@@ -1,6 +1,7 @@
 const util = require ('../util/util.js')
 const log = require ('ololog').configure ({ locate: false })
 const ccxt = require ('ccxt')
+const _ = require('lodash/core');
 
 class ExchangeSim {
 	constructor(id, info, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72){
@@ -109,7 +110,7 @@ class ExchangeSim {
 			balanceDiff = 0
 			
 		}else {
-			status = 'live'
+			status = 'open'
 			stockDiff = 0
 			balanceDiff = amount * price / (1-this.fee)
 		}
@@ -154,7 +155,7 @@ class ExchangeSim {
 			balanceDiff = amount * price * (1-this.fee)
 			stockDiff = 0
 		}else {
-			status = 'live'
+			status = 'open'
 			balanceDiff = 0
 			stockDiff = amount
 		}
@@ -192,6 +193,17 @@ class ExchangeSim {
 		.catch(function(e){
             throw e
         })		
+	}
+
+	fetchOpenOrders() {
+		var self = this
+		return util.sleep(300)
+		.then(function(){
+			return _.filter(self.orderList, function(o) { return o.status == 'open' })		
+		})
+		.catch(function(e){
+            throw e
+        })
 	}
 
 	cancelOrder(orderID) {

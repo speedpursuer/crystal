@@ -18,6 +18,7 @@ const util = require ('../util/util.js')
 var assert = require('assert');
 var _ = require('lodash/core');
 const keys = require('../config/exchangeInfo.js')
+// const _ = require('lodash');
 
 // describe('Array', function() {
 //   describe('#indexOf()', function() {
@@ -205,5 +206,36 @@ function test10() {
 	a.do()
 }
 
+async function test11() {
+	async function doSome() {
+		util.log("before sleep")
+		await util.sleep(2000)	
+		util.log("after sleep")
+	}
 
-test10()
+	function b() {
+		var a = doSome()
+		util.log(a)
+		return a
+	}
+	await b()
+	util.log("after b()")
+}
+
+function test12() {
+	// var users = [
+ //  		{ 'user': 'barney', 'age': 36, 'active': true },
+ //  		{ 'user': 'fred',   'age': 40, 'active': false }
+	// ];
+	var users = {
+		"a": { 'user': 'barney', 'age': 36, 'active': true },
+		"b": { 'user': 'fred',   'age': 40, 'active': false }
+	}
+ 
+	var result = _.filter(users, function(o) { return !o.active; });
+	util.log(users)
+	util.log(result)
+	// util.log(_.values(result))
+}
+
+test12()

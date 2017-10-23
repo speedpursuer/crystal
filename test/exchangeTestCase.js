@@ -12,11 +12,11 @@ async function test() {
 		var exchange = new Exchange(id, "BTC", true)
 		result.push(exchange.testOrder1())
 	}
-
+	
 	await Promise.all(result)
 
 	// var exchange = new Exchange('Kraken', "BTC", true)
-	// await exchange.testOrder1()			
+	// await exchange.testOrder1()
 
 	process.exit()      
 

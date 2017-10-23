@@ -11,7 +11,7 @@ class ExchangeFactory {
         var info = exchangeInfo[id]
         if(info) {
             let exchange = new ccxt[id](info)
-            // let exchange = new ExhangeSim(id, info, false)
+            // let exchange = new ExhangeSim(id, info, true)
             exchange.fee = info.fee
             exchange.fiat = info.fiat
             exchange.slippage = defaultSlippage
