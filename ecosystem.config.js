@@ -7,7 +7,7 @@ module.exports = {
 
     // First application
     {
-      name      : 'trader_us',
+      name      : 'crystal',
       script    : 'app/app.js',
       env: {
         COMMON_VARIABLE: 'true'
@@ -27,9 +27,9 @@ module.exports = {
       user : 'root',
       host : '67.218.155.174 -p 26821',
       ref  : 'origin/master',
-      repo : 'git@github.com:speedpursuer/Trader.git',
-      path : '/node/Trader_us/production',
-      // 'post-deploy' : 'npm install && pm2 reload ecosystem.config.js --env production'
+      repo : 'git@github.com:speedpursuer/crystal.git',
+      path : '/node/crystal',
+      'post-deploy' : 'npm install'
     },
     // dev : {
     //   user : 'node',
