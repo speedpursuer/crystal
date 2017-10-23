@@ -153,9 +153,9 @@ class Exchange {
             await this.getAccount()
             this.log("开始下单")
             if(this.balance >= 35) {
-                result = await this.exchangeEntity.createLimitBuyOrder(this.symbol, 0.005, 3000)
+                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, 0.005, 3000)
             }else {
-                result = await this.exchangeEntity.createLimitSellOrder(this.symbol, 0.005, 10000)
+                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, 0.005, 10000)
             }            
         }catch(e){
             this.log(e, 'red')
