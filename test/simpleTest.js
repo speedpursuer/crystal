@@ -1,33 +1,8 @@
-// var Promise = require('bluebird');
-// var promiseWhile = function(condition, action) {
-//     var resolver = Promise.defer();
-
-//     var loop = function() {
-//         if (!condition()) return resolver.resolve();
-//         return Promise.cast(action())
-//             .then(loop)
-//             .catch(resolver.reject);
-//     };
-
-//     process.nextTick(loop);
-
-//     return resolver.promise;
-// };
-
 const util = require ('../util/util.js')
 var assert = require('assert');
-var _ = require('lodash/core');
+// var _ = require('lodash/core');
 const keys = require('../config/exchangeInfo.js')
-// const _ = require('lodash');
-
-// describe('Array', function() {
-//   describe('#indexOf()', function() {
-//     it('should return -1 when the value is not present', function() {
-//       assert.equal(-1, [1,2,3].indexOf(4));
-//     });
-//   });
-// });
-
+const _ = require('lodash');
 
 
 class Test {
@@ -227,13 +202,23 @@ function test12() {
  //  		{ 'user': 'barney', 'age': 36, 'active': true },
  //  		{ 'user': 'fred',   'age': 40, 'active': false }
 	// ];
-	var users = {
-		"a": { 'user': 'barney', 'age': 36, 'active': true },
-		"b": { 'user': 'fred',   'age': 40, 'active': false }
-	}
+	// var users = {
+	// 	"a": { 'user': 'barney', 'age': 36, 'active': true },
+	// 	"b": { 'user': 'fred',   'age': 40, 'active': false }
+	// }
+
+	var list = [ 
+		{    
+			id:  1,
+    		amount:  12,
+     		price:  2999.027,
+    		status: "open",
+      		type: "buy"      
+      	} 
+    ]
  
-	var result = _.filter(users, function(o) { return !o.active; });
-	util.log(users)
+	var result = _.filter(list, function(o) { return o.status == 'open' });
+	util.log(list)
 	util.log(result)
 	// util.log(_.values(result))
 }
@@ -307,7 +292,52 @@ async function test13() {
 }
 
 function test14() {
-
+	var list = {
+		a: {
+			price: 12
+		},
+		b: {
+			price: 34
+		},
+		c: {
+			price: 6
+		}
+	}
+	var result = _.orderBy(list, 'price', 'asc')
+	util.log(list)
+	util.log(result)
 } 
 
-test13()
+async function test15() {
+	class A{
+		async balanced() {
+			await util.sleep(100)
+			return false
+		}
+	}
+
+	var a = new A()
+	util.log(await a.balanced())
+}
+
+function test16() {
+	class A {
+		constructor(amount, size) {
+			this.amount = amount
+			this.size = size
+		}
+
+		get total() {
+			return this.amount * this.size			
+		}
+	}
+
+	var list = [new A(3, 11), new A(1, 20), new A(2, 15)]
+
+	var result = _.orderBy(list, 'total', 'desc')
+
+	util.log(result)
+}
+
+test16()
+

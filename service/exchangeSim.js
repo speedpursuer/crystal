@@ -1,11 +1,11 @@
 const util = require ('../util/util.js')
 const log = require ('ololog').configure ({ locate: false })
 const ccxt = require ('ccxt')
-const _ = require('lodash/core');
+const _ = require('lodash');
 
 class ExchangeSim {
 	constructor(id, info, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72){
-		this.orderList = []
+		this.orderList = {}
 		this.currID = 0
 		this.tryTime = 0
 		//JPY
@@ -30,70 +30,51 @@ class ExchangeSim {
         this.ccxtExchange = new ccxt[id](info)
 	}
 
-	fetchOrderBook() {
-
+	async fetchOrderBook() {
 		if(this.realOrderBook){
-			return this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)
-	        .then(function(orderBooks){
-	            return orderBooks
-	        })
-	        .catch(function(e){
-	            throw e
-	        })
+			return await this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)	        
 		}else {
-			var self = this
-			return util.sleep(300)
-			.then(function(){
-				var book = self.id == 'bitfinex'? 
-				{
-					asks: [
-						[5000, 0.1],
-						[5003, 0.2]
-					],
-					bids: [
-						[5055, 0.5],
-						[5004, 0.3],
-					]
-				}:
-				{
-					asks: [
-						[5000, 0.1],
-						[5003, 0.2]
-					],
-					bids: [
-						[5005, 0.5],
-						[5004, 0.3],
-					]
-				}
-				return book
-			})
-			.catch(function(e){
-		        throw e
-		    })
+			await util.sleep(300)
+			var book = this.id == 'bitfinex'? 
+			{
+				asks: [
+					[5000, 0.1],
+					[5003, 0.2]
+				],
+				bids: [
+					[5055, 0.5],
+					[5004, 0.3],
+				]
+			}:
+			{
+				asks: [
+					[5000, 0.1],
+					[5003, 0.2]
+				],
+				bids: [
+					[5005, 0.5],
+					[5004, 0.3],
+				]
+			}
+			return book
 		}	
 	}
 
-	fetchBalance() {
-		var self = this
-		return util.sleep(300)
-		.then(function(){
-			var balance = {}
-			balance[self.crypto] = {
-				free: self.stocks,
-				used: self.frozenStocks
-			}
-			balance[self.fiat] = {
-				free: self.balance,
-				used: self.frozenBalance			
-			}
-			return balance
-		})
-		.catch(function(e){
-            throw e
-        })
+	async fetchBalance() {
+		await util.sleep(300)
+		var balance = {}
+		balance[this.crypto] = {
+			free: this.stocks,
+			used: this.frozenStocks
+		}
+		balance[this.fiat] = {
+			free: this.balance,
+			used: this.frozenBalance			
+		}
+		return balance
 	}
 
-	createLimitBuyOrder(symbol, amount, price) {
+	async createLimitBuyOrder(symbol, amount, price) {
 		this.currID++
 
 		price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
@@ -130,16 +111,11 @@ class ExchangeSim {
 		this.stocks += stockDiff
 		this.frozenBalance += balanceDiff
 
-		return util.sleep(300)
-		.then(function(){
-			return {id: order.id}
-		})
-		.catch(function(e){
-            throw e
-        })
+		await util.sleep(300)
+		return {id: order.id}		
 	}
 
-	createLimitSellOrder(symbol, amount, price) {
+	async createLimitSellOrder(symbol, amount, price) {
 		this.currID++
 
 		price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
@@ -175,62 +151,39 @@ class ExchangeSim {
 		this.balance += balanceDiff
 		this.frozenStocks += stockDiff
 
-		return util.sleep(300)
-		.then(function(){
-			return {id: order.id}
-		})
-		.catch(function(e){
-            throw e
-        })
+		await util.sleep(300)
+		return {id: order.id}
 	}
 
-	fetchOrder(orderID) {
-		var self = this
-		return util.sleep(300)
-		.then(function(){
-			return self.orderList[orderID]	
-		})
-		.catch(function(e){
-            throw e
-        })		
+	async fetchOrder(orderID) {
+		await util.sleep(300)
+		return this.orderList[orderID]		
 	}
 
-	fetchOpenOrders() {
-		var self = this
-		return util.sleep(300)
-		.then(function(){
-			return _.filter(self.orderList, function(o) { return o.status == 'open' })		
-		})
-		.catch(function(e){
-            throw e
-        })
+	async fetchOpenOrders() {
+		await util.sleep(300)
+		return _.filter(this.orderList, function(o) { return o.status == 'open' })
 	}
 
-	cancelOrder(orderID) {
-		var self = this
+	async cancelOrder(orderID) {		
 		this.tryTime++
-		return util.sleep(300)
-		.then(function(){
-			// log("self.tryTime: ", self.tryTime)
-			if(self.tryTime >= 1) {				
-				var order = self.orderList[orderID]
-				if(order.type == 'buy') {					
-					self.frozenBalance -= order.amount * order.price / (1-self.fee)
-					self.balance += order.amount * order.price / (1-self.fee)
-				}else {
-					self.frozenStocks -= order.amount
-					self.stocks += order.amount
-				}
-				order.status = 'closed'
-				self.tryTime = 0
-				return true
-			}else{
-				return false
-			}			
-		})
-		.catch(function(e){
-            throw e
-        })
+		await util.sleep(300)
+
+		if(this.tryTime >= 1) {				
+			var order = this.orderList[orderID]
+			if(order.type == 'buy') {					
+				this.frozenBalance -= order.amount * order.price / (1-this.fee)
+				this.balance += order.amount * order.price / (1-this.fee)
+			}else {
+				this.frozenStocks -= order.amount
+				this.stocks += order.amount
+			}
+			order.status = 'closed'
+			this.tryTime = 0
+			return true
+		}else{
+			return false
+		}
 	}
 
 	getRandomArbitrary (min, max) {

@@ -10,8 +10,8 @@ class ExchangeFactory {
         var id = eid.toLowerCase()
         var info = exchangeInfo[id]
         if(info) {
-            let exchange = new ccxt[id](info)
-            // let exchange = new ExhangeSim(id, info, true)
+            // let exchange = new ccxt[id](info)
+            let exchange = new ExhangeSim(id, info, false, 0.75, 0.75)
             exchange.fee = info.fee
             exchange.fiat = info.fiat
             exchange.slippage = defaultSlippage

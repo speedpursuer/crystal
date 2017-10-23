@@ -70,12 +70,12 @@ class Exchange {
         return this.stocks
     }
 
-    payForBuy(amount) {        
-        return amount * this.sell1Price * (1+this.slippage) / (1-this.fee)
+    get payForBuy() {        
+        return this.sell1Price * (1+this.slippage) / (1-this.fee)
     }
 
-    earnForSell(amount) {
-        return amount * this.buy1Price * (1-this.slippage) * (1-this.fee)
+    get earnForSell() {
+        return this.buy1Price * (1-this.slippage) * (1-this.fee)
     }
 
     async fetchOrderBook() {        
@@ -157,7 +157,7 @@ class Exchange {
                     } 
                     continue
                 }
-                
+
                 await this.fetchAccount()
                 if(this.frozenStocks == 0 && this.frozenBalance == 0) {
                     break

@@ -15,31 +15,36 @@ async function test() {
 	
 	await Promise.all(result)
 
-	// var exchange = new Exchange('Kraken', "BTC", true)
-	// await exchange.testOrder1()
+	
+}
 
+async function test1() {
+	var exchange = new Exchange('Kraken', "BTC", true)
+	await exchange.
 	process.exit()      
+}
 
-	// await exchange.getAccount()
- //    await exchange.fetchOrderBook()    		
-	// await exchange.limitBuy(0.002)
+async function testOrder() {
+	try{
+		var exchange = new Exchange('bitstamp', 'BTC', true)
+		await exchange.fetchOrderBook()
+		var order = await exchange.limitBuy(0.01)
+		// var order = await exchange.limitSell(0.01)
+		log("order", order)
+		// var account = await exchange.limitBuy(0.01)
+	}catch(e) {
+		log(e)
+	}
+}
+
+async function testAccount() {
+	try{
+		var exchange = new Exchange('bittrex', 'BTC', true)
+		await exchange.fetchAccount()
+		// log(await exchange.fetchOrderBook('BTC/USD'))	
+	}catch(e) {
+		log(e)
+	}	
 }
 
 test()
-
-// describe.only('exchange class', async function() {
-
-// 	var exchange = new Exchange('kraken', "BTC", true)
-
-// 	afterEach(async function(){
-		
-// 	})
-
-//   	describe('测试交易', async function() {  		
-//     	it('限价买单', async function() {
-//     		await exchange.getAccount()
-//     		await exchange.fetchOrderBook()    		
-//       		await exchange.limitBuy(0.001)
-//     	});
-//   	});
-// });

@@ -6,15 +6,15 @@ async function main(){
 	try {  
 		// var exchangeIDs = ['Bitfinex2', 'Bitstamp', 'GDAX', 'Gemini', 'Poloniex', 'Bittrex', 'Kraken']
         // var exchangeIDs = ['Bitfinex2', 'Poloniex', 'Bittrex', 'Kraken']  
-        var exchangeIDs = ['Bitfinex2', 'Bitstamp']  
-		var trade = new Trade(exchangeIDs, new Hedge("USD"))
+        var exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']  
+		var trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))
 		
 		await trade.init()
 
 		util.log("******************************************************")                                            
 
 
-        trade.exchanges['Bitfinex2'].orderBooks = 
+        trade.exchanges['Bitfinex'].orderBooks = 
         {
         	asks: [
 				[5000, 0.1],
@@ -38,15 +38,35 @@ async function main(){
 			]
 		}
 
-		util.log("Bitfinex2 fee:", trade.exchanges['Bitfinex2'].fee)
-		util.log("Bitstamp fee:", trade.exchanges['Bitstamp'].fee)
-     
-        await trade.strategy.doTrade()                                             
+		trade.exchanges['Poloniex'].orderBooks = 
+        {
+			asks: [
+				[5000, 0.1],
+				[5003, 0.2]
+			],
+			bids: [
+				[5005, 0.5],
+				[5004, 0.3],
+			]
+		}
 
-        await trade.strategy.reportBalance()        
+		// util.log("Bitfinex2 fee:", trade.exchanges['Bitfinex'].fee)
+		// util.log("Bitstamp fee:", trade.exchanges['Bitstamp'].fee)
+		// util.log("Bitstamp fee:", trade.exchanges['Bitstamp'].fee)
+    	
+
+        while(true) {
+        	await trade.strategy.doTrade()        
+        	await trade.strategy.reportBalance()
+        	if(trade.strategy.balanceDiff > 0.5 && trade.strategy.stockDiff == 0) {
+        		break
+        	}
+        }
+
+        process.exit()  
 
     }catch (e) {
         util.log.bright.yellow(e)        
     } 
 }
-// main()
+main()
