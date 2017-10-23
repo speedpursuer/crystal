@@ -6,38 +6,14 @@ class Util{
 		return new Promise (resolve => setTimeout (resolve, ms))
 	}
 
-	promiseWhile(condition, action) {
-	    var resolver = Promise.defer();
-	    var self = this
-	    var maxRetry = 5
-	    var retried = 0
-	    var loop = function() {
-	        if (retried > maxRetry|| !condition()) return resolver.resolve();
-	        return Promise.cast(action())
-	            .then(()=>{
-	            	retried++
-	            	self.sleep(200)
-	            })
-	            .then(loop)
-	            .catch(resolver.reject);
-	    };
-
-	    process.nextTick(loop);
-
-	    return resolver.promise;
-	}
-
-	promiseFor(list, method) {
+	async promiseFor(list, method) {
 		var fetchers = []
 		for(var i in list) {
 			if(typeof list[i][method] === "function") {
 				fetchers.push(list[i][method]())
 			}            
         }
-        return Promise.all(fetchers)
-        .then(function(result) {  	
-        	return result
-        })
+        return await Promise.all(fetchers)    
 	}
 
 	get log() {
@@ -82,6 +58,27 @@ class Util{
 			"WUSD": 6.5807,
 		}
 		return fiats[fiat.toUpperCase()]
+	}
+
+	promiseWhile(condition, action) {
+	    var resolver = Promise.defer();
+	    var self = this
+	    var maxRetry = 5
+	    var retried = 0
+	    var loop = function() {
+	        if (retried > maxRetry|| !condition()) return resolver.resolve();
+	        return Promise.cast(action())
+	            .then(()=>{
+	            	retried++
+	            	self.sleep(200)
+	            })
+	            .then(loop)
+	            .catch(resolver.reject);
+	    };
+
+	    process.nextTick(loop);
+
+	    return resolver.promise;
 	}
 }
 var util = new Util()

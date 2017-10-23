@@ -3,9 +3,8 @@ const Database = require('../service/database.js')
 
 class Strategy {
 
-	constructor(symbol,fiat){
-        // super()
-        this.symbol = symbol
+	constructor(crypto,fiat){
+        this.crypto = crypto
         this.fiat = fiat      
     }
 

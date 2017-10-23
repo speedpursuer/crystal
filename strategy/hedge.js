@@ -6,12 +6,18 @@ const orderRate = 0.5
 const minMargin = 0.6
 
 class Hedge extends Strategy {
+
+    constructor(crypto,fiat){
+        super(crypto, fiat)
+        this.isBalanced = true
+    }
     
-	doTrade() {
-		if(Math.abs(this.stockDiff) >= minTrade) {
-            return this.balance()
+	async doTrade() {
+		// if(Math.abs(this.stockDiff) >= minTrade) {
+        if(!this.isBalanced) {
+            await this.balance()
         }else {
-            return this.hedge()
+            await this.hedge()
         }
 	}
 
@@ -27,11 +33,17 @@ class Hedge extends Strategy {
 
         if(this.bestPair.magin > 0) {
         	util.log(`存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 差价: ${this.bestPair.magin}`)
-        	return Promise.all([
-	    		this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount), 
-	    		this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount),
-                this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, this.bestPair.tradeAmount, this.bestPair.magin/this.bestPair.tradeAmount)
-	    	])                                 
+            try {
+                await Promise.all([
+                    this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount), 
+                    this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount),
+                    this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, this.bestPair.tradeAmount, this.bestPair.magin/this.bestPair.tradeAmount)
+                ])
+            }catch(e) {
+                throw e
+            }finally {
+                this.isBalanced = false
+            }        	           
         }else {
         	util.log(`无套利机会`)
         }
@@ -53,29 +65,32 @@ class Hedge extends Strategy {
         }
     }
 
-    balance() {
-    	var lowestBuyExchange
-    	var highestSellExchange
-    	for(let [id, exchange] of Object.entries(this.exchanges)){
-			if(!lowestBuyExchange || lowestBuyExchange.sell1Price > exchange.sell1Price) {
+    async balance() {
+
+
+
+        var lowestBuyExchange
+        var highestSellExchange
+        for(let [id, exchange] of Object.entries(this.exchanges)){
+            if(!lowestBuyExchange || lowestBuyExchange.sell1Price > exchange.sell1Price) {
                 lowestBuyExchange = exchange
             }
             if(!highestSellExchange || highestSellExchange.buy1Price < exchange.buy1Price) {
                 highestSellExchange = exchange
             }
-		}		
+        }       
         if(this.stockDiff > 0) {
-        	var orderAmount = Math.min(this.stockDiff, highestSellExchange.amountCanSell, highestSellExchange.buy1Amount * orderRate)
-        	if(orderAmount >= minTrade) {
+            var orderAmount = Math.min(this.stockDiff, highestSellExchange.amountCanSell, highestSellExchange.buy1Amount * orderRate)
+            if(orderAmount >= minTrade) {
                 util.log(`存在币差 ${this.stockDiff}, ${highestSellExchange.id} 卖出 ${orderAmount} ${highestSellExchange.crypto}`)
-        		return highestSellExchange.limitSell(orderAmount)	
-        	}            
+                await highestSellExchange.limitSell(orderAmount)   
+            }            
         }else{
-        	var orderAmount = Math.min(Math.abs(this.stockDiff), lowestBuyExchange.amountCanBuy, lowestBuyExchange.sell1Amount * orderRate)
-        	if(orderAmount >= minTrade) {
+            var orderAmount = Math.min(Math.abs(this.stockDiff), lowestBuyExchange.amountCanBuy, lowestBuyExchange.sell1Amount * orderRate)
+            if(orderAmount >= minTrade) {
                 util.log(`存在币差 ${this.stockDiff}, ${lowestBuyExchange.id} 买入 ${orderAmount} ${lowestBuyExchange.crypto}`)
-        		return lowestBuyExchange.limitBuy(orderAmount)
-        	}            
+                await lowestBuyExchange.limitBuy(orderAmount)
+            }            
         }
     }
 }

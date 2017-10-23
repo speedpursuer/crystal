@@ -7,30 +7,20 @@ class Trade{
 		this.strategy = strategy
 		this.exchanges = {}
 		for(var id of ids) {
-			this.exchanges[id] = new Exchange(id, this.strategy.symbol, true)
+			this.exchanges[id] = new Exchange(id, this.strategy.crypto, true)
 		}		
 	}
 
-	init(){		
-		return util.promiseFor(this.exchanges, 'getAccount')
-		.then(list=>{
-			util.log(`已获取 ${list.length} 个交易所得账户信息', `)
-			this.strategy.init(this.exchanges)			
-		})
-		.catch(function(e){
-			throw e
-		})
+	async init(){		
+		var list = await util.promiseFor(this.exchanges, 'fetchAccount')
+		util.log(`已获取 ${list.length} 个交易所得账户信息', `)
+		await this.strategy.init(this.exchanges)	
 	}
 
-	updateOrderBook(){
+ 	async updateOrderBook(){
 		var now = (new Date()).getTime()
-		return util.promiseFor(this.exchanges, 'fetchOrderBook')
-		.then(list=>{
-			util.log(`获取 ${list.length} 个交易数据，时间 ${(new Date()).getTime() - now} ms`)
-		})
-		.catch(function(e){
-			throw e
-		})
+		var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')
+		util.log(`获取 ${list.length} 个交易数据，时间 ${(new Date()).getTime() - now} ms`)		
 	}
 
 	async loop(){

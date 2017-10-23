@@ -11,9 +11,10 @@ async function main(){
         // var exchangeIDs = ['zaif', 'bitflyer', 'quoine']  
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'quoine', 'hitbtc', 'Bitstamp', 'lakebtc', 'cex', 'gatecoin', 'wex', 'itBit']  
 		var trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))
-		trade.run()                  
-    }catch (e) {
-        util.log.bright.yellow(e)        
+		await trade.run()
+    }catch (e) {        
+        util.log.bright.yellow(e)
+        process.exit()  
     } 
 }
 main()

@@ -78,32 +78,19 @@ class Exchange {
         return amount * this.buy1Price * (1-this.slippage) * (1-this.fee)
     }
 
-    fetchOrderBook() {
-        var self = this
-        return this.exchangeDelegate.fetchOrderBook(this.symbol)
-        .then(function(orderBooks){            
-            self.orderBooks = orderBooks
-            return orderBooks
-        })
-        .catch(function(e){
-            throw e
-        })
+    async fetchOrderBook() {        
+        this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
+        return this.orderBooks        
     }
 
-    getAccount() {
-        var self = this
-        return this.exchangeDelegate.fetchBalance()
-        .then(function(account){
-            self.balance = account[self.fiat].free
-            self.frozenBalance = account[self.fiat].used
-            self.stocks = account[self.crypto].free 
-            self.frozenStocks = account[self.crypto].used
-            self.log(`balance: ${self.balance}, frozenBalance: ${self.frozenBalance}, stocks: ${self.stocks}, frozenStocks: ${self.frozenStocks}`, 'green')            
-            return account
-        })
-        .catch(function(e) {
-            throw e
-        })   
+    async fetchAccount() {
+        var account = await this.exchangeDelegate.fetchBalance()
+        this.balance = account[this.fiat].free
+        this.frozenBalance = account[this.fiat].used
+        this.stocks = account[this.crypto].free 
+        this.frozenStocks = account[this.crypto].used
+        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'green')            
+        return account
     }
 
     limitBuy(amount) {  
@@ -147,24 +134,6 @@ class Exchange {
         await this.cancelPendingOrders(result.id)     
     }
 
-    async testOrder1() {
-        var result = {}
-        try{
-            await this.getAccount()
-            this.log("开始下单")
-            if(this.balance >= 35) {
-                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, 0.005, 3000)
-            }else {
-                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, 0.005, 10000)
-            }            
-        }catch(e){
-            this.log(e, 'red')
-            await util.sleep(4 * RetryDelay)
-        }
-
-        await this.cancelPendingOrders(result.id)   
-    }
-
     async cancelPendingOrders(orderID) {
         this.log("开始轮询订单状态")
         var retryTime = 0
@@ -172,7 +141,6 @@ class Exchange {
             try{
                 this.log("--------------------------------")
                 await util.sleep(RetryDelay)
-
                 if(orderID) {
                     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
                     if(order && order.status == 'open') {
@@ -182,7 +150,6 @@ class Exchange {
                 }
 
                 var orders = await this.exchangeDelegate.fetchOpenOrders(this.symbol)
-
                 if(orders && orders.length > 0) {
                     for(var order of orders) {
                         await this.cancelOrder(order)                        
@@ -190,9 +157,8 @@ class Exchange {
                     } 
                     continue
                 }
-
-                await this.getAccount()
-
+                
+                await this.fetchAccount()
                 if(this.frozenStocks == 0 && this.frozenBalance == 0) {
                     break
                 }                    
@@ -216,6 +182,24 @@ class Exchange {
 
     log(message, color='white', always=false) {
         if(this.debug || always) util.log[color](this.id, message)
+    }
+
+    async testOrder() {
+        var result = {}
+        try{
+            await this.fetchAccount()
+            this.log("开始下单")
+            if(this.balance >= 35) {
+                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, 0.005, 3000)
+            }else {
+                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, 0.005, 10000)
+            }            
+        }catch(e){
+            this.log(e, 'red')
+            await util.sleep(4 * RetryDelay)
+        }
+
+        await this.cancelPendingOrders(result.id)   
     }
 }
 module.exports = Exchange

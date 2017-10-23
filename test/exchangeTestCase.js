@@ -10,7 +10,7 @@ async function test() {
 
 	for(var id of list) {		
 		var exchange = new Exchange(id, "BTC", true)
-		result.push(exchange.testOrder1())
+		result.push(exchange.testOrder())
 	}
 	
 	await Promise.all(result)

@@ -238,4 +238,76 @@ function test12() {
 	// util.log(_.values(result))
 }
 
-test12()
+async function test13() {
+	function do1 () {
+		return util.sleep(100)
+	}
+
+	async function do2() {
+		throw "err"
+	}
+
+	function do3() {
+		return do1()
+		.then(function (){
+			util.log('do3')
+			return do2()			
+		})
+		// .catch(function(e){
+		// 	util.log(e, 'do3')
+		// })
+		// .finally(function(){
+		// 	util.log('do3 finally')
+		// })
+	}
+
+	async function do4() {
+		try{
+			await do1()
+			await do2()
+			util.log('do4')
+		}catch(e) {
+			util.log(e, 'do4')
+			throw e			
+		}finally {
+			util.log('do4 finally')
+		}		
+	}
+
+	async function do5() {
+		await do1()
+		await do2()
+		util.log('do4')		
+	}
+
+	function do6() {
+		var a = null
+		util.log(a.b)
+	}
+
+	function do7() {
+		do6()
+	}
+
+	async function do8() {
+		await util.sleep(400)
+		return ['a']
+	}
+
+	async function do9() {
+		return await do8()
+	}
+
+	try{
+		util.log(await do9())
+	}catch(e){
+		util.log('catch')
+		// util.log(e)
+	}
+}
+
+function test14() {
+
+} 
+
+test13()
