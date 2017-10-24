@@ -59,6 +59,10 @@ class Database {
         await client.setAsync(this.key, JSON.stringify(data))
     }
 
+    async deleteData() {
+        return await client.delAsync(this.key)
+    }
+
     get now() {
         return moment().format("YYYY-MM-DD HH:mm:ss")
     }

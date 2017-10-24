@@ -1,8 +1,8 @@
 const util = require ('../util/util.js')
-var assert = require('assert');
+var assert = require('assert')
 // var _ = require('lodash/core');
 const keys = require('../config/exchangeInfo.js')
-const _ = require('lodash');
+const _ = require('lodash')
 
 
 class Test {
@@ -339,5 +339,19 @@ function test16() {
 	util.log(result)
 }
 
-test16()
+function test17() {
+	global.simMode = true
+	util.log(_.round(1213.004, 2))
+	util.log(util.toFixedNumber(1213.004, 2))
+	util.log(global.name)
+}
+
+
+if (require.main === module) {
+  	// 如果是直接执行 main.js，则进入此处
+  	// 如果 main.js 被其他文件 require，则此处不会执行。
+  	test17()
+}
+
+
 

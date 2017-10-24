@@ -2,7 +2,9 @@ const Hedge = require('../strategy/hedge.js')
 const Trade = require('./trade.js')
 const util = require('../util/util.js')
 
-async function main(){	
+async function main(){
+    global.realMode = false
+    global.realSim = true
 	try {  
 		// var exchangeIDs = ['Bitfinex2', 'Bitstamp', 'GDAX', 'Gemini', 'Poloniex', 'Bittrex', 'Kraken']
         var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Kraken', 'Bitstamp']  

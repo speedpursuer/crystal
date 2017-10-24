@@ -3,48 +3,37 @@ const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
 
 
-async function test() {
+describe('测试 exchange', async function() {	
 
 	var list = ['Bitfinex', 'Poloniex', 'Bittrex']  
-	var result = []
+	var result = []	
+	var exchanges = []
 
-	for(var id of list) {		
-		var exchange = new Exchange(id, "BTC", true)
-		result.push(exchange.testOrder())
-	}
-	
-	await Promise.all(result)
+	this.timeout(50000)
 
-	
-}
+	before(async function() {
+		global.realMode = true
 
-async function test1() {
-	var exchange = new Exchange('Kraken', "BTC", true)
-	await exchange.
-	process.exit()      
-}
+		for(var id of list) {		
+			var exchange = new Exchange(id, "BTC", true)
+			exchanges.push(exchange)
+			result.push(exchange.testOrder())
+		}
+	})
 
-async function testOrder() {
-	try{
-		var exchange = new Exchange('bitstamp', 'BTC', true)
-		await exchange.fetchOrderBook()
-		var order = await exchange.limitBuy(0.01)
-		// var order = await exchange.limitSell(0.01)
-		log("order", order)
-		// var account = await exchange.limitBuy(0.01)
-	}catch(e) {
-		log(e)
-	}
-}
+	afterEach(async function(){
+		
+	})
 
-async function testAccount() {
-	try{
-		var exchange = new Exchange('bittrex', 'BTC', true)
-		await exchange.fetchAccount()
-		// log(await exchange.fetchOrderBook('BTC/USD'))	
-	}catch(e) {
-		log(e)
-	}	
-}
+  	describe('下单和取消', async function() {  		
+    	it('后确保所有订单都取消', async function() {    		      		
+      				
+			await Promise.all(result)
 
-test()
+			for(var exchange of exchanges) {		
+				exchange.frozenBalance.should.equal(0)
+				exchange.frozenStocks.should.equal(0)
+			}
+    	})
+  	})
+})
