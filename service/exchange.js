@@ -120,7 +120,7 @@ class Exchange {
         }else {
             var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 1)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, orderPrice)
-            this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'green', true)
+            this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue', true)
         }      
 
         var result = {}        

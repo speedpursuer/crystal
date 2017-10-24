@@ -44,7 +44,7 @@ class Trade{
         	util.log.red("交易初始化失败，程序退出")     	
         	throw e
         }
-		// await this.loop()
+		await this.loop()
 	}
 
 	async handleError(err) {
