@@ -79,9 +79,9 @@ class Exchange {
     }
 
     async fetchOrderBook() {        
-        var now = (new Date()).getTime()
+        // var now = (new Date()).getTime()
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
-        this.log(`${this.id} 延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    
+        // this.log(`延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    
         return this.orderBooks        
     }
 
