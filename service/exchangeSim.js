@@ -12,8 +12,8 @@ class ExchangeSim {
 		// this.balance = 85000
   //       this.stocks = 0.134
         //USD
-        this.balance = 460
-        this.stocks = 0.08
+        this.balance = 1500
+        this.stocks = 0.26
         this.frozenBalance = 0
         this.frozenStocks = 0
 
