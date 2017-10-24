@@ -11,7 +11,7 @@ async function main(){
         // var exchangeIDs = ['Bitfinex', 'Bitstamp']  
         // var exchangeIDs = ['zaif', 'bitflyer', 'quoine']  
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'quoine', 'hitbtc', 'Bitstamp', 'lakebtc', 'cex', 'gatecoin', 'wex', 'itBit']  )
-        var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Kraken', 'Bitstamp', 'okcoinusd', 'okex']  
+        var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'okcoinusd', 'okex']  
 		var trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))
 		await trade.run()
     }catch (e) {        
