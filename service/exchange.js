@@ -84,6 +84,8 @@ class Exchange {
             'limit_bids': 5, // max = 50
             'limit_asks': 5, // may be 0 in which case the array is empty
             'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
+            'depth': 5,
+            'size': 5,            
         })
         // this.log(`延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    
         return this.orderBooks    
