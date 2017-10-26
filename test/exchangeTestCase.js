@@ -3,7 +3,7 @@ const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
 
 
-describe.only('测试 exchange', async function() {	
+describe('测试 exchange', async function() {	
 
 	this.timeout(50000)
 
@@ -37,7 +37,7 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-  	describe.only('获取市场深度', async function() {  		
+  	describe('获取市场深度', async function() {  		
     	it('返回数量压缩不超过5', async function() {   
     		// ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'okcoinusd']   		      		
     		var exchange = new Exchange('bitstamp', "BTC", true)
