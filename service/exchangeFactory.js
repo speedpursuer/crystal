@@ -5,8 +5,7 @@ const exchangeInfo = require('../config/exchangeInfo.js')
 const defaultSlippage = 0.001
 
 class ExchangeFactory {
-    createExchange(eid) {
-        
+    createExchange(eid) {        
         var id = eid.toLowerCase()
         var info = exchangeInfo[id]
         if(info) {

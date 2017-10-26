@@ -425,6 +425,10 @@ function test20() {
 
 function test21() {
 	util.log(util.timestamp)
+	util.log(util.timeFromTimestamp(util.timestamp))
+	var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'hitbtc']
+	exchangeIDs = _.map(exchangeIDs, function(item) {return item.toLowerCase()})
+	util.log(exchangeIDs)
 }
 
 if (require.main === module) {

@@ -84,8 +84,57 @@ class Database {
     }
 
     async getOrderBook() {    
-        return await this.OrderBook.find().exec()
+        return await this.OrderBook.find()
     }
+
+    async getOrderBooksTimeline(from, to) {
+        return this.OrderBook.distinct(
+            'recordTime',
+            {recordTime: { $gt: from - 1, $lt: to + 1}}
+        )
+    }
+
+    async getOrderBooks(exchange, recordTime) {
+        var orderBook = await this.OrderBook.find(
+            {
+                exchange: exchange,
+                recordTime: recordTime
+            }
+        ).lean()
+        return {
+            bids: orderBook[0].bids,
+            asks: orderBook[0].asks
+        }
+    }
+
+    async getOrderBooks1(exchanges, recordTime) {
+        var result = {}
+
+        var orderBooks = await this.OrderBook.find(
+            {
+                exchange: { $in: exchanges },
+                recordTime: recordTime
+            }
+        ).lean()
+    
+        for(var orderBook of orderBooks) {
+            result[orderBook.exchange] = {
+                bids: orderBook.bids,
+                asks: orderBook.asks
+            }
+        }      
+
+        return result
+    }
+
+    // async getOrderBooks(exchanges, from, to) {
+    //     return this.OrderBook.find(
+    //         {
+    //             exchange: { $in: exchanges },
+    //             recordTime: { $gt: from - 1, $lt: to + 1}
+    //         }
+    //     )
+    // }
 
     async getData() {
         return JSON.parse(await client.getAsync(this.key))

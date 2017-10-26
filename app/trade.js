@@ -1,14 +1,17 @@
 const util = require ('../util/util.js')
 const Exchange = require('../service/exchange.js')
+const database = require('../service/database.js')
+const _ = require('lodash')
 const Interval = 2000
 
 class Trade{
 	constructor(ids, strategy){				
 		this.strategy = strategy
+		this.exchangesIDs = _.map(ids, function(i) {return i.toLowerCase()})
 		this.exchanges = {}
-		for(var id of ids) {
+		for(var id of this.exchangesIDs) {
 			this.exchanges[id] = new Exchange(id, this.strategy.crypto, true)
-		}		
+		}
 	}
 
 	async init(){		
@@ -18,16 +21,16 @@ class Trade{
 	}
 
  	async updateOrderBook(){
-		var now = (new Date()).getTime()
+		var start = util.now
 		var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')
-		util.log(`获取 ${list.length} 个交易数据，时间 ${(new Date()).getTime() - now} ms`)		
+		util.log(`获取 ${list.length} 个交易数据，时间 ${util.now - now} ms`)	
 	}
 
 	async loop(){
 		while(this.strategy.condition()) {
             try {  
             	util.log("******************************************************")                                            
-                await this.updateOrderBook()                    
+                await this.updateOrderBook()                
                 await this.strategy.doTrade()
                 await this.strategy.reportBalance()                                          
                 await util.sleep(Interval)                                  
@@ -52,6 +55,35 @@ class Trade{
 		// var exchangeID = message.split(' ')[0]
 		// util.log(this.exchanges[exchangeID])
 		return util.sleep(Interval)
+	}
+
+	async backtest() {
+		try { 
+			await this.init()
+			var timeline = await database.getOrderBooksTimeline('1509021522000', '1509021545000')
+			timeline.sort(function(a, b){ return a - b})
+			for(var time of timeline) {				
+				var orderBook = await database.getOrderBooks1(this.exchangesIDs, time)
+				var skip = false
+				for(var id of this.exchangesIDs) {
+					if(orderBook[id]) {
+						this.exchanges[id].orderBooks = orderBook[id]
+					}else{
+						skip = true
+						break
+					}					
+				}
+				if(skip) continue
+				util.log.yellow(`******************************* 测试时间: ${util.timeFromTimestamp(time)} *******************************`)
+				await this.strategy.doTrade()
+                await this.strategy.reportBalance()                                          
+			}
+			util.log.green("回测完成")			
+			process.exit()
+        }catch (e) {   
+        	util.log.red(e)     	
+        	throw e
+        }
 	}
 }
 module.exports = Trade

@@ -69,4 +69,17 @@ describe.skip('测试Database class', async function() {
       }
     })
   })
+
+  describe('getOrderBooks', async function() {      
+    it('获取时间条数', async function() {
+      var result = await database.getOrderBooksTimeline('1509021522000', '1509021545000')
+      util.log(result)
+
+      result = await database.getOrderBooks('bitstamp', '1509021545000')
+      util.log(result)
+      
+      result = await database.getOrderBooks1(['bitstamp', 'hitbtc', 'bitfinex'], '1509021523000')
+      util.log(result)
+    })
+  })
 })

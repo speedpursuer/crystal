@@ -29,6 +29,10 @@ class Util{
         return moment().unix() * 1000
     }
 
+    timeFromTimestamp(timestamp) {
+    	return moment.unix(timestamp/1000).format("YYYY-MM-DD HH:mm:ss")
+    }
+
 	toFixedNumber(number, x, base=10){
 	  	var pow = Math.pow(base||10,x);
 	  	return +( Math.round(number*pow) / pow );
