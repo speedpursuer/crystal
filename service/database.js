@@ -24,7 +24,7 @@ class Database {
         })
 
         var orderBookSchema = mongoose.Schema({
-            exhange: {type: String},
+            exchange: {type: String},
             market: {type: String},
             timestamp: { type: Number },
             bids: { type: Array},

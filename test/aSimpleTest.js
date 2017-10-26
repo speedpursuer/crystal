@@ -7,8 +7,6 @@ const _ = require('lodash')
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
-var pmongo = require('promised-mongo');
-
 const ccxt = require ('ccxt')
 
 
