@@ -423,10 +423,14 @@ function test20() {
 	util.log(_.slice([1,2,3,4,5], 0, 4))
 }
 
+function test21() {
+	util.log(util.timestamp)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test18()
+  	test21()
 }
 
 

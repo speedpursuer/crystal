@@ -81,7 +81,7 @@ class Exchange {
     }
 
     async fetchOrderBook() {        
-        // var now = (new Date()).getTime()
+        var start = util.timestamp
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol, {
             'limit_bids': 5, // max = 50
             'limit_asks': 5, // may be 0 in which case the array is empty
@@ -95,10 +95,10 @@ class Exchange {
         data.asks = _.slice(data.asks, 0, 5)
         data.exchange = this.id
         data.market = this.symbol
-        data.recordTime = util.now
+        data.recordTime = start
 
         await database.recordOrderBook(data)
-        // this.log(`延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    
+        // this.log(`延迟： ${(util.now - start} ms`, 'yellow')  
         return this.orderBooks
     }
 
