@@ -36,7 +36,7 @@ describe('测试Database class', async function() {
   	})
 	})
 
-  describe('recordOrderBook', async function() {      
+  describe.skip('recordOrderBook', async function() {      
     it('保存orderbook', async function() {
       var data = {
           timestamp: 1508932164960,
