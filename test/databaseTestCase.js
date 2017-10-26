@@ -3,7 +3,7 @@ const database = require('../service/database.js')
 const util = require('../util/util.js')
 const _ = require('lodash')
 
-describe.skip('测试Database class', async function() {
+describe('测试Database class', async function() {
 
 	// var database = new Database('Test')
 	var curreData

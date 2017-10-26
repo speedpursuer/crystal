@@ -19,7 +19,7 @@ describe('测试trade和stratege', async function() {
 		trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))		
 		await trade.init()
 
-        trade.exchanges['Bitfinex'].orderBooks = 
+        trade.exchanges['bitfinex'].orderBooks = 
         {
         	asks: [
 				[5000, 0.1],
@@ -31,7 +31,7 @@ describe('测试trade和stratege', async function() {
 			]			
 		}
 
-		trade.exchanges['Bitstamp'].orderBooks = 
+		trade.exchanges['bitstamp'].orderBooks = 
         {
 			asks: [
 				[5000, 0.1],
@@ -43,7 +43,7 @@ describe('测试trade和stratege', async function() {
 			]
 		}
 
-		trade.exchanges['Poloniex'].orderBooks = 
+		trade.exchanges['poloniex'].orderBooks = 
         {
 			asks: [
 				[5000, 0.1],
