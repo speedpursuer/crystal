@@ -95,6 +95,7 @@ class Exchange {
         data.asks = _.slice(data.asks, 0, 5)
         data.exchange = this.id
         data.market = this.symbol
+        data.recordTime = util.now
 
         await database.recordOrderBook(data)
         // this.log(`延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    

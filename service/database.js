@@ -30,6 +30,7 @@ class Database {
             bids: { type: Array},
             asks: { type: Array},
             datetime: { type: String },
+            recordTime: { type: String},
         })
 
         this.OrderBook = mongoose.model('OrderBook', orderBookSchema)
