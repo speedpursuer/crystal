@@ -21,9 +21,9 @@ class Trade{
 	}
 
  	async updateOrderBook(){
-		var start = util.now
+		var start = (new Date()).getTime()
 		var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')
-		util.log(`获取 ${list.length} 个交易数据，时间 ${util.now - start} ms`)	
+		util.log(`获取 ${list.length} 个交易数据，时间 ${(new Date()).getTime() - start} ms`)	
 	}
 
 	async loop(){

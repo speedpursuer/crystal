@@ -423,12 +423,16 @@ function test20() {
 	util.log(_.slice([1,2,3,4,5], 0, 4))
 }
 
-function test21() {
+async function test21() {
 	util.log(util.timestamp)
 	util.log(util.timeFromTimestamp(util.timestamp))
 	var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'hitbtc']
 	exchangeIDs = _.map(exchangeIDs, function(item) {return item.toLowerCase()})
 	util.log(exchangeIDs)
+
+	var start = util.timestamp
+	await util.sleep(1200)
+	util.log(util.timestamp - start)
 }
 
 if (require.main === module) {
