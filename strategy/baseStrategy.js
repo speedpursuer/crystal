@@ -1,5 +1,5 @@
 const util = require ('../util/util.js')
-const Database = require('../service/database.js')
+const database = require('../service/database.js')
 
 class Strategy {
 
@@ -10,7 +10,7 @@ class Strategy {
 
 	async init(exchanges){
 		this.exchanges = exchanges
-		this.database = new Database(this.constructor.name)		
+		// this.database = new Database(this.constructor.name)		
 		await this.reportBalance()
 	}
 
@@ -26,7 +26,7 @@ class Strategy {
 		if(!this.initBalance && !this.initStock) {
 			this.initBalance = this.currBalance
 			this.initStock = this.currStock
-			await this.database.init(this.initBalance, this.initStock, idList)
+			this.database = await database.initAccount(this.constructor.name, this.initBalance, this.initStock, idList)
 		}		
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock

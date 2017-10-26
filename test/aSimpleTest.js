@@ -4,6 +4,13 @@ var assert = require('assert')
 const keys = require('../config/exchangeInfo.js')
 const _ = require('lodash')
 
+var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
+
+var pmongo = require('promised-mongo');
+
+const ccxt = require ('ccxt')
+
 
 class Test {
 	async run() {
@@ -346,11 +353,82 @@ function test17() {
 	util.log(global.name)
 }
 
+async function test18() {
+	// mongoose.connect('mongodb://localhost/test');
+
+	try {
+		var db = mongoose.connect('mongodb://localhost/myapp', {
+		  	useMongoClient: true,
+		  	/* other options */
+		})
+
+		var kittySchema = mongoose.Schema({
+		    name: String
+		});
+
+		// kittySchema.methods.speak = function () {
+		//   var greeting = this.name
+		//     ? "Meow name is " + this.name
+		//     : "I don't have a name";
+		//   console.log(greeting);
+		// }
+
+		var Kitten = mongoose.model('Kitten', kittySchema);
+
+		var fluffy = new Kitten({ name: 'Jordan' });
+		// fluffy.speak(); // "Meow name is fluffy"	
+
+		await fluffy.save()
+
+		// var result = await Kitten.findOne()
+		// util.log(result)
+
+		Kitten.find({}, function (err, docs) {
+			for(var doc of docs) {
+				util.log(doc.name)	
+			}		  	
+		});
+
+
+	}catch(e){
+		util.log.yellow(e)
+	}
+
+
+	// promise.then(function(db) {
+	// 	db.on('error', console.error.bind(console, 'connection error:'));
+	// 	db.once('open', function() {
+	// 	  	util.log("we're connected!")
+	// 	});
+	// })
+	// var db = mongoose.connection;
+	// db.on('error', console.error.bind(console, 'connection error:'));
+	// db.once('open', function() {
+	//   	util.log("we're connected!")
+	// });
+}
+
+async function test19() {
+	let exchange = new ccxt.bitfinex()
+	this.orderBooks = await exchange.fetchOrderBook('BTC/USD', {
+        'limit_bids': 5, // max = 50
+        'limit_asks': 5, // may be 0 in which case the array is empty
+        'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
+        'depth': 5,
+        'size': 5,            
+    })
+    
+    util.log(this.orderBooks)
+}
+
+function test20() {
+	util.log(_.slice([1,2,3,4,5], 0, 4))
+}
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test17()
+  	test18()
 }
 
 

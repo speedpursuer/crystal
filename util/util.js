@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
 const log = require ('ololog').configure ({ locate: false, time: true })
+const moment = require('moment')
 
 class Util{
 	sleep(ms) {
@@ -19,6 +20,10 @@ class Util{
 	get log() {
 		return log
 	}
+
+	get now() {
+        return moment().format("YYYY-MM-DD HH:mm:ss")
+    }
 
 	toFixedNumber(number, x, base=10){
 	  	var pow = Math.pow(base||10,x);

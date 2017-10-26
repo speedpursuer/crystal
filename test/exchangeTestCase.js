@@ -40,9 +40,9 @@ describe.only('测试 exchange', async function() {
   	describe.only('获取市场深度', async function() {  		
     	it('返回数量压缩不超过5', async function() {   
     		// ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'okcoinusd']   		      		
-    		var exchange = new Exchange('okcoinusd', "BTC", true)
+    		var exchange = new Exchange('Bitfinex', "BTC", true)
     		var orderBook = await exchange.fetchOrderBook()
-    		util.log(orderBook)				
+    		util.log(orderBook)		
     		orderBook.bids.length.should.not.be.above(5)
     		orderBook.asks.length.should.not.be.above(5)
     	})

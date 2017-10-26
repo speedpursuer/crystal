@@ -1,5 +1,7 @@
 const util = require ('../util/util.js')
 const factory = require ('./exchangeFactory.js')
+const database = require('./database.js')
+const _ = require('lodash')
 
 const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
@@ -87,8 +89,16 @@ class Exchange {
             'depth': 5,
             'size': 5,            
         })
+
+        var data = this.orderBooks
+        data.bids = _.slice(data.bids, 0, 5)
+        data.asks = _.slice(data.asks, 0, 5)
+        data.exchange = this.id
+        data.market = this.symbol
+
+        await database.recordOrderBook(data)
         // this.log(`延迟： ${(new Date()).getTime() - now} ms`, 'yellow')    
-        return this.orderBooks    
+        return this.orderBooks
     }
 
     async fetchAccount() {

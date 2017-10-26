@@ -1,24 +1,24 @@
 const should = require('should');
-const Database = require('../service/database.js')
+const database = require('../service/database.js')
 const util = require('../util/util.js')
-
+const _ = require('lodash')
 
 describe('测试Database class', async function() {
 
-	var database = new Database('Test')
+	// var database = new Database('Test')
 	var curreData
 
 	before(async function() {		
-		await database.init()
+		await database.initAccount('database test case', 1000, 1, ['k', 'p'])
 	})
 
   after(async function() {
     await database.deleteData()
   })
 
-	afterEach(async function(){
-		util.log("CurreData", curreData)
-	})
+	// afterEach(async function(){
+	// 	util.log("CurreData", curreData)
+	// })
 
   describe('recordTrade', async function() {  		
   	it('可以保存交易记录', async function() {    		      		
@@ -35,4 +35,38 @@ describe('测试Database class', async function() {
   		curreData.balanceGap.should.equal(50)
   	})
 	})
+
+  describe('recordOrderBook', async function() {      
+    it('保存orderbook', async function() {
+      var data = {
+          timestamp: 1508932164960,
+          bids: [ [5509.6, 1.69],
+                  [5509.5, 0.5],
+                  [5509, 0.033733],
+                  [5508.9, 3.63048884],
+                  [5508.5, 0.05497499],
+                  [5508.5, 0.05497499],
+                  [5508.5, 0.05497499],
+                  [5508.5, 0.05497499], ],
+          asks: [ [5509.7, 5.675649],
+                  [5511, 0.013493],
+                  [5511.1, 5.89199391],
+                  [5511.7, 0.01352391],
+                  [5512, 0.01],
+                  [5512, 0.01],
+                  [5512, 0.01],  ],
+          datetime: util.now,
+      }
+      data.bids = _.slice(data.bids, 0, 5)
+      data.asks = _.slice(data.asks, 0, 5)
+      // await util.sleep(1000)
+      await database.recordOrderBook(data)
+      var result = await database.getOrderBook()
+      for(var book of result) {
+        book.should.have.property('bids')
+        util.log(book.bids)
+        util.log(book.asks)
+      }
+    })
+  })
 })

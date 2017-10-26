@@ -1,6 +1,6 @@
 const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
-const _ = require('lodash');
+const _ = require('lodash')
 
 const minTrade = 0.002
 const maxAmountOnce = 0.01

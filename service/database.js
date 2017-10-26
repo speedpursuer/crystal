@@ -1,20 +1,43 @@
 const bluebird = require("bluebird")
 const redis = require("redis")
 const client = redis.createClient()
-const moment = require('moment');
 const util = require ('../util/util.js')
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
+bluebird.promisifyAll(redis.RedisClient.prototype)
+bluebird.promisifyAll(redis.Multi.prototype)
+const mongoose = require('mongoose')
+mongoose.Promise = require('bluebird')
 
 class Database {
 
-    constructor(prefix) {
-        this.prefix = prefix
+    // constructor(prefix) {
+    //     this.prefix = prefix
+    // }
+
+    // async init(totalBalance, totalStock, exchanges) {        
+    //     await this.initRedis(totalBalance, totalStock, exchanges)
+    //     await this.initMongodb()        
+    // }
+
+    initMongodb() {
+        mongoose.connect('mongodb://localhost/crystal', {
+            useMongoClient: true                
+        })
+
+        var orderBookSchema = mongoose.Schema({
+            exhange: {type: String},
+            market: {type: String},
+            timestamp: { type: Number },
+            bids: { type: Array},
+            asks: { type: Array},
+            datetime: { type: String },
+        })
+
+        this.OrderBook = mongoose.model('OrderBook', orderBookSchema)
     }
 
-    async init(totalBalance, totalStock, exchanges) {
-        var time = this.now
-        this.key = `${this.prefix}, ${time}`
+    async initAccount(strategyName, totalBalance, totalStock, exchanges) {
+        var time = util.now
+        this.key = `${strategyName}, ${time}`
         var data = {
             exchanges: exchanges,
             initTotalBalance: totalBalance,
@@ -27,6 +50,7 @@ class Database {
             lastUpdate: time,
         }
         await this.saveData(data)
+        return this
     }
 
     async recordTrade(sellName, buyName, amount, gap) {
@@ -37,7 +61,7 @@ class Database {
             amount: amount,
             gap: gap,
             profit: amount * gap,            
-            time: this.now
+            time: util.now
         })
         data.tradeTimes++       
         await this.saveData(data)
@@ -47,8 +71,19 @@ class Database {
         var data = await this.getData()
         data.balanceGap = balanceGap
         data.stocksGap = stocksGap
-        data.lastUpdate = this.now
+        data.lastUpdate = util.now
         await this.saveData(data)
+    }
+
+    async recordOrderBook(data) {    
+        var orderBook = new this.OrderBook(data)
+        await orderBook.save()
+        // var result = await this.OrderBook.findOne()
+        // return result
+    }
+
+    async getOrderBook() {    
+        return await this.OrderBook.find().exec()
     }
 
     async getData() {
@@ -62,9 +97,7 @@ class Database {
     async deleteData() {
         return await client.delAsync(this.key)
     }
-
-    get now() {
-        return moment().format("YYYY-MM-DD HH:mm:ss")
-    }
 }
-module.exports = Database
+var database = new Database()
+database.initMongodb()   
+module.exports = database
