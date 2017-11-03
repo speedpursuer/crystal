@@ -39,7 +39,7 @@ class Strategy {
 	}
 
 	condition() {
-		if(Math.abs(this.stockDiff) > 0.8 || this.balanceDiff < -100) {
+		if(Math.abs(this.stockDiff) > 2 || Math.abs(this.balanceDiff) > 0.5) {
 			util.log("账户异常，退出交易")
 			return false
 		}
