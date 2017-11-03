@@ -4,7 +4,7 @@ const ExchangeSim = require ('../service/exchangeSim.js')
 const should = require('should');
 
 
-describe.only('测试 ExchangeSim', async function() {
+describe.skip('测试 ExchangeSim', async function() {
 
 	
 

@@ -9,7 +9,7 @@ async function main(){
     global.realSim = true
 	try {          
         var exchangeIDs = ['Bitfinex', 'okex']    
-        var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"), 0.25, 3.25, true)
+        var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"))
         trade.run()        
     }catch (e) {        
         util.log.bright.yellow(e)

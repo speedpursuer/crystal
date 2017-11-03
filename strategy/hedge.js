@@ -43,7 +43,7 @@ class Hedge extends Strategy {
             var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
             var magin = (sellExchange.earnForSell - buyExchange.payForBuy) * tradeAmount
 
-            this.log(`findPair - sellExchange: ${sellExchange.id}, buyExchange: ${buyExchange.id}, magin: ${magin}, Earn: ${sellExchange.earnForSell}, Pay: ${buyExchange.payForBuy}, Unit magin: ${sellExchange.earnForSell - buyExchange.payForBuy}, tradeAmount: ${tradeAmount}`)
+            // this.log(`findPair - sellExchange: ${sellExchange.id}, buyExchange: ${buyExchange.id}, magin: ${magin}, Earn: ${sellExchange.earnForSell}, Pay: ${buyExchange.payForBuy}, Unit magin: ${sellExchange.earnForSell - buyExchange.payForBuy}, tradeAmount: ${tradeAmount}`)
             // this.log("bestPair.magin", this.bestPair.magin, tradeAmount, minTrade, magin, minMargin, minMargin/util.getExRate(this.fiat), this.fiat)
 
             if(tradeAmount >= minTrade && magin > minMargin/util.getExRate(this.fiat) && magin > this.bestPair.magin) {

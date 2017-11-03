@@ -10,7 +10,7 @@ const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
-const slippage = 0.001
+const slippage = 0.0005
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -187,7 +187,7 @@ class Exchange {
     }
 
     async cancelOrder(order) {
-        await this.exchangeDelegate.cancelOrder(order.id) 
+        await this.exchangeDelegate.cancelOrder(order.id, this.symbol) 
         this.log(`订单 ${order.id} 取消完成`, 'yellow')
     }
 
@@ -200,22 +200,24 @@ class Exchange {
         if(this.debug) util.log[color](this.id, message)
     }
 
-    async testOrder() {
+    async testOrder(buyPrice, sellPrice, amount) {
         var result = {}
         try{
-            await this.fetchAccount()
-            this.log("开始下单")
-            if(this.balance >= 35) {
-                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, 0.005, 3000)
-            }else {
-                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, 0.005, 10000)
-            }            
+            await this.fetchOrderBook()
+            this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
+            this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
+            await this.fetchAccount()            
+            this.log("开始下买单", 'green')
+            result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
+            this.log(`取消订单 ${result.id}`, 'yellow')
+            await this.cancelPendingOrders(result.id)               
+            this.log("开始下卖单", 'blue')
+            result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
+            this.log(`取消订单 ${result.id}`, 'yellow')
+            await this.cancelPendingOrders(result.id)
         }catch(e){
-            this.log(e, 'red')
-            await util.sleep(4 * this.delay)
-        }
-
-        await this.cancelPendingOrders(result.id)   
+            this.log(e, 'red')         
+        }    
     }
 }
 module.exports = Exchange

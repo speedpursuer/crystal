@@ -3,7 +3,7 @@ const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
 
 
-describe('测试 exchange', async function() {	
+describe.only('测试 exchange', async function() {	
 
 	this.timeout(50000)
 
@@ -14,6 +14,22 @@ describe('测试 exchange', async function() {
 	afterEach(async function(){
 		
 	})
+
+	describe.only('测试交易所API', async function() {  		
+    	it('查询账户、订单簿、下单、取消', async function() {  
+
+    		var base = 'BCH', quote = 'BTC'
+    		var buyPrice = 0.01
+    		var sellPrice = 10000
+    		var amount = 0.1
+    		var exchangeIDs = ['okex', 'Bitfinex']
+
+    		for(var id of exchangeIDs) {
+    			var exchange = new Exchange(id, base, quote)
+    			await exchange.testOrder(buyPrice, sellPrice, amount)	
+    		}
+    	})
+  	})
 
   	describe('下单和取消', async function() {  		
     	it('后确保所有订单都取消', async function() {  
