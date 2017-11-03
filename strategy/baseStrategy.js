@@ -3,18 +3,19 @@ const database = require('../service/database.js')
 
 class Strategy {
 
-	constructor(crypto,fiat){
+	constructor(crypto,fiat, debug=true){
         this.crypto = crypto
-        this.fiat = fiat      
+        this.fiat = fiat
+        this.debug = debug      
     }
 
 	async init(exchanges){
 		this.exchanges = exchanges
 		// this.database = new Database(this.constructor.name)		
-		await this.reportBalance()
+		await this.updateBalance(false)
 	}
 
-	async reportBalance() {
+	async updateBalance(print=true) {
 		this.currBalance = 0
 		this.currStock = 0
 		var idList = []
@@ -32,7 +33,9 @@ class Strategy {
 		this.stockDiff = this.currStock - this.initStock
 		
 		await this.database.recordBalance(this.balanceDiff, this.stockDiff)
-		util.log.red(`盈利: ${this.balanceDiff}, 币差: ${this.stockDiff}`)		
+		if(print) {
+			util.log.red(`盈利: ${this.balanceDiff}, 币差: ${this.stockDiff}`)	
+		}		
 	}
 
 	condition() {
@@ -41,6 +44,14 @@ class Strategy {
 			return false
 		}
 		return true
+	}
+
+	get market() {
+		return `${this.crypto}/${this.fiat}`
+	}
+
+	log(message) {
+		if(this.debug) util.log(message)
 	}
 
 	doTrade() {

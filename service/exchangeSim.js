@@ -2,26 +2,24 @@ const util = require ('../util/util.js')
 const log = require ('ololog').configure ({ locate: false })
 const ccxt = require ('ccxt')
 const _ = require('lodash');
+const Delay = 0
 
 class ExchangeSim {
-	constructor(id, info, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72){
+	constructor(id, info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72){
 		this.orderList = {}
 		this.currID = 0
 		this.tryTime = 0
-		//JPY
-		// this.balance = 85000
-  //       this.stocks = 0.134
-        //USD
-        this.balance = 1500
-        this.stocks = 0.26
+
+        this.balance = initBalance
+        this.stocks = initStocks
         this.frozenBalance = 0
         this.frozenStocks = 0
 
         this.id = id
-        this.fiat = info.fiat
-        this.fee = info.fee
-        this.crypto = 'BTC'
-
+        this.crypto = crypto
+        this.fee = info.fee        
+        this.fiat = fiat == 'USD'? info.fiat: fiat
+        
         this.realOrderBook = realOrderBook
 
         this.buySuccess = buySuccess
@@ -34,7 +32,7 @@ class ExchangeSim {
 		if(this.realOrderBook){
 			return await this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)	        
 		}else {
-			await util.sleep(300)
+			await util.sleep(Delay)
 			var book = this.id == 'bitfinex'? 
 			{
 				asks: [
@@ -61,7 +59,7 @@ class ExchangeSim {
 	}
 
 	async fetchBalance() {
-		await util.sleep(300)
+		await util.sleep(Delay)
 		var balance = {}
 		balance[this.crypto] = {
 			free: this.stocks,
@@ -71,13 +69,14 @@ class ExchangeSim {
 			free: this.balance,
 			used: this.frozenBalance			
 		}
+		// util.log.green(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`)            
 		return balance
 	}
 
 	async createLimitBuyOrder(symbol, amount, price) {
 		this.currID++
 
-		price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
+		// price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
 
 		var sucess = this.getRandom(this.buySuccess)
 
@@ -111,14 +110,14 @@ class ExchangeSim {
 		this.stocks += stockDiff
 		this.frozenBalance += balanceDiff
 
-		await util.sleep(300)
+		await util.sleep(Delay)
 		return {id: order.id}		
 	}
 
 	async createLimitSellOrder(symbol, amount, price) {
 		this.currID++
 
-		price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
+		// price = util.toFixedNumber(price + this.getRandomArbitrary(-1, 0), 3)
 
 		var sucess = this.getRandom(this.sellSuccess)
 
@@ -151,23 +150,23 @@ class ExchangeSim {
 		this.balance += balanceDiff
 		this.frozenStocks += stockDiff
 
-		await util.sleep(300)
+		await util.sleep(Delay)
 		return {id: order.id}
 	}
 
 	async fetchOrder(orderID) {
-		await util.sleep(300)
+		await util.sleep(Delay)
 		return this.orderList[orderID]		
 	}
 
 	async fetchOpenOrders() {
-		await util.sleep(300)
+		await util.sleep(Delay)
 		return _.filter(this.orderList, function(o) { return o.status == 'open' })
 	}
 
 	async cancelOrder(orderID) {		
 		this.tryTime++
-		await util.sleep(300)
+		await util.sleep(Delay)
 
 		if(this.tryTime >= 1) {				
 			var order = this.orderList[orderID]

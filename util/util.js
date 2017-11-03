@@ -28,6 +28,10 @@ class Util{
     get timestamp() {
         return moment().unix() * 1000
     }
+    
+    timestampFromTime(time) {
+    	return moment(time).unix() * 1000
+    }
 
     timeFromTimestamp(timestamp) {
     	return moment.unix(timestamp/1000).format("YYYY-MM-DD HH:mm:ss")
@@ -69,6 +73,7 @@ class Util{
 			"JPY": 0.0585,
 			"EUR": 7.7678,
 			"WUSD": 6.5807,
+			"BTC": 38600
 		}
 		return fiats[fiat.toUpperCase()]
 	}

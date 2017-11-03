@@ -9,17 +9,8 @@ mongoose.Promise = require('bluebird')
 
 class Database {
 
-    // constructor(prefix) {
-    //     this.prefix = prefix
-    // }
-
-    // async init(totalBalance, totalStock, exchanges) {        
-    //     await this.initRedis(totalBalance, totalStock, exchanges)
-    //     await this.initMongodb()        
-    // }
-
     initMongodb() {
-        mongoose.connect('mongodb://localhost/crystal', {
+        mongoose.connect('mongodb://localhost/nike_10_30', {
             useMongoClient: true                
         })
 
@@ -87,10 +78,14 @@ class Database {
         return await this.OrderBook.find()
     }
 
-    async getOrderBooksTimeline(from, to) {
+    async getOrderBooksTimeline(market, exchanges, from, to) {
         return this.OrderBook.distinct(
             'recordTime',
-            {recordTime: { $gt: from - 1, $lt: to + 1}}
+            {
+                exchange: { $in: exchanges },
+                recordTime: { $gt: from - 1, $lt: to + 1},
+                market: market
+            }
         )
     }
 
@@ -107,25 +102,50 @@ class Database {
         }
     }
 
-    async getOrderBooks1(exchanges, recordTime) {
+    async getOrderBooks2(market, exchanges, from, to) {
         var result = {}
-
         var orderBooks = await this.OrderBook.find(
             {
                 exchange: { $in: exchanges },
-                recordTime: recordTime
+                recordTime: { $gt: from - 1, $lt: to + 1},
+                market: market
             }
         ).lean()
-    
+        var i = 0
         for(var orderBook of orderBooks) {
-            result[orderBook.exchange] = {
+            result[this.orderBookKey(orderBook)] = {
                 bids: orderBook.bids,
                 asks: orderBook.asks
             }
-        }      
-
+            i++
+        }   
+        util.log("Data retrieved from db, count: ", i)
         return result
     }
+
+    orderBookKey(orderBook) {
+        return `${orderBook.market}-${orderBook.exchange}-${orderBook.recordTime}`
+    }
+
+    // async getOrderBooks1(exchanges, recordTime) {
+    //     var result = {}
+
+    //     var orderBooks = await this.OrderBook.find(
+    //         {
+    //             exchange: { $in: exchanges },
+    //             recordTime: recordTime
+    //         }
+    //     ).lean()
+    
+    //     for(var orderBook of orderBooks) {
+    //         result[orderBook.exchange] = {
+    //             bids: orderBook.bids,
+    //             asks: orderBook.asks
+    //         }
+    //     }      
+
+    //     return result
+    // }
 
     // async getOrderBooks(exchanges, from, to) {
     //     return this.OrderBook.find(

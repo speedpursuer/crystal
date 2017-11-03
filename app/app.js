@@ -1,23 +1,37 @@
+const util = require('../util/util.js')
 const Hedge = require('../strategy/hedge.js')
 const Trade = require('./trade.js')
-const util = require('../util/util.js')
+const Backtest = require('./backtest.js')
+
 
 async function main(){
-    global.realMode = false
+    global.realMode = true
     global.realSim = true
-	try {  
-		// var exchangeIDs = ['Bitfinex2', 'Bitstamp', 'GDAX', 'Gemini', 'Poloniex', 'Bittrex', 'Kraken']        
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'quoine', 'hitbtc', 'Bitstamp', 'lakebtc', 'cex', 'gatecoin', 'livecoin', 'exmo', 'wex', 'itBit']  
-        // var exchangeIDs = ['Bitfinex', 'Bitstamp']  
-        // var exchangeIDs = ['zaif', 'bitflyer', 'quoine']  
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'quoine', 'hitbtc', 'Bitstamp', 'lakebtc', 'cex', 'gatecoin', 'wex', 'itBit']  )
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'okcoinusd']
-        var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'hitbtc']
-		var trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))
-		await trade.run()
+	try {          
+        var exchangeIDs = ['Bitfinex', 'okex']    
+        var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"), 0.25, 3.25, true)
+        trade.run()        
     }catch (e) {        
         util.log.bright.yellow(e)
         process.exit()  
-    } 
+    }
 }
+
+async function test(){
+    global.realMode = false
+    global.realSim = true
+    try {              
+        var backtest = new Backtest("2017-11-01 09:14:55")
+        // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
+        // await backtest.BTC()
+        // await backtest.LTC()
+        // await backtest.ETH()
+        await backtest.BCH()
+        process.exit()
+    }catch (e) {        
+        util.log.bright.yellow(e)
+        process.exit()  
+    }
+}
+
 main()

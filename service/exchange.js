@@ -2,23 +2,27 @@ const util = require ('../util/util.js')
 const factory = require ('./exchangeFactory.js')
 const database = require('./database.js')
 const _ = require('lodash')
+const ccxt = require ('ccxt')
+const exchangeInfo = require('../config/exchangeInfo.js')
+const ExhangeSim = require ('./exchangeSim')
 
 const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
-const RetryDelay = 200
+
+const slippage = 0.001
 
 class Exchange {
-	constructor(id, crypto, debug=false) {
-		this.exchangeDelegate = factory.createExchange(id)      
-        
-        this.fee = this.exchangeDelegate.fee
+	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
+		this.exchangeDelegate = factory.createExchange(id, crypto, fiat, initBalance, initStocks)  
+
         this.id = this.exchangeDelegate.id
-        this.slippage = this.exchangeDelegate.slippage
-        this.fiat = this.exchangeDelegate.fiat
-        
+        this.delay = this.exchangeDelegate.delay
+        this.fee = this.exchangeDelegate.fee        
+        this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat
+        this.slippage = slippage
         this.crypto = crypto
-        this.debug = debug 
+        this.debug = debug
 
         this.balance = 0
         this.stocks = 0
@@ -81,7 +85,7 @@ class Exchange {
     }
 
     async fetchOrderBook() {        
-        var start = util.timestamp
+        var start = util.time
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol, {
             'limit_bids': 5, // max = 50
             'limit_asks': 5, // may be 0 in which case the array is empty
@@ -89,16 +93,7 @@ class Exchange {
             'depth': 5,
             'size': 5,            
         })
-
-        var data = this.orderBooks
-        data.bids = _.slice(data.bids, 0, 5)
-        data.asks = _.slice(data.asks, 0, 5)
-        data.exchange = this.id
-        data.market = this.symbol
-        data.recordTime = start
-
-        await database.recordOrderBook(data)
-        // this.log(`延迟： ${(util.now - start} ms`, 'yellow')  
+        // this.log(`延迟： ${(util.time - start} ms`, 'yellow')  
         return this.orderBooks
     }
 
@@ -133,13 +128,15 @@ class Exchange {
         }
 
         if(type == ORDER_TYPE_BUY) {
-            var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 1)
+            var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 8)
+            // var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 1)
             orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, orderPrice)
-            this.log(`限价买单，数量：${amount}，价格：${orderPrice}`, 'green', true)
+            this.log(`限价买单，数量：${amount}，价格：${orderPrice}`, 'green')
         }else {
-            var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 1)
+            var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 8)
+            // var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 1)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, orderPrice)
-            this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue', true)
+            this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue')
         }      
 
         var result = {}        
@@ -147,7 +144,7 @@ class Exchange {
             result = await orderOpt          
         }catch(e){
             this.log(e, 'red')
-            await util.sleep(4 * RetryDelay)
+            await util.sleep(4 * this.delay)
         }        
 
         await this.cancelPendingOrders(result.id)     
@@ -159,7 +156,7 @@ class Exchange {
         while(retryTime < 5) {
             try{
                 this.log("--------------------------------")
-                await util.sleep(RetryDelay)
+                await util.sleep(this.delay)
                 if(orderID) {
                     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
                     if(order && order.status == 'open') {
@@ -172,7 +169,7 @@ class Exchange {
                 if(orders && orders.length > 0) {
                     for(var order of orders) {
                         await this.cancelOrder(order)                        
-                        util.sleep(RetryDelay)
+                        util.sleep(this.delay)
                     } 
                     continue
                 }
@@ -199,8 +196,8 @@ class Exchange {
         return value === undefined? 0: value
     }
 
-    log(message, color='white', always=false) {
-        if(this.debug || always) util.log[color](this.id, message)
+    log(message, color='white') {
+        if(this.debug) util.log[color](this.id, message)
     }
 
     async testOrder() {
@@ -215,7 +212,7 @@ class Exchange {
             }            
         }catch(e){
             this.log(e, 'red')
-            await util.sleep(4 * RetryDelay)
+            await util.sleep(4 * this.delay)
         }
 
         await this.cancelPendingOrders(result.id)   

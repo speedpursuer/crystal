@@ -9,6 +9,12 @@ mongoose.Promise = require('bluebird');
 
 const ccxt = require ('ccxt')
 
+const moment = require('moment')
+
+const math = require('mathjs')
+
+var ProgressBar = require('progress')
+
 
 class Test {
 	async run() {
@@ -347,8 +353,8 @@ function test16() {
 function test17() {
 	global.simMode = true
 	util.log(_.round(1213.004, 2))
-	util.log(util.toFixedNumber(1213.004, 2))
-	util.log(global.name)
+	util.log(util.toFixedNumber(0.00965998123, 8))
+	util.log(_.round(0.00965998123, 8))
 }
 
 async function test18() {
@@ -433,12 +439,47 @@ async function test21() {
 	var start = util.timestamp
 	await util.sleep(1200)
 	util.log(util.timestamp - start)
+
+	util.log(_.split('a', '/'))
 }
+
+async function test22() {
+	var start = util.timestamp
+	util.log(start)
+	await util.sleep(1200)
+	util.log(util.timestamp - start)
+}
+
+function test23(time) {
+	util.log(moment("2017-11-01 09:14:59").unix())
+	util.log(moment(time).unix())
+	util.log(moment().unix())
+	util.log(moment.unix("1509245091").format("YYYY-MM-DD HH:mm:ss"))
+
+	util.log(math.std([2, 4, 6, 8]))
+}
+
+function test24() {
+	var bar = new ProgressBar(':bar', { total: 10000, clear: true });
+	// bar._destroy()
+	util.log(bar)
+	// for(var i=0; i<10000; i++) {
+	// 	bar.tick()
+	// }
+	// var timer = setInterval(function () {
+	//   bar.tick();
+	//   if (bar.complete) {
+	//     console.log('\ncomplete\n');
+	//     clearInterval(timer);
+	//   }
+	// }, 100);
+}
+
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test21()
+  	test24()
 }
 
 

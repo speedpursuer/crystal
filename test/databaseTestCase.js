@@ -3,7 +3,7 @@ const database = require('../service/database.js')
 const util = require('../util/util.js')
 const _ = require('lodash')
 
-describe('测试Database class', async function() {
+describe.skip('测试Database class', async function() {
 
 	// var database = new Database('Test')
 	var curreData
@@ -70,7 +70,7 @@ describe('测试Database class', async function() {
     })
   })
 
-  describe.skip('getOrderBooks', async function() {      
+  describe.only('getOrderBooks', async function() {      
     it('获取时间条数', async function() {
       var result = await database.getOrderBooksTimeline('1509021522000', '1509021545000')
       util.log(result.length)
@@ -78,8 +78,8 @@ describe('测试Database class', async function() {
       // result = await database.getOrderBooks('bitstamp', '1509021545000')
       // util.log(result.length)
       
-      result = await database.getOrderBooks1(['bitstamp', 'hitbtc', 'bitfinex'], '1509021523000')
-      util.log(result['bitstamp'])
+      result = await database.getOrderBooks2('BTC/USD', ['bitstamp', 'lakebtc', 'bitfinex'], 0, util.timestamp)
+      util.log("got data")
     })
   })
 })
