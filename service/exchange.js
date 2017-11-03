@@ -157,13 +157,15 @@ class Exchange {
             try{
                 this.log("--------------------------------")
                 await util.sleep(this.delay)
-                if(orderID) {
-                    var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
-                    if(order && order.status == 'open') {
-                        await this.cancelOrder(order)                        
-                        continue
-                    }
-                }
+
+                await this.fetchAccount()
+                // if(orderID) {
+                //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
+                //     if(order && order.status == 'open') {
+                //         await this.cancelOrder(order)                        
+                //         continue
+                //     }
+                // }
 
                 var orders = await this.exchangeDelegate.fetchOpenOrders(this.symbol)
                 if(orders && orders.length > 0) {
@@ -173,13 +175,12 @@ class Exchange {
                     } 
                     continue
                 }
-
-                await this.fetchAccount()
+                                
                 if(this.frozenStocks == 0 && this.frozenBalance == 0) {
                     break
                 }                    
             }catch(e){          
-                this.log(e, 'red')             
+                this.log(e.message, 'red')    
                 retryTime++                
             }        
         }
