@@ -11,7 +11,7 @@
   "dependencies": {
     "as-table": "^1.0.25",
     "bluebird": "^3.5.1",
-    "ccxt": "^1.8.83",
+    "ccxt": "^1.9.352",
     "lodash": "^4.17.4",
     "mathjs": "^3.16.5",
     "mocha": "^4.0.1",

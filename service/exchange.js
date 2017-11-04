@@ -10,7 +10,7 @@ const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
-const slippage = 0.0005
+const slippage = 0.0008
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -153,33 +153,33 @@ class Exchange {
     async cancelPendingOrders(orderID) {
         this.log("开始轮询订单状态")
         var retryTime = 0
-        while(retryTime < 10) {
+        while(retryTime < 5) {
             try{
                 this.log("--------------------------------")
-                await util.sleep(this.delay)
-
-                await this.fetchAccount()
+                await util.sleep(this.delay)                
                 // if(orderID) {
                 //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
                 //     if(order && order.status == 'open') {
                 //         await this.cancelOrder(order)                        
                 //         continue
                 //     }
-                // }
-
+                // }                
                 var orders = await this.exchangeDelegate.fetchOpenOrders(this.symbol)
                 if(orders && orders.length > 0) {
                     for(var order of orders) {
                         await this.cancelOrder(order)                        
-                        util.sleep(this.delay)
-                    } 
+                        await util.sleep(this.delay)
+                    }
                     continue
                 }
+
+                await this.fetchAccount()
                                 
                 if(this.frozenStocks == 0 && this.frozenBalance == 0) {
                     break
                 }                    
-            }catch(e){          
+            }catch(e){        
+                await this.fetchAccount()  
                 this.log(e.message, 'red')    
                 retryTime++                
             }        
@@ -188,8 +188,9 @@ class Exchange {
     }
 
     async cancelOrder(order) {
-        await this.exchangeDelegate.cancelOrder(order.id, this.symbol) 
+        var result = await this.exchangeDelegate.cancelOrder(order.id, this.symbol) 
         this.log(`订单 ${order.id} 取消完成`, 'yellow')
+        // this.log(`订单 ${order.id} 取消完成, 结果: ${result}`, 'yellow')
     }
 
     getOrderBooksData(path) {
@@ -210,11 +211,9 @@ class Exchange {
             await this.fetchAccount()            
             this.log("开始下买单", 'green')
             result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
-            this.log(`取消订单 ${result.id}`, 'yellow')
             await this.cancelPendingOrders(result.id)               
             this.log("开始下卖单", 'blue')
             result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
-            this.log(`取消订单 ${result.id}`, 'yellow')
             await this.cancelPendingOrders(result.id)
         }catch(e){
             this.log(e, 'red')         

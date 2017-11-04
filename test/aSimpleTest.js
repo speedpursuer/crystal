@@ -475,11 +475,24 @@ function test24() {
 	// }, 100);
 }
 
+function test25() {
+	var list = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
+
+    for(var i=0; i<list.length; i++) {
+    	// util.log("out", i)
+        for(var j=i+1; j<list.length; j++) {
+            // util.log("in", i)
+            // util.log("in", j)
+            util.log(list[i], list[j])
+        }
+    }
+}
+
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test24()
+  	test25()
 }
 
 
