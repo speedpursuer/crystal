@@ -17,7 +17,7 @@ describe.only('测试 exchange', async function() {
 
 	describe('测试交易所API', async function() {  		
     	it('下现价单', async function() {  
-    		var exchange = new Exchange('okex', 'BCH', 'BTC')
+    		var exchange = new Exchange('huobipro', 'BCH', 'BTC')
     		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()    		
     		// await exchange.limitBuy(0.1)
@@ -33,15 +33,17 @@ describe.only('测试 exchange', async function() {
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
     		var sellPrice = 4900
-    		var amount = 0.1
-    		var exchangeIDs = ['okex', 'hitbtc']
+    		var amount = 0.0181
+    		var exchangeIDs = ['huobipro']
+    		// var exchangeIDs = ['okex', 'hitbtc', 'poloniex']
 
-    		var list = []
+    		// var list = []
     		for(var id of exchangeIDs) {
     			var exchange = new Exchange(id, base, quote)
-    			list.push(exchange.testOrder(buyPrice, sellPrice, amount))
+    			await exchange.testOrder(buyPrice, sellPrice, amount)
+    			// list.push(exchange.testOrder(buyPrice, sellPrice, amount))
     		}
-    		await Promise.all(list)
+    		// await Promise.all(list)
     	})
   	})
 

@@ -127,6 +127,8 @@ class Exchange {
             throw "orderBooks not available"
         }
 
+        amount = _.round(amount, 3)
+
         if(type == ORDER_TYPE_BUY) {
             var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 8)
             // var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 1)
@@ -203,6 +205,7 @@ class Exchange {
     }
 
     async testOrder(buyPrice, sellPrice, amount) {
+        amount = _.round(amount, 3)
         var result = {}
         try{
             await this.fetchOrderBook()
