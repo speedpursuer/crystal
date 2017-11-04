@@ -102,9 +102,13 @@ class Exchange {
         this.balance = account[this.fiat].free
         this.frozenBalance = account[this.fiat].used
         this.stocks = account[this.crypto].free 
-        this.frozenStocks = account[this.crypto].used
-        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'green')            
+        this.frozenStocks = account[this.crypto].used        
+        this.logAccount()
         return account
+    }
+
+    logAccount() {
+        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'green')
     }
 
     limitBuy(amount) {  
@@ -128,6 +132,8 @@ class Exchange {
         }
 
         amount = _.round(amount, 3)
+
+        this.logAccount()
 
         if(type == ORDER_TYPE_BUY) {
             var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 8)
@@ -158,7 +164,7 @@ class Exchange {
         while(retryTime < 5) {
             try{
                 this.log("--------------------------------")
-                await util.sleep(this.delay)                
+                await util.sleep(this.delay)        
                 // if(orderID) {
                 //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
                 //     if(order && order.status == 'open') {
@@ -211,7 +217,7 @@ class Exchange {
             await this.fetchOrderBook()
             this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
             this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
-            await this.fetchAccount()            
+            await this.fetchAccount()        
             this.log("开始下买单", 'green')
             result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
             await this.cancelPendingOrders(result.id)               

@@ -34,7 +34,7 @@ describe.only('测试 exchange', async function() {
     		var buyPrice = 0.01
     		var sellPrice = 4900
     		var amount = 0.0181
-    		var exchangeIDs = ['huobipro']
+    		var exchangeIDs = ['hitbtc']
     		// var exchangeIDs = ['okex', 'hitbtc', 'poloniex']
 
     		// var list = []

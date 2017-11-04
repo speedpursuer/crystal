@@ -488,11 +488,29 @@ function test25() {
     }
 }
 
+function calc() {
+
+	var total = math.eval('(0.08602500 * 0.69)')
+	util.log(total, 0.05935725)
+	var before = 0.059469926
+	var after = before - total
+	util.log("after", after)
+	var realAfter = 0.000053318
+	util.log("real after", realAfter)
+	var fee = after - realAfter
+	util.log("rate", fee / total)
+	// var 
+
+	// util.log(math.eval('(0.08602500 * 0.69)'))
+	// util.log(math.eval('0.059469926 - (0.08602500 * 0.69)'))
+	// util.log(math.eval('1 - 0.000053318 / (0.059469926 - 0.08602500 * 0.69)'))	
+}
+
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test25()
+  	calc()
 }
 
 

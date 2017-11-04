@@ -38,7 +38,7 @@ async function testBatch(){
     global.realMode = false
     global.realSim = true
     try {              
-        var backtest = new Backtest("2017-10-29 09:14:55")
+        var backtest = new Backtest("2017-11-01 09:14:55")
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
         // await backtest.BTC()
         // await backtest.LTC()
