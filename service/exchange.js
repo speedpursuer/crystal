@@ -10,7 +10,7 @@ const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
-const slippage = 0.0008
+const slippage = 0.0005
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -164,7 +164,7 @@ class Exchange {
         while(retryTime < 5) {
             try{
                 this.log("--------------------------------")
-                await util.sleep(this.delay)        
+                await util.sleep(this.delay * 2.5)        
                 // if(orderID) {
                 //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
                 //     if(order && order.status == 'open') {

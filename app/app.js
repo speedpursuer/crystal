@@ -21,12 +21,14 @@ async function test(){
     global.realMode = false
     global.realSim = true
     try {              
-        var backtest = new Backtest("2017-11-01 09:14:55")
+        var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55")
+        // var backtest = new Backtest("2017-11-01 09:14:55")
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
         // await backtest.BTC()
         // await backtest.LTC()
         // await backtest.ETH()
-        await backtest.BCH()
+        // await backtest.BCH()
+        await backtest.BCHTest(['hitbtc', 'okex'])        
         process.exit()
     }catch (e) {        
         util.log.bright.yellow(e)
@@ -38,7 +40,7 @@ async function testBatch(){
     global.realMode = false
     global.realSim = true
     try {              
-        var backtest = new Backtest("2017-11-01 09:14:55")
+        var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55")
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
         // await backtest.BTC()
         // await backtest.LTC()

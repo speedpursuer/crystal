@@ -80,9 +80,9 @@ class Backtest {
 		}
 		if(trade.strategy.after) {
 			trade.strategy.after()
-		}else {
-			await trade.strategy.updateBalance(true)
 		}
+
+		await trade.strategy.updateBalance(true)
 		// util.log.green("回测完成")					
 	}
 }
