@@ -10,7 +10,7 @@ async function main(){
 	try {          
         var exchangeIDs = ['hitbtc', 'okex']    
         var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"))
-        trade.run()        
+        trade.run()      
     }catch (e) {        
         util.log.bright.yellow(e)
         process.exit()  
