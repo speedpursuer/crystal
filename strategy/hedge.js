@@ -41,9 +41,9 @@ class Hedge extends Strategy {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
             var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
-            var magin = (sellExchange.earnForSell - buyExchange.payForBuy) * tradeAmount
+            var magin = (sellExchange.earnForSellOne - buyExchange.payForBuyOne) * tradeAmount
 
-            // this.log(`findPair - sellExchange: ${sellExchange.id}, buyExchange: ${buyExchange.id}, magin: ${magin}, Earn: ${sellExchange.earnForSell}, Pay: ${buyExchange.payForBuy}, Unit magin: ${sellExchange.earnForSell - buyExchange.payForBuy}, tradeAmount: ${tradeAmount}`)
+            // this.log(`findPair - sellExchange: ${sellExchange.id}, buyExchange: ${buyExchange.id}, magin: ${magin}, Earn: ${sellExchange.earnForSellOne}, Pay: ${buyExchange.payForBuyOne}, Unit magin: ${sellExchange.earnForSellOne - buyExchange.payForBuyOne}, tradeAmount: ${tradeAmount}`)
             // this.log("bestPair.magin", this.bestPair.magin, tradeAmount, minTrade, magin, minMargin, minMargin/util.getExRate(this.fiat), this.fiat)
 
             if(tradeAmount >= minTrade && magin > minMargin/util.getExRate(this.fiat) && magin > this.bestPair.magin) {
@@ -57,7 +57,7 @@ class Hedge extends Strategy {
             return false
         }
         if(this.stockDiff > 0) {
-            var descList = _.orderBy(this.exchanges, 'earnForSell', 'desc')
+            var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
                 var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
                 if(orderAmount >= minTrade) {
@@ -67,7 +67,7 @@ class Hedge extends Strategy {
                 }
             }
         }else {
-            var ascList = _.orderBy(this.exchanges, 'payForBuy', 'asc')
+            var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
             for(var exchange of ascList) {
                 var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
                 if(orderAmount >= minTrade) {

@@ -5,7 +5,7 @@ const _ = require('lodash');
 const Delay = 0
 
 class ExchangeSim {
-	constructor(id, info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72){
+	constructor(id, info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72, debug=false){
 		this.orderList = {}
 		this.currID = 0
 		this.tryTime = 0
@@ -19,11 +19,14 @@ class ExchangeSim {
         this.crypto = crypto
         this.fee = info.fee        
         this.fiat = fiat == 'USD'? info.fiat: fiat
+        this.specialBuy = info.specialBuy
         
         this.realOrderBook = realOrderBook
 
         this.buySuccess = buySuccess
         this.sellSuccess = sellSuccess
+
+        this.debug = debug
 
         this.ccxtExchange = new ccxt[id](info)
 	}
@@ -69,7 +72,7 @@ class ExchangeSim {
 			free: this.balance,
 			used: this.frozenBalance			
 		}
-		// util.log.green(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`)            
+		if(this.debug) util.log.green(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`)            
 		return balance
 	}
 
@@ -86,13 +89,13 @@ class ExchangeSim {
 
 		if(sucess) {
 			status = 'closed'
-			stockDiff = amount
+			stockDiff = this.specialBuy? amount: amount * (1-this.fee)
 			balanceDiff = 0
 			
 		}else {
 			status = 'open'
 			stockDiff = 0
-			balanceDiff = amount * price / (1-this.fee)
+			balanceDiff = this.specialBuy? amount * price / (1-this.fee): amount * price
 		}
 
 		var order = {
@@ -101,12 +104,11 @@ class ExchangeSim {
 			price: price,
 			status: status,
 			type: "buy",
-			amount: amount
 		}	
 
 		this.orderList[this.currID] = order	
 
-		this.balance -= amount * price / (1-this.fee)
+		this.balance -= this.specialBuy? amount * price / (1-this.fee): amount * price
 		this.stocks += stockDiff
 		this.frozenBalance += balanceDiff
 
@@ -170,9 +172,10 @@ class ExchangeSim {
 
 		if(this.tryTime >= 1) {				
 			var order = this.orderList[orderID]
-			if(order.type == 'buy') {					
-				this.frozenBalance -= order.amount * order.price / (1-this.fee)
-				this.balance += order.amount * order.price / (1-this.fee)
+			if(order.type == 'buy') {			
+				var balanceRollback = this.specialBuy? order.amount * order.price / (1-this.fee): order.amount * order.price
+				this.frozenBalance -= balanceRollback
+				this.balance += balanceRollback
 			}else {
 				this.frozenStocks -= order.amount
 				this.stocks += order.amount

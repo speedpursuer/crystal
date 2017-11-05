@@ -78,6 +78,13 @@ class Util{
 		return fiats[fiat.toUpperCase()]
 	}
 
+	promiseWithTimeout(aPromise, timeout) {
+		return Promise.race([
+			aPromise(),
+		    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), timeout))		  
+		])
+	}
+
 	promiseWhile(condition, action) {
 	    var resolver = Promise.defer();
 	    var self = this

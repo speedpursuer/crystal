@@ -13,14 +13,15 @@ class ExchangeFactory {
         if(global.realMode) {
             exchange = new ccxt[id](info)            
             exchange.fiat = info.fiat
-            exchange.fee = info.fee                
+            exchange.fee = info.fee   
+            exchange.specialBuy = info.specialBuy             
             exchange.timeout = 20000
             exchange.nonce = function(){ return this.milliseconds () }
             exchange.delay = 200
         }else {                
             exchange = new ExhangeSim(id, info, crypto, fiat, initBalance, initStocks, global.realSim||false, 0.7, 0.7)    
             exchange.delay = 0
-        }   
+        }
 
         return exchange
     }

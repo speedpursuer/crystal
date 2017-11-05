@@ -19,7 +19,8 @@ class Exchange {
         this.id = this.exchangeDelegate.id
         this.delay = this.exchangeDelegate.delay
         this.fee = this.exchangeDelegate.fee        
-        this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat
+        this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat,
+        this.specialBuy = this.exchangeDelegate.specialBuy
         this.slippage = slippage
         this.crypto = crypto
         this.debug = debug
@@ -68,31 +69,52 @@ class Exchange {
         return this.getOrderBooksData('asks.0.1')
     }
 
-    get amountCanBuy() {
-        return this.balance / (this.sell1Price * (1+this.slippage))
+    get buyPrice() {
+        return this.sell1Price * (1+this.slippage)
+    }
+
+    get sellPrice() {
+        return this.buy1Price * (1-this.slippage)
+    }
+
+    get payForBuyOne() {  
+        return this.buyPrice / (1-this.fee)
+    }
+    
+    get earnForSellOne() {
+        return this.sellPrice * (1-this.fee)
+    }
+
+    get amountCanBuy() {        
+        return this.balance / this.payForBuyOne
     }
 
     get amountCanSell() {
         return this.stocks
     }
 
-    get payForBuy() {        
-        return this.sell1Price * (1+this.slippage) / (1-this.fee)
-    }
-
-    get earnForSell() {
-        return this.buy1Price * (1-this.slippage) * (1-this.fee)
+    get needMoreCoinForBuy() {
+        return !this.specialBuy
     }
 
     async fetchOrderBook() {        
-        var start = util.time
-        this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol, {
-            'limit_bids': 5, // max = 50
-            'limit_asks': 5, // may be 0 in which case the array is empty
-            'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
-            'depth': 5,
-            'size': 5,            
-        })
+        // var start = util.time
+        try{          
+            this.orderBooks = await util.promiseWithTimeout(                
+                () => this.exchangeDelegate.fetchOrderBook(this.symbol, {
+                    'limit_bids': 5, // max = 50
+                    'limit_asks': 5, // may be 0 in which case the array is empty
+                    'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
+                    'depth': 5,
+                    'size': 5,            
+                }),
+                10000
+            )
+
+        }catch(e){
+            // util.log(e.message)
+            this.orderBooks = null
+        }
         // this.log(`延迟： ${(util.time - start} ms`, 'yellow')  
         return this.orderBooks
     }
@@ -108,7 +130,7 @@ class Exchange {
     }
 
     logAccount() {
-        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'green')
+        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'yellow')
     }
 
     limitBuy(amount) {  
@@ -119,7 +141,7 @@ class Exchange {
         return this.placeLimitOrder(ORDER_TYPE_SELL, amount)
     }   
 
-    async placeLimitOrder(type, amount) {    
+    async placeLimitOrder(type, amount) {
         var orderID
         var orderOpt
         
@@ -131,18 +153,16 @@ class Exchange {
             throw "orderBooks not available"
         }
 
-        amount = _.round(amount, 3)
-
         this.logAccount()
 
         if(type == ORDER_TYPE_BUY) {
-            var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 8)
-            // var orderPrice = util.toFixedNumber(this.sell1Price * (1 + this.slippage), 1)
+            var orderPrice = _.round(this.buyPrice, 8)
+            amount = this.needMoreCoinForBuy? _.round(amount/(1-this.fee), 3): _.round(amount, 3)
             orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, orderPrice)
             this.log(`限价买单，数量：${amount}，价格：${orderPrice}`, 'green')
         }else {
-            var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 8)
-            // var orderPrice = util.toFixedNumber(this.buy1Price * (1 - this.slippage), 1)
+            var orderPrice = _.round(this.sellPrice, 8)
+            amount = _.round(amount, 3)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, orderPrice)
             this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue')
         }      
@@ -163,7 +183,6 @@ class Exchange {
         var retryTime = 0
         while(retryTime < 5) {
             try{
-                this.log("--------------------------------")
                 await util.sleep(this.delay * 2.5)        
                 // if(orderID) {
                 //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)

@@ -1,5 +1,7 @@
+const _ = require('lodash')
 const util = require ('../util/util.js')
 const database = require('../service/database.js')
+const cryptoInfo = require('../config/cryptoInfo.js')
 
 class Strategy {
 
@@ -10,40 +12,67 @@ class Strategy {
     }
 
 	async init(exchanges){
-		this.exchanges = exchanges
-		// this.database = new Database(this.constructor.name)		
+		this._exchanges = exchanges
 		await this.updateBalance(false)
 	}
 
 	async updateBalance(print=true) {
 		this.currBalance = 0
 		this.currStock = 0
-		var idList = []
-		for(let [id, exchange] of Object.entries(this.exchanges)) {			
-			this.currBalance +=  exchange.balance + exchange.frozenBalance
-			this.currStock += exchange.stocks + exchange.frozenStocks
-			idList.push(exchange.id)
-		}
+
+		var that = this
+		_.forEach(this._exchanges, function(exchange) {
+		  	that.currBalance +=  exchange.balance + exchange.frozenBalance
+			that.currStock += exchange.stocks + exchange.frozenStocks
+		})
+
 		if(!this.initBalance && !this.initStock) {
 			this.initBalance = this.currBalance
 			this.initStock = this.currStock
-			this.database = await database.initAccount(this.constructor.name, this.initBalance, this.initStock, idList)
+			this.database = await database.initAccount(this.constructor.name, this.initBalance, this.initStock, _.keys(this._exchanges))
 		}		
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock
 		
 		await this.database.recordBalance(this.balanceDiff, this.stockDiff)
 		if(print) {
-			util.log.red(`盈利: ${this.balanceDiff}, 币差: ${this.stockDiff}, 总金额: ${this.currBalance}, 总币数: ${this.currStock}`)	
+			// util.log.red(`盈利: ${this.balanceDiff}, 币差: ${this.stockDiff}, 总金额: ${this.currBalance}, 总币数: ${this.currStock}`)	
+			util.log.red(`盈利：${this.currProfit}, 钱差: ${this.balanceDiff}, 币差: ${this.stockDiff}`)
 		}		
 	}
 
-	condition() {
-		if(Math.abs(this.stockDiff) > 2 || Math.abs(this.balanceDiff) > 0.5) {
-			util.log("账户异常，退出交易")
+	get condition() {
+		if(this.currProfit < -0.001) {
+			util.log.red("账户异常，退出交易")
 			return false
 		}
 		return true
+	}
+
+	get currProfit() {		
+		var avgPrice = _.mean(_.map(this._exchanges, function(e) {
+		  	return e.sellPrice
+		}))
+		return this.balanceDiff + (this.stockDiff) * avgPrice
+	}
+
+	get exchanges() {
+		var that = this
+		return _.filter(this._exchanges, function(e) { 
+			if(!e.orderBooks) {
+				return false
+			}else if(!cryptoInfo[that.market]){
+				return true				
+			}else {
+				if(_.inRange(e.sellPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max) &&
+				   _.inRange(e.buyPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max)) {
+					return true
+				}else {
+					return false
+				}
+			}
+			// return e.orderBooks
+		})
 	}
 
 	get market() {

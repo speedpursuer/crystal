@@ -490,15 +490,26 @@ function test25() {
 
 function calc() {
 
-	var total = math.eval('(0.08602500 * 0.69)')
-	util.log(total, 0.05935725)
-	var before = 0.059469926
-	var after = before - total
-	util.log("after", after)
-	var realAfter = 0.000053318
-	util.log("real after", realAfter)
-	var fee = after - realAfter
-	util.log("rate", fee / total)
+	// var total = math.eval('(0.08602500 * 0.69)')
+	// util.log(total, 0.05935725)
+	// var before = 0.059469926
+	// var after = before - total
+	// util.log("after", after)
+	// var realAfter = 0.000053318
+	// util.log("real after", realAfter)
+	// var fee = after - realAfter
+	// util.log("rate", fee / total)
+
+	// util.log(math.eval('(0.014862574372372372 + 0.0008476276276276277)'))
+	// util.log(math.eval('(0.5179952115116632 + 0.00084837)'))
+
+	util.log(math.eval('1.0289830620165 + 0.1442831689787388 - 0.5859375 * 2'))
+
+	util.log(math.eval('2.379964292134831 + 14.473966292134833 - 8.426966292134832 * 2'))
+
+	util.log(math.eval('(0.0013910868303569867 - 0.0013912309952386348) / 0.0000020000000020559128'))
+
+	util.log(math.eval('(0.072209877 + 0.0719550045)/2'))
 	// var 
 
 	// util.log(math.eval('(0.08602500 * 0.69)'))
@@ -506,12 +517,75 @@ function calc() {
 	// util.log(math.eval('1 - 0.000053318 / (0.059469926 - 0.08602500 * 0.69)'))	
 }
 
+function test26() {
+	var obj = {
+		a: {
+			price: 12
+		},
+		b: {
+			price: 55
+		}
+	}
+
+	var a = _.mean(_.map(obj, function(x) {
+	  	return x.price
+	}))
+
+	util.log(a)
+}
+
+async function getData() {
+	await util.sleep(1000)
+	return "Make money"
+}
+
+async function test27() {
+	try{
+		var a = await util.promiseWithTimeout(
+			// function() {
+			// 	return util.sleep(1000)
+			// }, 1500
+			() => getData(),
+			1500
+		)
+
+		util.log(a)
+	}catch(e){
+		util.log(e.message)
+	}
+}
+
+function test28() {
+
+	class Test {
+		constructor() {
+			this.obj = {
+				a: {
+					price: 12
+				},
+				b: {
+					price: null
+				},
+				c: {
+					price: 555
+				}
+			}
+		}
+		get filter() {
+			return _.find(this.obj, function(e) { return e.price })
+		}
+	}
+
+	var test = new Test()
+
+	for(var i in test.filter) {
+		util.log(i, test.filter[i])
+	}
+}
+
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	calc()
+  	test28()
 }
-
-
-

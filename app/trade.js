@@ -17,7 +17,7 @@ class Trade{
 	async init(){		
 		var list = await util.promiseFor(this.exchanges, 'fetchAccount')
 		this.log(`已获取 ${list.length} 个交易所得账户信息', `)
-		await this.strategy.init(this.exchanges)	
+		await this.strategy.init(this.exchanges)
 	}
 
  	async updateOrderBook(){
@@ -31,7 +31,7 @@ class Trade{
 	}
 
 	async loop(){
-		while(this.strategy.condition()) {
+		while(this.strategy.condition) {
             try {  
             	util.log("******************************************************")                                            
                 await this.updateOrderBook()                
