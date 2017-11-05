@@ -156,13 +156,13 @@ class Exchange {
         this.logAccount()
 
         if(type == ORDER_TYPE_BUY) {
-            var orderPrice = _.round(this.buyPrice, 8)
-            amount = this.needMoreCoinForBuy? _.round(amount/(1-this.fee), 3): _.round(amount, 3)
+            var orderPrice = _.ceil(this.buyPrice, 8)
+            amount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 3): _.floor(amount, 3)
             orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, orderPrice)
             this.log(`限价买单，数量：${amount}，价格：${orderPrice}`, 'green')
         }else {
-            var orderPrice = _.round(this.sellPrice, 8)
-            amount = _.round(amount, 3)
+            var orderPrice = _.floor(this.sellPrice, 8)
+            amount = _.floor(amount, 3)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, orderPrice)
             this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue')
         }      

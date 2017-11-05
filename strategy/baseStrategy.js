@@ -71,7 +71,6 @@ class Strategy {
 					return false
 				}
 			}
-			// return e.orderBooks
 		})
 	}
 

@@ -352,9 +352,9 @@ function test16() {
 
 function test17() {
 	global.simMode = true
-	util.log(_.round(1213.004, 2))
+	util.log(_.ceil(1213.0144, 3))
 	util.log(util.toFixedNumber(0.00965998123, 8))
-	util.log(_.round(0.00965998123, 8))
+	util.log(_.floor(0.00965998123, 8))
 }
 
 async function test18() {
@@ -587,5 +587,5 @@ function test28() {
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test28()
+  	test17()
 }
