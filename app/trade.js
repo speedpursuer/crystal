@@ -24,7 +24,7 @@ class Trade{
 		var start = (new Date()).getTime()
 		var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')		
 		var lag = (new Date()).getTime() - start
-		this.log(`获取 ${list.length} 个交易数据，时间 ${lag} ms`)	
+		this.log(`获取 ${_.filter(list, function(o) { return o.orderBooks }).length} 个交易数据，时间 ${lag} ms`)	
 		if(lag > 2000) {
 			throw '超时，跳过本轮'
 		}
