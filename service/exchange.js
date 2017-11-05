@@ -108,7 +108,7 @@ class Exchange {
                     'depth': 5,
                     'size': 5,            
                 }),
-                10000
+                1000
             )
 
         }catch(e){
