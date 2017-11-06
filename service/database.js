@@ -36,8 +36,9 @@ class Database {
             initTotalStock: totalStock,
             details: [],
             tradeTimes: 0,
+            profit: 0,
             balanceGap: 0,
-            stocksGap: 0,
+            stocksGap: 0,            
             startTime: time,
             lastUpdate: time,
         }
@@ -59,11 +60,12 @@ class Database {
         await this.saveData(data)
     }
 
-    async recordBalance(balanceGap, stocksGap) {
+    async recordBalance(profit, balanceGap, stocksGap) {
         var data = await this.getData()
+        data.profit = profit
         data.balanceGap = balanceGap
-        data.stocksGap = stocksGap
-        data.lastUpdate = util.now
+        data.stocksGap = stocksGap      
+        data.lastUpdate = util.now  
         await this.saveData(data)
     }
 

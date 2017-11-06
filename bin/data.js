@@ -77,7 +77,7 @@ async function display() {
     }
 	Log.bright.green(`开始时间: ${data.startTime}，更新时间: ${data.lastUpdate}`)
 	Log.bright.green(`初始金额: ${data.initTotalBalance}，初始币: ${data.initTotalStock}`)
-	Log.bright.red(`对冲次数: ${data.tradeTimes}，当前币差: ${data.stocksGap}，当前盈利：${data.balanceGap}`)
+	Log.bright.red(`对冲次数: ${data.tradeTimes}, 盈利: ${data.profit}, 钱差: ${data.balanceGap}, 币差: ${data.stocksGap}`)
 	Log.bright.red("************************************************")
 
 	var details = data.details
