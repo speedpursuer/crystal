@@ -50,7 +50,7 @@ class Strategy {
 	}
 
 	get currProfit() {		
-		var avgPrice = _.mean(_.map(this._exchanges, function(e) {
+		var avgPrice = _.mean(_.map(this.exchanges, function(e) {
 		  	return e.sellPrice
 		}))
 		return this.balanceDiff + (this.stockDiff) * avgPrice
