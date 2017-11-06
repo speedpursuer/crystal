@@ -4,7 +4,7 @@ const ExchangeSim = require ('../service/exchangeSim.js')
 const should = require('should');
 
 
-describe.only('测试 ExchangeSim', async function() {
+describe('测试 ExchangeSim', async function() {
 
 	
 
@@ -16,7 +16,7 @@ describe.only('测试 ExchangeSim', async function() {
 		
 	})
 
-	describe.only('测试不同买单模式', async function() {  		
+	describe('测试不同买单模式', async function() {  		
     	it('余额变化情况', async function() {    	
     		var info = {      
 	        	fee: 0.001,
