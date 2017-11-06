@@ -36,7 +36,6 @@ class Strategy {
 		
 		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)
 		if(print) {
-			// util.log.red(`盈利: ${this.balanceDiff}, 币差: ${this.stockDiff}, 总金额: ${this.currBalance}, 总币数: ${this.currStock}`)	
 			util.log.red(`盈利：${this.currProfit}, 钱差: ${this.balanceDiff}, 币差: ${this.stockDiff}`)
 		}		
 	}
