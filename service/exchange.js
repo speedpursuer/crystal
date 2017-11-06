@@ -184,7 +184,7 @@ class Exchange {
     async cancelPendingOrders(orderID) {
         this.log("开始轮询订单状态")
         var retryTime = 0
-        while(retryTime < 5) {
+        while(retryTime < 2) {
             try{
                 await util.sleep(this.delay * 2.5)        
                 // if(orderID) {
