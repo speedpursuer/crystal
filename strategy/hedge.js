@@ -3,7 +3,7 @@ const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
 const minTrade = 0.005
-const maxAmountOnce = 1
+const maxAmountOnce = 0.6
 const orderRate = 0.5
 const minMargin = 0.3
 

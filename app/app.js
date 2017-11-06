@@ -28,7 +28,7 @@ async function test(){
         // await backtest.LTC()
         // await backtest.ETH()
         // await backtest.BCH()
-        await backtest.BCHTest(['hitbtc', 'okex'])     
+        await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro'])     
         process.exit()
     }catch (e) {        
         util.log.bright.yellow(e)
