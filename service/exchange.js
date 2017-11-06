@@ -126,7 +126,10 @@ class Exchange {
         this.stocks = account[this.crypto].free 
         this.frozenStocks = account[this.crypto].used        
         this.logAccount()
-        return account
+        return {
+            balance: this.balance + this.frozenBalance,
+            stocks: this.stocks + this.frozenStocks
+        }
     }
 
     logAccount() {

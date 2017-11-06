@@ -590,9 +590,29 @@ function test28() {
 	}
 }
 
+function test29() {
+	var list = [
+		{
+			a: 1,
+			b: 2
+		},
+		{
+			a: 3,
+			b: 5
+		}
+	]
+	var a = _.reduce(list, function(result, value, key) {	  	
+		result.a += value.a
+		result.b += value.b
+	  	return result
+	}, {a: 0, b: 0})
+
+	util.log(a)
+}
+
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	calc()
+  	test29()
 }

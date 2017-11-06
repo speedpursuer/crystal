@@ -16,7 +16,12 @@ class Trade{
 
 	async init(){		
 		var list = await util.promiseFor(this.exchanges, 'fetchAccount')
-		this.log(`已获取 ${list.length} 个交易所得账户信息', `)
+		var total = _.reduce(list, function(result, value, key) {	  	
+			result.balance += value.balance
+			result.stocks += value.stocks
+		  	return result
+		}, {balance: 0, stocks: 0})
+		this.log(`获取 ${list.length} 个交易所账户信息, 总钱: ${total.balance}, 总币: ${total.stocks}`)
 		await this.strategy.init(this.exchanges)
 	}
 
