@@ -243,9 +243,9 @@ class Exchange {
             this.log("开始下买单", 'green')
             result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
             await this.cancelPendingOrders(result.id)               
-            this.log("开始下卖单", 'blue')
-            result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
-            await this.cancelPendingOrders(result.id)
+            // this.log("开始下卖单", 'blue')
+            // result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
+            // await this.cancelPendingOrders(result.id)
         }catch(e){
             this.log(e, 'red')         
         }    
