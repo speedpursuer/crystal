@@ -23,11 +23,11 @@ class Bitfinex {
 		return this.v1.createLimitSellOrder (symbol, ...args)
 	}
 
-	async fetchOpenOrders(symbol = undefined, params = {}) {
-		return await this.v2.fetchOpenOrders(symbol, params)
+	async fetchOpenOrders(symbol, params = {}) {
+		return await this.v1.fetchOpenOrders(symbol, params)
 	}
 
-	async cancelOrder(id, symbol = undefined, params = {}) {
+	async cancelOrder(id, symbol, params = {}) {
 		return await this.v1.cancelOrder (id, symbol, params)
 	}
 }
