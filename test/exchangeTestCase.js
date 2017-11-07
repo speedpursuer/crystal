@@ -15,7 +15,7 @@ describe.only('测试 exchange', async function() {
 		
 	})
 
-	describe.only('测试价格计算规则', async function() {  		
+	describe('测试价格计算规则', async function() {  		
     	it('买的余额', async function() {
     		global.realMode = true
     		global.realSim = true
@@ -54,14 +54,14 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-	describe('测试交易所API', async function() {  		
+	describe.only('测试交易所API', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
 
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
     		var sellPrice = 4900
     		var amount = 0.0181
-    		var exchangeIDs = ['huobipro']
+    		var exchangeIDs = ['Bitfinex']
     		// var exchangeIDs = ['okex', 'hitbtc', 'poloniex']
 
     		// var list = []
