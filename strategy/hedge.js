@@ -11,7 +11,7 @@ class Hedge extends Strategy {
 	async doTrade() {		
         if(!await this.balance()) {
             await this.hedge()
-        }
+        }        
 	}
 
 	async hedge() {
@@ -31,7 +31,8 @@ class Hedge extends Strategy {
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount), 
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount),
                 this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, this.bestPair.tradeAmount, this.bestPair.magin/this.bestPair.tradeAmount)
-            ])
+            ])  
+            this.logProfit()          
         }else {
         	// this.log(`无套利机会`)
         }
@@ -62,6 +63,7 @@ class Hedge extends Strategy {
                 if(orderAmount >= exchange.minTrade) {
                     this.log(`存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)   
+                    this.logProfit()
                     return true
                 }
             }
@@ -71,7 +73,8 @@ class Hedge extends Strategy {
                 var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
                 if(orderAmount >= exchange.minTrade) {
                     this.log(`存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
-                    await exchange.limitBuy(orderAmount)   
+                    await exchange.limitBuy(orderAmount) 
+                    this.logProfit()  
                     return true
                 }
             }

@@ -104,14 +104,14 @@ class Backtest {
 			}				
 			if(skip) continue				
 			await trade.strategy.doTrade()
-            await trade.strategy.updateBalance(this.debug)
+            await trade.strategy.updateBalance()
             if(!this.debug) bar.tick()                     
 		}
 		if(trade.strategy.after) {
 			trade.strategy.after()
 		}
 
-		if(!this.debug) await trade.strategy.updateBalance(true)
+		if(!this.debug) await trade.strategy.logProfit()
 		util.log.green("回测完成")			
 
 		return {
