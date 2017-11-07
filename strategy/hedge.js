@@ -25,6 +25,7 @@ class Hedge extends Strategy {
         }
 
         if(this.bestPair.magin > 0) {
+            this.log("---------------------------------------------")
         	this.log(`存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 差价: ${this.bestPair.magin}`)
             await Promise.all([
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount), 

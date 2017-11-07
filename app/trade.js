@@ -37,8 +37,7 @@ class Trade{
 
 	async loop(){
 		while(this.strategy.condition) {
-            try {  
-            	// util.log("******************************************************")                                            
+            try {            	
                 await this.updateOrderBook()                
                 await this.strategy.doTrade()
                 await this.strategy.updateBalance()                                          
