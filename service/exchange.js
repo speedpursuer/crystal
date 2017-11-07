@@ -10,7 +10,7 @@ const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
-const slippage = 0.0006
+const slippage = 0.0008
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
