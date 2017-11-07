@@ -20,12 +20,12 @@ describe.only('测试 exchange', async function() {
     		global.realMode = true
     		global.realSim = true
 
-    		var exchange = new Exchange('huobipro', 'BCH', 'BTC', 0.5, 0.2)
+    		var exchange = new Exchange('Bitfinex', 'BCH', 'BTC', 0.5, 0.2)
     		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()
     		util.log(exchange.buyPrice)
     		util.log(exchange.sellPrice)
-    		await exchange.limitBuy(0.01)
+    		await exchange.limitBuy(0.1)
 
     		// exchange = new Exchange('hitbtc', 'BCH', 'BTC', 0.015710202, 5.624)
     		// await exchange.fetchAccount()
