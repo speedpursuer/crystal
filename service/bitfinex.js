@@ -4,6 +4,7 @@ class Bitfinex {
 	constructor(info) {
 		this.v1 = new ccxt['bitfinex'](info)
 		this.v2 = new ccxt['bitfinex2'](info)
+		this.id = 'bitfinex'
 	}
 
 	async fetchOrderBook (symbol, params = {}) {
