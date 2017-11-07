@@ -60,7 +60,7 @@ describe.only('测试 exchange', async function() {
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
     		var sellPrice = 4900
-    		var amount = 0.0181
+    		var amount = 0.181
     		var exchangeIDs = ['Bitfinex']
     		// var exchangeIDs = ['okex', 'hitbtc', 'poloniex']
 

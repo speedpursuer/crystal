@@ -8,7 +8,7 @@ class Bitfinex {
 	}
 
 	async fetchOrderBook (symbol, params = {}) {
-		return await this.v1.fetchOrderBook(symbol, params)
+		return await this.v2.fetchOrderBook(symbol, params)
 	}
 
 	async fetchBalance (params = {}) {
