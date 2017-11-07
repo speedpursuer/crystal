@@ -32,7 +32,7 @@ class Hedge extends Strategy {
                 this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, this.bestPair.tradeAmount, this.bestPair.magin/this.bestPair.tradeAmount)
             ])
         }else {
-        	this.log(`无套利机会`)
+        	// this.log(`无套利机会`)
         }
     }
 
