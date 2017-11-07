@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const minTrade = 0.1
 const maxAmountOnce = 1
-const orderRate = 0.3
+const orderRate = 0.2
 const minMargin = 0.3
 
 class Hedge extends Strategy {
