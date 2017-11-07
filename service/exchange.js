@@ -11,6 +11,7 @@ const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
 const slippage = 0.0005
+const defaultMinTrade = 0.005
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -21,6 +22,7 @@ class Exchange {
         this.fee = this.exchangeDelegate.fee        
         this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat,
         this.specialBuy = this.exchangeDelegate.specialBuy
+        this.minTrade = this.exchangeDelegate.minTrade? this.exchangeDelegate.minTrade: defaultMinTrade
         this.slippage = slippage
         this.crypto = crypto
         this.debug = debug

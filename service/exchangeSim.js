@@ -20,6 +20,7 @@ class ExchangeSim {
         this.fee = info.fee        
         this.fiat = fiat == 'USD'? info.fiat: fiat
         this.specialBuy = info.specialBuy
+        this.minTrade = info.minTrade
         
         this.realOrderBook = realOrderBook
 
