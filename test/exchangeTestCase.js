@@ -43,19 +43,18 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-	describe('测试交易所API', async function() {  		
+	describe.only('测试交易所API', async function() {  		
     	it('下现价单', async function() {  
     		var exchange = new Exchange('Bitfinex', 'BCH', 'BTC')
-    		util.log(await exchange.fetchOpenOrder())
-    		// await exchange.fetchOrderBook()    		
-    		// await exchange.limitBuy(0.01)
-    		// await exchange.limitSell(0.1)
+    		await exchange.fetchOrderBook()    		
+    		await exchange.limitBuy(0.1)
+    		await exchange.limitSell(0.1)
     		// await util.sleep(5000)
     		// await exchange.fetchAccount()
     	})
   	})
 
-	describe.only('测试交易所API', async function() {  		
+	describe('测试交易所API', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
 
     		var base = 'BCH', quote = 'BTC'
