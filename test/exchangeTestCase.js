@@ -25,7 +25,7 @@ describe.only('测试 exchange', async function() {
     		await exchange.fetchOrderBook()
     		util.log(exchange.buyPrice)
     		util.log(exchange.sellPrice)
-    		await exchange.limitSell(0.1)
+    		await exchange.limitBuy(0.1)
 
     		// exchange = new Exchange('hitbtc', 'BCH', 'BTC', 0.015710202, 5.624)
     		// await exchange.fetchAccount()

@@ -1,6 +1,7 @@
 const ccxt = require ('ccxt')
 const ExhangeSim = require ('./exchangeSim')
 const exchangeInfo = require('../config/exchangeInfo.js')
+const Bitfinex = require('./bitfinex')
 
 class ExchangeFactory {
     createExchange(eid, crypto, fiat, initBalance, initStocks) {    
@@ -11,7 +12,11 @@ class ExchangeFactory {
 
         let exchange = {}
         if(global.realMode) {
-            exchange = new ccxt[id](info)            
+            if(id == 'bitfinex') {
+                exchange = new Bitfinex(info)
+            }else {
+                exchange = new ccxt[id](info)    
+            }            
             exchange.fiat = info.fiat
             exchange.fee = info.fee   
             exchange.specialBuy = info.specialBuy             
