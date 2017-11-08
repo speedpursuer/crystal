@@ -21,7 +21,7 @@ async function test(){
     global.realMode = false
     global.realSim = true
     try {              
-        var backtest = new Backtest("2017-11-02 09:37:18", "2017-11-02 22:00:00", true)
+        var backtest = new Backtest("2017-11-04 00:00:00", "2017-11-05 00:00:00", false)
         // var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55", true)        
         // var backtest = new Backtest("2017-11-01 09:14:55")
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
@@ -29,7 +29,8 @@ async function test(){
         // await backtest.LTC()
         // await backtest.ETH()
         // await backtest.BCH()
-        await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro'])     
+        await backtest.BCHTest(['Bitfinex', 'okex'])  
+        // await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'Bitfinex'])     
         process.exit()
     }catch (e) {        
         util.log.bright.yellow(e)
@@ -38,8 +39,8 @@ async function test(){
 }
 
 async function testBatch(){
-    var backtest = new Backtest("2017-11-01 09:14:55", null, false)
-    await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro'])
+    var backtest = new Backtest("2017-11-04 00:00:00", "2017-11-08 00:00:00", false)
+    await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'])
 }
 
 main()

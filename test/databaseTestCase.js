@@ -75,10 +75,7 @@ describe.skip('测试Database class', async function() {
       var result = await database.getOrderBooksTimeline('1509021522000', '1509021545000')
       util.log(result.length)
 
-      // result = await database.getOrderBooks('bitstamp', '1509021545000')
-      // util.log(result.length)
-      
-      result = await database.getOrderBooks2('BTC/USD', ['bitstamp', 'lakebtc', 'bitfinex'], 0, util.timestamp)
+      result = await database.getOrderBooks('BTC/USD', ['bitstamp', 'lakebtc', 'bitfinex'], 0, util.timestamp)
       util.log("got data")
     })
   })

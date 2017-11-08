@@ -8,7 +8,7 @@ class Strategy {
 	constructor(crypto,fiat, debug=true){
         this.crypto = crypto
         this.fiat = fiat
-        this.debug = debug      
+        this.debug = debug    
     }
 
 	async init(exchanges){
@@ -36,7 +36,7 @@ class Strategy {
 		
 		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)		
 
-		if(this.needReport) {
+		if(this.needReport && this.debug) {
 			this.logProfit()
 			this.needReport = false
 		}
@@ -83,12 +83,18 @@ class Strategy {
 		return `${this.crypto}/${this.fiat}`
 	}
 
-	log(message) {
-		if(this.debug) util.log(message)
+	action(text) {
+		this.log("---------------------------------------------")
+    	this.log(text)
+        this.needReport = true
 	}
 
+	log(message) {
+		if(this.debug) util.log(message)	
+	}
+	
 	doTrade() {
-		util.log("doTrade() must be implemented, exiting app")
+		util.log.red("doTrade() must be implemented, exiting app")
 		process.exit()
 	}
 }

@@ -21,7 +21,11 @@ class Trade{
 			result.stocks += value.stocks
 		  	return result
 		}, {balance: 0, stocks: 0})
-		this.log(`获取 ${list.length} 个交易所账户信息, 总钱: ${total.balance}, 总币: ${total.stocks}`)
+		this.log(`*********************************************************`)
+		this.log(`*********************************************************`)
+		this.log(`******* 获取 ${list.length} 个交易所账户信息, 总钱: ${total.balance}, 总币: ${total.stocks} *******`)
+		this.log(`*********************************************************`)
+		this.log(`*********************************************************`)
 		await this.strategy.init(this.exchanges)
 	}
 
