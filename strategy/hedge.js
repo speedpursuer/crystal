@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.2
-const minMargin = 0.3
+const minMargin = 0
 
 class Hedge extends Strategy {
     
@@ -32,7 +32,7 @@ class Hedge extends Strategy {
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount),
                 this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, this.bestPair.tradeAmount, this.bestPair.magin/this.bestPair.tradeAmount)
             ])  
-            this.logProfit()          
+            this.needReport = true          
         }else {
         	// this.log(`无套利机会`)
         }
@@ -61,9 +61,10 @@ class Hedge extends Strategy {
             for(var exchange of descList) {
                 var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
                 if(orderAmount >= exchange.minTrade) {
+                    this.log("---------------------------------------------")
                     this.log(`存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)   
-                    this.logProfit()
+                    this.needReport = true
                     return true
                 }
             }
@@ -72,9 +73,10 @@ class Hedge extends Strategy {
             for(var exchange of ascList) {
                 var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
                 if(orderAmount >= exchange.minTrade) {
+                    this.log("---------------------------------------------")
                     this.log(`存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount) 
-                    this.logProfit()  
+                    this.needReport = true
                     return true
                 }
             }

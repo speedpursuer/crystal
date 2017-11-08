@@ -583,6 +583,10 @@ function test28() {
 		get filter() {
 			return _.find(this.obj, function(e) { return e.price })
 		}
+
+		set bb(value) {
+			this.b = value
+		}
 	}
 
 	var test = new Test()
@@ -590,6 +594,9 @@ function test28() {
 	for(var i in test.filter) {
 		util.log(i, test.filter[i])
 	}
+
+	test.bb = "abc"
+	util.log(test.b)
 }
 
 function test29() {
@@ -616,5 +623,5 @@ function test29() {
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	calc()
+  	test28()
 }

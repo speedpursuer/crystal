@@ -35,6 +35,11 @@ class Strategy {
 		this.stockDiff = this.currStock - this.initStock
 		
 		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)		
+
+		if(this.needReport) {
+			this.logProfit()
+			this.needReport = false
+		}
 	}
 
 	logProfit() {
