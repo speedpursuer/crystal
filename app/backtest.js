@@ -35,8 +35,9 @@ class Backtest {
 	}
 
 	async BCH() {
-	    var exchangeIDs = ['hitbtc', 'okex']
+	    // var exchangeIDs = ['hitbtc', 'okex']
 	    // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex']
 	    await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
 	}
 

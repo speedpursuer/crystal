@@ -21,11 +21,11 @@ class ExchangeFactory {
             exchange.fee = info.fee   
             exchange.specialBuy = info.specialBuy             
             exchange.minTrade = info.minTrade
-            exchange.timeout = 20000
+            exchange.timeout = 10000
             exchange.nonce = function(){ return this.milliseconds () }
             exchange.delay = 200
         }else {                
-            exchange = new ExhangeSim(id, info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
+            exchange = new ExhangeSim(id, info, crypto, fiat, initBalance, initStocks, global.realSim||false, 0.7, 0.7)    
             exchange.delay = 0
         }
 

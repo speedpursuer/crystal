@@ -5,7 +5,7 @@ const util = require('../util/util.js')
 const _ = require('lodash')
 
 
-describe('测试trade和stratege', async function() {
+describe.only('测试trade和stratege', async function() {
 
 	var exchangeIDs
 	var trade 	
@@ -14,7 +14,7 @@ describe('测试trade和stratege', async function() {
 
 	before(async function() {
 		global.realMode = false
-		global.realSim = false		
+		global.realSim = false
 		//await initBTC_USD()
 		await initLTC_BTC()						
 	})
@@ -63,7 +63,7 @@ describe('测试trade和stratege', async function() {
 
 	async function initLTC_BTC() {
 		exchangeIDs = ['Bitfinex', 'bittrex', 'Poloniex']  
-		trade = new Trade(exchangeIDs, new Hedge('LTC', 'BTC'))		
+		trade = new Trade(exchangeIDs, new Hedge('LTC', 'BTC', true), 1000, 10, true)
 		await trade.init()
 
         trade.exchanges['bitfinex'].orderBooks = 
@@ -107,10 +107,10 @@ describe('测试trade和stratege', async function() {
 		trade.strategy.database.deleteData()
 	})
 
-  	describe('对冲交易', async function() {  		
+  	describe.only('对冲交易', async function() {  		
     	it('单次交易币差可能为正、负、零', async function() {    		      		
       		await trade.strategy.doTrade()
-      		await trade.strategy.reportBalance()
+      		await trade.strategy.updateBalance()
 			// trade.strategy.stockDiff.should.not.equal(0)			
     	})
   	})
@@ -121,7 +121,7 @@ describe('测试trade和stratege', async function() {
   			trade.strategy.stockDiff = diff
     		trade.strategy.initStock = trade.strategy.currStock - diff
 
-    		trade.strategy.reportBalance()
+    		trade.strategy.updateBalance()
 
     		await simTrade(function() {
     			return _.round(trade.strategy.stockDiff, 3) == 0
@@ -156,7 +156,7 @@ describe('测试trade和stratege', async function() {
 
 		while(true) {
         	await trade.strategy.doTrade()        
-        	await trade.strategy.reportBalance()
+        	await trade.strategy.updateBalance()
         	if(condition()) {
         		break
         	}

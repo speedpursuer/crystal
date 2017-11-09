@@ -46,14 +46,16 @@ class Database {
         return this
     }
 
-    async recordTrade(sellName, buyName, amount, gap) {
+    async recordTrade(sellName, buyName, sellResult, buyResult, amount, margin) {        
         var data = await this.getData()
         data.details.push({
             sell: sellName,
             buy: buyName,
             amount: amount,
-            gap: gap,
-            profit: amount * gap,            
+            margin: margin,
+            profit: amount * margin,
+            sellResult: sellResult,
+            buyResult: buyResult,
             time: util.now
         })
         data.tradeTimes++       
@@ -73,7 +75,7 @@ class Database {
         var orderBook = new this.OrderBook(data)
         await orderBook.save()
     }
-    
+
     async getOrderBooksTimeline(market, exchanges, from, to) {
         return this.OrderBook.distinct(
             'recordTime',

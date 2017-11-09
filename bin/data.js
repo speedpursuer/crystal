@@ -1,3 +1,4 @@
+const _ = require('lodash')
 let bluebird = require("bluebird")
 let redis = require("redis"),
     client = redis.createClient();
@@ -137,9 +138,24 @@ async function display() {
 	// for(var i in byExchange) {
 	// 	Log(i, "detail:")
 	// 	for(var item of byExchange[i].details) {
-	// 		Log("Time", item.time, "Sell", item.sell, "Buy", item.buy, "amount", item.amount, "profit", item.profit)		
+	// 		Log(item)
+	// 		// Log("Time", item.time, "Sell", item.sell, "Buy", item.buy, "amount", item.amount, "profit", item.profit)		
 	// 	}		
 	// }
+
+
+	Log("平均gap", _.meanBy(details, function(o) { return o.margin }))
+
+	// var total = _.reduce(details, function(result, value, key) {	  	
+	// 	result.balance += value.balance
+	// 	result.stocks += value.stocks
+	//   	return result
+	// }, {gap: 0})
+
+
+	_.forEach(details, function(value, key) {
+		Log(value)  			
+	})
 	
 	process.exit()
 }

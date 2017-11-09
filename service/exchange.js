@@ -122,12 +122,17 @@ class Exchange {
     }
 
     async fetchAccount() {
-        var account = await this.exchangeDelegate.fetchBalance()
-        this.balance = account[this.fiat].free
-        this.frozenBalance = account[this.fiat].used
-        this.stocks = account[this.crypto].free 
-        this.frozenStocks = account[this.crypto].used        
-        this.logAccount()
+        try {
+            var account = await this.exchangeDelegate.fetchBalance()                        
+            this.balance = account[this.fiat].free
+            this.frozenBalance = account[this.fiat].used
+            this.stocks = account[this.crypto].free 
+            this.frozenStocks = account[this.crypto].used        
+            this.logAccount()
+        }catch(e) {
+            this.log(e.message, 'red')
+        }
+        
         return {
             balance: this.balance + this.frozenBalance,
             stocks: this.stocks + this.frozenStocks
@@ -147,7 +152,6 @@ class Exchange {
     }   
 
     async placeLimitOrder(type, amount) {
-        var orderID
         var orderOpt
         
         if(![ORDER_TYPE_BUY, ORDER_TYPE_SELL].includes(type) || isNaN(amount)) {
@@ -162,67 +166,84 @@ class Exchange {
 
         if(type == ORDER_TYPE_BUY) {
             var orderPrice = _.ceil(this.buyPrice, 8)
-            amount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 5): _.floor(amount, 3)
-            orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, orderPrice)
-            this.log(`限价买单，数量：${amount}，价格：${orderPrice}`, 'green')
+            var orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 5): _.floor(amount, 3)
+            orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, orderAmount, orderPrice)
+            this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
             var orderPrice = _.floor(this.sellPrice, 8)
-            amount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
-            orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, orderPrice)
-            this.log(`限价卖单，数量：${amount}，价格：${orderPrice}`, 'blue')
+            var orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
+            orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, orderAmount, orderPrice)
+            this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }      
 
         var result = {}        
         try{
-            result = await orderOpt          
+            result = await orderOpt            
         }catch(e){
-            this.log(e, 'red')
-            await util.sleep(4 * this.delay)
+            this.log(e, 'red')            
         }        
 
-        await this.cancelPendingOrders(result.id)     
+        await util.sleep(this.delay)
+        return await this.cancelPendingOrders(amount)  
     }
 
-    async cancelPendingOrders(orderID) {
+    async cancelPendingOrders(amount) {
         this.log("开始轮询订单状态")
-        var retryTime = 0
-        while(retryTime < 2) {
-            try{
-                await util.sleep(this.delay * 2.5)        
-                // if(orderID) {
-                //     var order = await this.exchangeDelegate.fetchOrder(orderID, this.symbol)
-                //     if(order && order.status == 'open') {
-                //         await this.cancelOrder(order)                        
-                //         continue
-                //     }
-                // }                
-                var orders = await this.exchangeDelegate.fetchOpenOrders(this.symbol)
-                if(orders && orders.length > 0) {
-                    for(var order of orders) {
-                        await this.cancelOrder(order)                        
-                        await util.sleep(this.delay)
-                    }
-                    continue
-                }
+                
+        var beforeAccount = this.account
+        var retryTimes = 0        
+        var dealAmount = 0
+        var balanceChanged = 0
+        var hasPendingOrders = false
+        var completed = false            
 
-                await this.fetchAccount()
-                                
-                if(this.frozenStocks == 0 && this.frozenBalance == 0) {
-                    break
-                }                    
-            }catch(e){        
-                await this.fetchAccount()  
-                this.log(e.message, 'red')    
-                retryTime++                
-            }        
+        while(retryTimes < 10) {   
+            await util.sleep(this.delay)  
+            retryTimes++                                           
+            var orders = await this.fetchOpenOrders(this.symbol)
+            if(orders && orders.length > 0) {
+                hasPendingOrders = true
+                for(var order of orders) {
+                    await this.cancelOrder(order.id)                        
+                    await util.sleep(this.delay)
+                }
+                continue
+            }
+
+            await this.fetchAccount()
+
+            // 没有挂单，但余额没变，需要重新刷新
+            if(!hasPendingOrders && beforeAccount.balance == this.balance && beforeAccount.stocks == this.stocks) {                
+                continue
+            }           
+
+            if(this.frozenStocks == 0 && this.frozenBalance == 0) {
+                dealAmount = Math.abs(this.stocks - beforeAccount.stocks)
+                balanceChanged = this.balance - beforeAccount.balance
+                if(_.round(dealAmount - amount, 4) == 0) completed = true
+                break
+            }         
         }
         this.log("订单轮询处理结束")
+        return {amount, dealAmount, balanceChanged, completed}
     }
 
-    async cancelOrder(order) {
-        var result = await this.exchangeDelegate.cancelOrder(order.id, this.symbol) 
-        this.log(`订单 ${order.id} 取消完成`, 'yellow')
-        // this.log(`订单 ${order.id} 取消完成, 结果: ${result}`, 'yellow')
+    async fetchOpenOrders() {
+        try {
+            return await this.exchangeDelegate.fetchOpenOrders(this.symbol)
+        }catch(e) {
+            this.log(e.message, "red")
+        }   
+        return null
+    }
+
+    async cancelOrder(orderID) {
+        try {
+            await this.exchangeDelegate.cancelOrder(orderID, this.symbol) 
+            this.log(`订单 ${orderID} 取消完成`, 'yellow')
+        }catch(e) {
+            this.log(e.message, "red")
+        }                
     }
 
     getOrderBooksData(path) {
@@ -244,10 +265,14 @@ class Exchange {
             await this.fetchAccount()        
             this.log("开始下买单", 'green')
             result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
-            await this.cancelPendingOrders(result.id)               
+            this.log(result)
+            result = await this.cancelPendingOrders(amount)
+            this.log(result)
             this.log("开始下卖单", 'blue')
             result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
-            await this.cancelPendingOrders(result.id)
+            this.log(result)
+            result = await this.cancelPendingOrders(amount)
+            this.log(result)
         }catch(e){
             this.log(e, 'red')         
         }    

@@ -3,7 +3,7 @@ const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
 
 
-describe.only('测试 exchange', async function() {	
+describe('测试 exchange', async function() {	
 
 	this.timeout(50000)
 
@@ -43,9 +43,10 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-	describe.only('测试交易所API', async function() {  		
+	describe('测试交易所API', async function() {  		
     	it('下现价单', async function() {  
     		var exchange = new Exchange('Bitfinex', 'BCH', 'BTC')
+    		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()    		
     		await exchange.limitBuy(0.1)
     		await exchange.limitSell(0.1)
@@ -54,19 +55,30 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
+  	describe('模拟交易所API', async function() {  		
+    	it('查询账户、订单簿、下单、取消', async function() {  
+    		global.realMode = false
+    		global.realSim = true
+    		var exchange = new Exchange('okex', 'BCH', 'BTC', 1, 3)
+    		await exchange.fetchAccount()
+    		await exchange.fetchOrderBook()    		
+    		util.log(await exchange.limitBuy(0.1))
+    		util.log(await exchange.limitSell(0.1))
+    	})
+  	})
+
 	describe('测试交易所API', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
-
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
     		var sellPrice = 4900
     		var amount = 0.181
-    		var exchangeIDs = ['Bitfinex']
-    		// var exchangeIDs = ['okex', 'hitbtc', 'poloniex']
+    		// var exchangeIDs = ['Bitfinex']
+    		var exchangeIDs = ['okex']
 
     		// var list = []
     		for(var id of exchangeIDs) {
-    			var exchange = new Exchange(id, base, quote)
+    			var exchange = new Exchange(id, base, quote, 0.1, 3)
     			await exchange.testOrder(buyPrice, sellPrice, amount)
     			// list.push(exchange.testOrder(buyPrice, sellPrice, amount))
     		}

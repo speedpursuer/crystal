@@ -619,9 +619,36 @@ function test29() {
 	util.log(a)
 }
 
+function test30() {
+	util.log(util.timestampFromTime("2017-11-04 00:00:00"))
+	util.log(util.timestampFromTime("2017-11-08 00:00:00"))
+}
+
+function test31() {
+	class A {
+		constructor() {
+			this.a = 1
+		}
+		change() {
+			var a = this.a
+			this.a = 2
+			util.log(a)
+			util.log(this.a)
+		}
+	}
+
+	var a = new A()
+	a.change()
+
+	var x = 1
+	var y = 2
+
+	var r = {x, y, z: 3}
+	util.log(r)
+}
 
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	calc()
+  	test31()
 }
