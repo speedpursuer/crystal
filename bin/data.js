@@ -153,9 +153,9 @@ async function display() {
 	// }, {gap: 0})
 
 
-	_.forEach(details, function(value, key) {
-		Log(value)  			
-	})
+	// _.forEach(details, function(value, key) {
+	// 	Log(value)  			
+	// })
 	
 	process.exit()
 }
