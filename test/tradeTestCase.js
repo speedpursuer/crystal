@@ -5,7 +5,7 @@ const util = require('../util/util.js')
 const _ = require('lodash')
 
 
-describe.only('测试trade和stratege', async function() {
+describe('测试trade和stratege', async function() {
 
 	var exchangeIDs
 	var trade 	
@@ -107,7 +107,7 @@ describe.only('测试trade和stratege', async function() {
 		trade.strategy.database.deleteData()
 	})
 
-  	describe.only('对冲交易', async function() {  		
+  	describe('对冲交易', async function() {  		
     	it('单次交易币差可能为正、负、零', async function() {    		      		
       		await trade.strategy.doTrade()
       		await trade.strategy.updateBalance()
