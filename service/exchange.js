@@ -124,10 +124,10 @@ class Exchange {
     async fetchAccount() {
         try {
             var account = await this.exchangeDelegate.fetchBalance()                        
-            this.balance = account[this.fiat].free
-            this.frozenBalance = account[this.fiat].used
-            this.stocks = account[this.crypto].free 
-            this.frozenStocks = account[this.crypto].used        
+            this.balance = account[this.fiat]? account[this.fiat].free: 0
+            this.frozenBalance = account[this.fiat]? account[this.fiat].used: 0
+            this.stocks = account[this.crypto]? account[this.crypto].free: 0
+            this.frozenStocks = account[this.crypto]? account[this.crypto].used: 0
             this.logAccount()
         }catch(e) {
             this.log(e.message, 'red')
