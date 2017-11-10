@@ -7,7 +7,7 @@ async function main(){
     global.realMode = true
     global.realSim = true
 	try {          
-        var exchangeIDs = ['hitbtc', 'bittrex', 'okex', 'bitfinex']    
+        var exchangeIDs = ['hitbtc', 'bittrex', 'okex', 'bitfinex', 'poloniex']    
         // var exchangeIDs = ['hitbtc', 'bitfinex', 'bittrex', 'poloniex', 'okex']    
         // var exchangeIDs = ['hitbtc', 'okex', 'poloniex', 'bittrex', 'huobipro']    
         var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"))

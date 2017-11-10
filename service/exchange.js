@@ -114,7 +114,7 @@ class Exchange {
             )
 
         }catch(e){
-            // util.log(e.message)
+            util.log(e)
             this.orderBooks = null
         }
         // this.log(`延迟： ${(util.time - start} ms`, 'yellow')  
@@ -130,7 +130,7 @@ class Exchange {
             this.frozenStocks = account[this.crypto]? account[this.crypto].used: 0
             this.logAccount()
         }catch(e) {
-            this.log(e.message, 'red')
+            this.log(e, 'red')
         }
         
         return {
@@ -232,7 +232,7 @@ class Exchange {
         try {
             return await this.exchangeDelegate.fetchOpenOrders(this.symbol)
         }catch(e) {
-            this.log(e.message, "red")
+            this.log(e, "red")
         }   
         return null
     }
@@ -242,7 +242,7 @@ class Exchange {
             await this.exchangeDelegate.cancelOrder(orderID, this.symbol) 
             this.log(`订单 ${orderID} 取消完成`, 'yellow')
         }catch(e) {
-            this.log(e.message, "red")
+            this.log(e, "red")
         }                
     }
 
