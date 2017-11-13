@@ -11,7 +11,7 @@ const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
 const slippage = 0.0005
-const defaultMinTrade = 0.005
+const defaultMinTrade = 0.01
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -166,12 +166,13 @@ class Exchange {
 
         if(type == ORDER_TYPE_BUY) {
             var orderPrice = _.ceil(this.buyPrice, 8)
-            var orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 5): _.floor(amount, 2)
+            var orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 2): _.floor(amount, 2)
             orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, orderAmount, orderPrice)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
             var orderPrice = _.floor(this.sellPrice, 8)
-            var orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 2)
+            var orderAmount = _.floor(amount, 2)
+            // var orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, orderAmount, orderPrice)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }      

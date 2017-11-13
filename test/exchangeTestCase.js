@@ -32,9 +32,9 @@ describe.only('测试 exchange', async function() {
     		var base = 'BTC', quote = 'USD'
     		var buyPrice = 1
     		var sellPrice = 9000
-    		var amount = 0.01
+    		var amount = 0.0248
     		// var exchangeIDs = ['Bitfinex']
-    		var exchangeIDs = ['okex']
+    		var exchangeIDs = ['hitbtc']
 
     		// var list = []
     		for(var id of exchangeIDs) {
