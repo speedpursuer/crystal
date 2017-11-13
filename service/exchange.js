@@ -123,7 +123,7 @@ class Exchange {
 
     async fetchAccount() {
         try {
-            var account = await this.exchangeDelegate.fetchBalance()                        
+            var account = await this.exchangeDelegate.fetchBalance()             
             this.balance = account[this.fiat]? account[this.fiat].free: 0
             this.frozenBalance = account[this.fiat]? account[this.fiat].used: 0
             this.stocks = account[this.crypto]? account[this.crypto].free: 0
@@ -263,16 +263,19 @@ class Exchange {
             this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
             this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
             await this.fetchAccount()        
-            this.log("开始下买单", 'green')
-            result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
-            this.log(result)
-            result = await this.cancelPendingOrders(amount)
-            this.log(result)
-            this.log("开始下卖单", 'blue')
-            result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
-            this.log(result)
-            result = await this.cancelPendingOrders(amount)
-            this.log(result)
+            if(this.balance > 0) {
+                this.log("开始下买单", 'green')
+                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
+                this.log(result)
+                result = await this.cancelPendingOrders(amount)
+                this.log(result)
+            }else {
+                this.log("开始下卖单", 'blue')
+                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
+                this.log(result)
+                result = await this.cancelPendingOrders(amount)
+                this.log(result)    
+            }
         }catch(e){
             this.log(e, 'red')         
         }    

@@ -2,9 +2,10 @@ const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
-const maxAmountOnce = 1
+const maxAmountOnce = 0.2
 const orderRate = 0.2
 const minProfit = 0.3
+const minMargin = 10
 
 class Hedge extends Strategy {
     
@@ -46,7 +47,8 @@ class Hedge extends Strategy {
 
             if(tradeAmount >= sellExchange.minTrade && 
                 tradeAmount >= buyExchange.minTrade &&
-                profit > minProfit/util.getExRate(this.fiat) && 
+                // profit > minProfit/util.getExRate(this.fiat) && 
+                margin > minMargin &&
                 points > this.bestPair.points) {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
             }                                               
