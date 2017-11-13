@@ -73,7 +73,7 @@ class Util{
 			"JPY": 0.0585,
 			"EUR": 7.7678,
 			"WUSD": 6.5807,
-			"BTC": 47000
+			"BTC": 38000
 		}
 		return fiats[fiat.toUpperCase()]
 	}

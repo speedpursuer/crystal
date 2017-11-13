@@ -78,13 +78,14 @@ class Backtest {
 		var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)		
 		await trade.init()					
 		
-		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
-		util.log.yellow(`---- 正在回测 - market: ${market}, exchanges: ${trade.exchangesIDs} ----`)
+		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market		
 
 		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)			
 		timeline.sort(function(a, b){ return a - b})		
 		var orderBook = await database.getOrderBooks(market, trade.exchangesIDs, from, to)
 		
+		util.log.yellow(`---- 正在回测 - market: ${market}, exchanges: ${trade.exchangesIDs} 开始: ${util.timeFromTimestamp(_.head(timeline))}, 结束: ${util.timeFromTimestamp(_.last(timeline))} ----`)
+
 		if(trade.strategy.before) {
 			trade.strategy.before()
 		}

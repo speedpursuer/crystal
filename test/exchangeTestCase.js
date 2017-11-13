@@ -19,11 +19,11 @@ describe.only('测试 exchange', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		global.realMode = true
     		global.realSim = false
-    		var exchange = new Exchange('Poloniex', 'BCH', 'BTC', 1, 3)
+    		var exchange = new Exchange('okex', 'BTC', 'USD', 1, 3)
     		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()
     		// util.log(await exchange.limitBuy(0.1))
-    		util.log(await exchange.limitSell(0.01))
+    		// util.log(await exchange.limitSell(0.01))
     	})
   	})
 
@@ -34,7 +34,7 @@ describe.only('测试 exchange', async function() {
     		var sellPrice = 9000
     		var amount = 0.0248
     		// var exchangeIDs = ['Bitfinex']
-    		var exchangeIDs = ['hitbtc']
+    		var exchangeIDs = ['okex']
 
     		// var list = []
     		for(var id of exchangeIDs) {
