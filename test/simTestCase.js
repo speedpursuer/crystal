@@ -1,11 +1,11 @@
 const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
-const ExchangeSim = require ('../service/exchangeSim.js')
+const ExchangeSim = require ('../service/API/exchangeSim.js')
 const should = require('should');
 
 
 describe('测试 ExchangeSim', async function() {
-	
+
 	before(async function() {
 			
 	})

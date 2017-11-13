@@ -5,7 +5,7 @@ const util = require('../util/util.js')
 const _ = require('lodash')
 
 
-describe('测试trade和stratege', async function() {
+describe.only('测试trade和stratege', async function() {
 
 	var exchangeIDs
 	var trade 	
@@ -15,8 +15,9 @@ describe('测试trade和stratege', async function() {
 	before(async function() {
 		global.realMode = false
 		global.realSim = false
+
 		//await initBTC_USD()
-		await initLTC_BTC()						
+		// await initLTC_BTC()						
 	})
 
 	async function initBTC_USD() {
@@ -103,6 +104,13 @@ describe('测试trade和stratege', async function() {
 		}
 	}
 
+	async function initBTC_BCH() {
+		global.realMode = true
+		exchangeIDs = ['okex', 'hitbtc']
+		trade = new Trade(exchangeIDs, new Hedge('BCH', 'BTC', true), 1000, 10, true)
+		await trade.init()
+	}
+
 	after(async function(){
 		trade.strategy.database.deleteData()
 	})
@@ -150,16 +158,30 @@ describe('测试trade和stratege', async function() {
     	})
   	})
 
+  	describe.only('测试BTC_BCH', async function() {  		
+    	it('循环交易', async function() {
+    		await initBTC_BCH()
+    		await simTrade(function() {
+    			return true
+    		})			    		    
+    	})
+  	})
+
   	async function simTrade(condition) {
 
   		if(typeof condition !== "function") throw 'now condition function setup'
 
 		while(true) {
+			await trade.updateOrderBook()  
         	await trade.strategy.doTrade()        
         	await trade.strategy.updateBalance()
         	if(condition()) {
         		break
         	}
         }
+	}
+
+	async function testTrade() {
+		global.realMode = true
 	}
 })

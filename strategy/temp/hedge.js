@@ -2,10 +2,12 @@ const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
-const maxAmountOnce = 1
+// const maxAmountOnce = 1
+const maxAmountOnce = 0.2
 const orderRate = 0.2
 const minProfit = 0.3
-const minMargin = 0.00002
+// const minMargin = 0.0001
+const minMargin = 0.01
 
 class Hedge extends Strategy {
     

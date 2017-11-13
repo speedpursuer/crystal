@@ -1,11 +1,11 @@
-const util = require ('../util/util.js')
+const util = require ('../../util/util.js')
 const log = require ('ololog').configure ({ locate: false })
 const ccxt = require ('ccxt')
 const _ = require('lodash');
 const Delay = 0
 
 class ExchangeSim {
-	constructor(id, info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72, debug=false){
+	constructor(info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72, debug=false){
 		this.orderList = {}
 		this.currID = 0
 		this.tryTime = 0
@@ -15,7 +15,7 @@ class ExchangeSim {
         this.frozenBalance = 0
         this.frozenStocks = 0
 
-        this.id = id
+        this.id = info.id
         this.crypto = crypto
         this.fee = info.fee        
         this.fiat = fiat == 'USD'? info.fiat: fiat
@@ -29,7 +29,7 @@ class ExchangeSim {
 
         this.debug = debug
 
-        this.ccxtExchange = new ccxt[id](info)
+        this.ccxtExchange = new ccxt[info.id](info)
 	}
 
 	async fetchOrderBook() {
@@ -62,7 +62,7 @@ class ExchangeSim {
 		}	
 	}
 
-	async fetchBalance() {
+	async fetchAccount() {
 		await util.sleep(Delay)
 		var balance = {}
 		balance[this.crypto] = {
@@ -73,8 +73,18 @@ class ExchangeSim {
 			free: this.balance,
 			used: this.frozenBalance			
 		}
-		if(this.debug) util.log.green(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`)            
+		this.log(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, "green")
 		return balance
+	}
+
+	async createLimitOrder(symbol, type, amount, price, balanceInfo) {
+		if(type == "buy") {
+			await this.createLimitBuyOrder(symbol, amount, price)
+		}else {
+			await this.createLimitSellOrder(symbol, amount, price)
+		}
+
+		return await this.cancelPendingOrders(symbol, balanceInfo)
 	}
 
 	async createLimitBuyOrder(symbol, amount, price) {
@@ -157,6 +167,53 @@ class ExchangeSim {
 		return {id: order.id}
 	}
 
+	async cancelPendingOrders(symbol, balanceInfo) {
+		this.log("开始轮询订单状态")
+                
+        var beforeAccount = balanceInfo
+        var retryTimes = 0        
+        var dealAmount = 0
+        var balanceChanged = 0
+        var hasPendingOrders = false
+        var completed = false            
+
+        while(retryTimes < 10) {   
+            retryTimes++
+            var orders = await this.fetchOpenOrders(symbol)
+            if(orders && orders.length > 0) {
+                hasPendingOrders = true
+                for(var order of orders) {
+                    await this.cancelOrder(order.id, symbol)                        
+                    await util.sleep(Interval)
+                }
+                continue
+            }
+
+            var newAccount = await this.fetchAccount()
+
+            // 没有挂单，但余额没变，需要重新刷新
+            if(!hasPendingOrders && beforeAccount.balance == newAccount.balance && beforeAccount.stocks == newAccount.stocks) {                
+                continue
+            }        
+
+            if(newAccount.frozenStocks == 0 && newAccount.frozenBalance == 0) {
+                dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
+                balanceChanged = newAccount.balance - beforeAccount.balance
+                completed = true
+                break
+            }         
+        }
+        if(completed) {
+        	this._status = true
+        	this._log("订单轮询处理完成", "green")
+        }else {
+        	this._status = false
+        	this._log("订单轮询处理失败", "red")
+        }        
+
+        return {amount, dealAmount, balanceChanged, completed}
+	}
+
 	async fetchOrder(orderID) {
 		await util.sleep(Delay)
 		return this.orderList[orderID]		
@@ -188,6 +245,10 @@ class ExchangeSim {
 			return false
 		}
 	}
+
+	log(message, color='white') {
+        if(this.debug) util.log[color](this.id, message)
+    }
 
 	getRandomArbitrary (min, max) {
         return Math.random() * (max - min) + min;

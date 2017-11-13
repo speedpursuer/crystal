@@ -620,8 +620,8 @@ function test29() {
 }
 
 function test30() {
-	util.log(util.timestampFromTime("2017-11-04 00:00:00"))
-	util.log(util.timestampFromTime("2017-11-08 00:00:00"))
+	util.log(util.timestampFromTime("2017-11-9 00:00:00"))
+	util.log(util.timestampFromTime("2017-11-13 00:00:00"))
 }
 
 function test31() {
@@ -647,8 +647,66 @@ function test31() {
 	util.log(r)
 }
 
+async function test32() {
+	class A {
+		constructor() {
+			this.notAvalable = false
+			this.bugTimes = 0
+		}
+
+		use() {
+			if(!this.notAvalable) {
+				util.log("used")
+			}else {
+				util.log("Not avalable")
+			}
+		}
+
+		bug() {
+			if(this.notAvalable) return
+			this.bugTimes++
+			if(this.bugTimes > 3) {
+				this.notAvalable = true		
+				var that = this
+				setTimeout(function(){
+					that.checkAvalability()
+				},5000)		
+			}
+		}
+
+		checkAvalability() {
+			this.notAvalable = false
+			this.bugTimes = 0
+		}
+	}
+
+	var a = new A()
+	while(true) {
+		await util.sleep(200)
+		a.use()
+		a.bug()
+	}
+}
+
+function test33() {
+	class Base{
+		constructor() {
+			util.log("base constructor")
+		}
+	}
+
+	class A extends Base {
+		constructor() {
+			super()
+			util.log("A constructor")
+		}
+	}
+
+	var a = new A()
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test31()
+  	test30()
 }
