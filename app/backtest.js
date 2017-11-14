@@ -6,7 +6,7 @@ const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 15000 / 2
+const total_budget = 43000 / 2
 const btc_price = 6600
 const ltc_price = 60
 const eth_price = 314
@@ -22,7 +22,9 @@ class Backtest {
 	}
 
 	async BTC() {	  
-	    var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro']
+	    var exchangeIDs = ['Poloniex', 'Bittrex', 'okex', 'hitbtc', 'huobipro']
+	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'hitbtc', 'huobipro']
+	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro']
 	    await this.backtest(exchangeIDs, "BTC", "USD", total_budget/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
 	}
 
@@ -45,19 +47,32 @@ class Backtest {
 
 	async XMR() {
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc']
-	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/xmr_price/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
+	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xmr_price/exchangeIDs.length)
 	}
 
 	async XRP() {	  
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp']
-	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/xrp_price/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
+	    await this.backtest(exchangeIDs, "XRP", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xrp_price/exchangeIDs.length)
 	}
 
 	async BCHTest(exchangeIDs) {
 		return await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
 	}
 
+	async BTCTest(exchangeIDs) {	  
+	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro']
+	    return await this.backtest(exchangeIDs, "BTC", "USD", total_budget/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
+	}
+
 	async batchBCHTest(list) {
+		await this.batchTest(list, this.BCHTest)
+	}
+
+	async batchBTCTest(list) {
+		await this.batchTest(list, "BTCTest")
+	}
+
+	async batchTest(list, test) {
 		global.realMode = false
 	    global.realSim = true
 	    try {              	        
@@ -65,7 +80,7 @@ class Backtest {
 
 	        for(var i=0; i<list.length; i++) {         
 	            for(var j=i+1; j<list.length; j++) {
-	                result.push(await this.BCHTest([list[i], list[j]]))
+	                result.push(await this[test]([list[i], list[j]]))
 	            }
 	        }
 
