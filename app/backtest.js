@@ -7,10 +7,12 @@ const ProgressBar = require('progress')
 const _ = require('lodash')
 
 const total_budget = 15000 / 2
-const btc_price = 6400
-const ltc_price = 55
-const eth_price = 303
-const bch_price = 445
+const btc_price = 6600
+const ltc_price = 60
+const eth_price = 314
+const bch_price = 1266
+const xmr_price = 122
+const xrp_price = 0.2
 
 class Backtest {
 	constructor(start, end, debug) {		
@@ -39,6 +41,16 @@ class Backtest {
 	    // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex']
 	    await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
+	}
+
+	async XMR() {
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc']
+	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/xmr_price/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
+	}
+
+	async XRP() {	  
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp']
+	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/xrp_price/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
 	}
 
 	async BCHTest(exchangeIDs) {
@@ -82,9 +94,8 @@ class Backtest {
 
 		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)			
 		timeline.sort(function(a, b){ return a - b})		
-		var orderBook = await database.getOrderBooks(market, trade.exchangesIDs, from, to)
-		
 		util.log.yellow(`---- 正在回测 - market: ${market}, exchanges: ${trade.exchangesIDs} 开始: ${util.timeFromTimestamp(_.head(timeline))}, 结束: ${util.timeFromTimestamp(_.last(timeline))} ----`)
+		var orderBook = await database.getOrderBooks(market, trade.exchangesIDs, from, to)
 
 		if(trade.strategy.before) {
 			trade.strategy.before()
