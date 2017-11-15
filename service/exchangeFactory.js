@@ -21,6 +21,7 @@ class ExchangeFactory {
             exchange.fee = info.fee   
             exchange.specialBuy = info.specialBuy             
             exchange.minTrade = info.minTrade
+            exchange.precision = info.precision
             exchange.timeout = 20000
             exchange.nonce = function(){ return this.milliseconds () }
             exchange.delay = 200

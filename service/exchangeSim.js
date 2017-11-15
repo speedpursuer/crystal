@@ -21,6 +21,7 @@ class ExchangeSim {
         this.fiat = fiat == 'USD'? info.fiat: fiat
         this.specialBuy = info.specialBuy
         this.minTrade = info.minTrade
+        this.precision = info.precision
         
         this.realOrderBook = realOrderBook
 
