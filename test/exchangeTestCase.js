@@ -15,7 +15,7 @@ describe.only('测试 exchange', async function() {
 		
 	})
 
-  	describe.only('模拟测试交易所API', async function() {  		
+  	describe('模拟测试交易所API', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
     		global.realMode = true
     		global.realSim = false
@@ -29,14 +29,14 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-	describe('真实测试交易所下单取消', async function() {  		
+	describe.only('真实测试交易所下单取消', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
     		var base = 'BTC', quote = 'USD'
     		var buyPrice = 1
     		var sellPrice = 9000
-    		var amount = 0.0248
-    		// var exchangeIDs = ['Bitfinex']
-    		var exchangeIDs = ['huobipro']
+    		var amount = 0.01
+
+    		var exchangeIDs = ['okex']
 
     		// var list = []
     		for(var id of exchangeIDs) {

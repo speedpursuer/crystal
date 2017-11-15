@@ -25,7 +25,7 @@ class Exchange {
         this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat,
         this.specialBuy = this.exchangeDelegate.specialBuy
         this.minTrade = this.exchangeDelegate.minTrade? this.exchangeDelegate.minTrade: defaultMinTrade
-        this.precision = this.exchangeDelegate.precision? this.exchangeDelegate.precision: defaultPrecision
+        this.precision = this.exchangeDelegate.amountPrecision? this.exchangeDelegate.amountPrecision: defaultPrecision
 
         this.slippage = slippage
         this.crypto = crypto
@@ -261,7 +261,7 @@ class Exchange {
     }
 
     async testOrder(buyPrice, sellPrice, amount) {
-        amount = _.round(amount, 3)
+        amount = _.floor(amount, this.precision)
         var result = {}
         try{
             await this.fetchOrderBook()
