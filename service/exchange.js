@@ -188,7 +188,7 @@ class Exchange {
             this.log(e, 'red')            
         }        
 
-        await util.sleep(this.delay)
+        await util.sleep(this.delay * 2)
         return await this.cancelPendingOrders(amount)  
     }
 
