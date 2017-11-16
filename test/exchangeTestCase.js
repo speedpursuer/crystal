@@ -19,24 +19,24 @@ describe.only('测试 exchange', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		global.realMode = true
     		global.realSim = false
-    		var exchange = new Exchange('huobipro', 'BTC', 'USD', 1, 3)
+    		var exchange = new Exchange('huobipro', 'BCH', 'BTC', 1, 3)
     		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()
             util.log(exchange.sell1Price)
             util.log(exchange.buy1Price)
-    		// util.log(await exchange.limitBuy(0.1))
-    		util.log(await exchange.limitSell(0.001))
+    		util.log(await exchange.limitBuy(0.1))
+    		// util.log(await exchange.limitSell(0.001))
     	})
   	})
 
-	describe.only('真实测试交易所下单取消', async function() {  		
+	describe.only('BCH真实测试交易所下单取消', async function() {  		
     	it('查询账户、订单簿、下单、取消', async function() {  
-    		var base = 'BTC', quote = 'USD'
-    		var buyPrice = 1
-    		var sellPrice = 9000
-    		var amount = 0.01
+    		var base = 'BCH', quote = 'BTC'
+    		var buyPrice = 0.01
+    		var sellPrice = 0.9
+    		var amount = 0.083
 
-    		var exchangeIDs = ['okex']
+    		var exchangeIDs = ['hitbtc']
 
     		// var list = []
     		for(var id of exchangeIDs) {
@@ -47,6 +47,25 @@ describe.only('测试 exchange', async function() {
     		// await Promise.all(list)
     	})
   	})
+
+    describe('BTC真实测试交易所下单取消', async function() {         
+        it('查询账户、订单簿、下单、取消', async function() {  
+            var base = 'BTC', quote = 'USD'
+            var buyPrice = 1
+            var sellPrice = 9000
+            var amount = 0.01
+
+            var exchangeIDs = ['hitbtc']
+
+            // var list = []
+            for(var id of exchangeIDs) {
+                var exchange = new Exchange(id, base, quote, 100, 2)
+                await exchange.testOrder(buyPrice, sellPrice, amount)
+                // list.push(exchange.testOrder(buyPrice, sellPrice, amount))
+            }
+            // await Promise.all(list)
+        })
+    })
 
   	describe('获取市场深度', async function() {  		
     	it('返回数量压缩不超过5', async function() {   

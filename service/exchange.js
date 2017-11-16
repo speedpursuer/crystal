@@ -268,13 +268,13 @@ class Exchange {
             this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
             await this.fetchAccount()        
             if(this.balance > 0) {
-                this.log("开始下买单", 'green')
+                this.log(`开始下买单, 数量: ${amount}, 金额: ${buyPrice}`, 'green')
                 result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
                 this.log(result)
-                result = await this.cancelPendingOrders(amount)
-                this.log(result)
+                // result = await this.cancelPendingOrders(amount)
+                // this.log(result)
             }else {
-                this.log("开始下卖单", 'blue')
+                this.log(`开始下卖单, 数量: ${amount}, 金额: ${sellPrice}`, 'blue')
                 result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
                 this.log(result)
                 result = await this.cancelPendingOrders(amount)
