@@ -10,8 +10,7 @@ async function main(){
         var exchangeIDs = ['hitbtc', 'bittrex', 'okex', 'poloniex']
         // var exchangeIDs = ['hitbtc', 'bitfinex', 'bittrex', 'poloniex', 'okex']    
         // var exchangeIDs = ['hitbtc', 'okex', 'poloniex', 'bittrex', 'huobipro']    
-        // var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"))
-        var trade = new Trade(exchangeIDs, new Hedge("BTC", "USD"))
+        var trade = new Trade(exchangeIDs, new Hedge("BCH", "BTC"))
         trade.run()      
     }catch (e) {        
         util.log.bright.yellow(e)

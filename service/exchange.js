@@ -176,10 +176,6 @@ class Exchange {
         }else {
             var orderPrice = _.floor(this.sellPrice, 8)
             var orderAmount = _.floor(amount, this.precision)
-<<<<<<< HEAD
-=======
-            // var orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
->>>>>>> origin/master
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, orderAmount, orderPrice)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }      
