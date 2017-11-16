@@ -5,13 +5,16 @@ const _ = require('lodash')
 const maxAmountOnce = 1
 const orderRate = 0.2
 const minProfit = 0.3
+const minMargin = 0.0001
 
 class Hedge extends Strategy {
     
-	async doTrade() {		
-        if(!await this.balance()) {
+	async doTrade() {		           
+        if(this.exchanges.length == 0) {
+            this.log("无对冲数据，请检查配置")
+        }else if(!await this.balance()) {
             await this.hedge()
-        }        
+        }   
 	}
 
 	async hedge() {
@@ -46,7 +49,8 @@ class Hedge extends Strategy {
 
             if(tradeAmount >= sellExchange.minTrade && 
                 tradeAmount >= buyExchange.minTrade &&
-                profit > minProfit/util.getExRate(this.fiat) && 
+                // profit > minProfit/util.getExRate(this.fiat) && 
+                margin > minMargin &&
                 points > this.bestPair.points) {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
             }                                               

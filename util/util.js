@@ -68,12 +68,12 @@ class Util{
 
 	getExRate(fiat) {
 		var fiats = {
-			"USD": 6.5807,
-			"USDT": 6.5807,
+			"USD": 6.64,
+			"USDT": 6.64,
 			"JPY": 0.0585,
 			"EUR": 7.7678,
-			"WUSD": 6.5807,
-			"BTC": 47000
+			"WUSD": 6.64,
+			"BTC": 43800
 		}
 		return fiats[fiat.toUpperCase()]
 	}

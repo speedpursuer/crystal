@@ -12,6 +12,8 @@ const ORDER_TYPE_SELL = 'sell'
 
 const slippage = 0.0005
 const defaultMinTrade = 0.005
+const defaultPrecision = 5
+
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -23,6 +25,8 @@ class Exchange {
         this.fiat = fiat == 'USD'? this.exchangeDelegate.fiat: fiat,
         this.specialBuy = this.exchangeDelegate.specialBuy
         this.minTrade = this.exchangeDelegate.minTrade? this.exchangeDelegate.minTrade: defaultMinTrade
+        this.precision = this.exchangeDelegate.amountPrecision? this.exchangeDelegate.amountPrecision: defaultPrecision
+
         this.slippage = slippage
         this.crypto = crypto
         this.debug = debug
@@ -114,7 +118,7 @@ class Exchange {
             )
 
         }catch(e){
-            util.log(e)
+            // util.log(e)
             this.orderBooks = null
         }
         // this.log(`延迟： ${(util.time - start} ms`, 'yellow')  
@@ -123,7 +127,7 @@ class Exchange {
 
     async fetchAccount() {
         try {
-            var account = await this.exchangeDelegate.fetchBalance()                        
+            var account = await this.exchangeDelegate.fetchBalance()             
             this.balance = account[this.fiat]? account[this.fiat].free: 0
             this.frozenBalance = account[this.fiat]? account[this.fiat].used: 0
             this.stocks = account[this.crypto]? account[this.crypto].free: 0
@@ -166,12 +170,12 @@ class Exchange {
 
         if(type == ORDER_TYPE_BUY) {
             var orderPrice = _.ceil(this.buyPrice, 8)
-            var orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 5): _.floor(amount, 3)
+            var orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), this.precision): _.floor(amount, this.precision)
             orderOpt = this.exchangeDelegate.createLimitBuyOrder(this.symbol, orderAmount, orderPrice)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
             var orderPrice = _.floor(this.sellPrice, 8)
-            var orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
+            var orderAmount = _.floor(amount, this.precision)
             orderOpt = this.exchangeDelegate.createLimitSellOrder(this.symbol, orderAmount, orderPrice)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }      
@@ -256,23 +260,26 @@ class Exchange {
     }
 
     async testOrder(buyPrice, sellPrice, amount) {
-        amount = _.round(amount, 3)
+        amount = _.floor(amount, this.precision)
         var result = {}
         try{
             await this.fetchOrderBook()
             this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
             this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
             await this.fetchAccount()        
-            this.log("开始下买单", 'green')
-            result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
-            this.log(result)
-            result = await this.cancelPendingOrders(amount)
-            this.log(result)
-            this.log("开始下卖单", 'blue')
-            result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
-            this.log(result)
-            result = await this.cancelPendingOrders(amount)
-            this.log(result)
+            if(this.balance > 0) {
+                this.log("开始下买单", 'green')
+                result = await this.exchangeDelegate.createLimitBuyOrder(this.symbol, amount, buyPrice)            
+                this.log(result)
+                result = await this.cancelPendingOrders(amount)
+                this.log(result)
+            }else {
+                this.log("开始下卖单", 'blue')
+                result = await this.exchangeDelegate.createLimitSellOrder(this.symbol, amount, sellPrice)        
+                this.log(result)
+                result = await this.cancelPendingOrders(amount)
+                this.log(result)    
+            }
         }catch(e){
             this.log(e, 'red')         
         }    
