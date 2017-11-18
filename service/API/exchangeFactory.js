@@ -1,24 +1,18 @@
 const ccxt = require ('ccxt')
 const ExhangeSim = require ('./exchangeSim')
-// const Bitfinex = require('./bitfinex')
 
-import Bitfinex from './Bitfinex';
-import ExchangeDelegate from './ExchangeDelegate';
+const ExchangeDelegate = require ('./exchangeDelegate')
 
-const classes = { 
-    bitfinex: Bitfinex
-}
 
 class ExchangeFactory {
-
-    createExchange(info, crypto, fiat, initBalance, initStocks) {    
+    createExchange(info, crypto, fiat, initBalance, initStocks) {
+        var exchangeDelegate = {}
         if(!global.realMode) {
-            exchange = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
-        }else if (classes[info.id]) {
-            return new classes[info.id](info)
+            exchangeDelegate = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
         }else {
-            return new ExchangeDelegate(info)
+            exchangeDelegate = new ExchangeDelegate(info)            
         }
+        return exchangeDelegate
     }
 
     // createExchange(eid, crypto, fiat, initBalance, initStocks) {    
@@ -50,4 +44,4 @@ class ExchangeFactory {
     // }
 }
 var exchangeFactory = new ExchangeFactory()
-module.exports = exchangeFactory;
+module.exports = exchangeFactory

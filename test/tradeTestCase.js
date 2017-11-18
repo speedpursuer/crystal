@@ -5,7 +5,7 @@ const util = require('../util/util.js')
 const _ = require('lodash')
 
 
-describe.only('测试trade和stratege', async function() {
+describe('测试trade和stratege', async function() {
 
 	var exchangeIDs
 	var trade 	
@@ -158,7 +158,7 @@ describe.only('测试trade和stratege', async function() {
     	})
   	})
 
-  	describe.only('测试BTC_BCH', async function() {  		
+  	describe('测试BTC_BCH', async function() {  		
     	it('循环交易', async function() {
     		await initBTC_BCH()
     		await simTrade(function() {

@@ -49,10 +49,12 @@ class Exchange {
     }
 
     set account(account) {
-        this.balance = account.balance
-        this.frozenBalance = account.frozenBalance
-        this.stocks = account.stocks
-        this.frozenStocks = account.frozenStocks
+        if(account) {
+            this.balance = account.balance
+            this.frozenBalance = account.frozenBalance
+            this.stocks = account.stocks
+            this.frozenStocks = account.frozenStocks
+        }
     }
 
     get totalBalance() {
@@ -105,11 +107,7 @@ class Exchange {
 
     get needMoreCoinForBuy() {
         return !this.specialBuy
-    }
-
-    logAccount() {
-        this.log(`balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, 'yellow')
-    }
+    }    
 
     limitBuy(amount) {  
         return this.placeLimitOrder(ORDER_TYPE_BUY, amount)
@@ -120,12 +118,12 @@ class Exchange {
     }   
 
     async fetchOrderBook() {
-        return await this.exchangeDelegate.fetchOrderBook(this.symbol)
+        this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
+        return this.orderBooks
     }
 
     async fetchAccount() {
         this.account = await this.exchangeDelegate.fetchAccount(this.symbol)
-        this.logAccount()
         return {
             balance: this.totalBalance,
             stocks: this.totalStocks
@@ -140,8 +138,6 @@ class Exchange {
         if(!this.buy1Price || !this.sell1Price) {
             throw "orderBooks not available"
         }
-
-        this.logAccount()
 
         var orderPrice, orderAmount
 

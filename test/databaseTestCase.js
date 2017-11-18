@@ -70,7 +70,7 @@ describe.skip('测试Database class', async function() {
     })
   })
 
-  describe.only('getOrderBooks', async function() {      
+  describe('getOrderBooks', async function() {      
     it('获取时间条数', async function() {
       var result = await database.getOrderBooksTimeline('1509021522000', '1509021545000')
       util.log(result.length)
