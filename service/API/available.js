@@ -1,13 +1,23 @@
 const util = require('../util/util.js')
+const EventEmitter = require('events')
 
 const maxFailureTimes = 2
 const retryInterval = 5 * 1000 //* 60 
 
-class Available {
+class Available extends EventEmitter {
 	constructor(checkMethod) {
-		this.isAvailable = true
+		this._isAvailable = true
 		this.failureTimes = 0
 		this.checkMethod = checkMethod
+	}
+
+	set isAvailable(value) {
+		this._isAvailable = value
+		this._nofify(value)
+	}
+
+	get isAvailable() {
+		return this._isAvailable
 	}
 	
 	checkin(isSuccess, reset=false) {
@@ -39,5 +49,9 @@ class Available {
 			this.checkin(false, true)
 		}
 	}
+
+	_nofify(flag) {
+        this.emit(flag? 'open': 'close')   
+    }
 }
 module.exports = Available

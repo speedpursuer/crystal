@@ -15,6 +15,7 @@ const math = require('mathjs')
 
 var ProgressBar = require('progress')
 
+const EventEmitter = require('events');
 
 class Test {
 	async run() {
@@ -705,8 +706,38 @@ function test33() {
 	var a = new A()
 }
 
+function test34() {
+	class ExchangeDelegate extends EventEmitter {
+		nofify(flag) {
+			this.emit(flag? 'open': 'close')
+		}
+
+		test() {
+			var that = this
+			setTimeout(function() {
+		      	that.nofify(false)
+		    }, 1000);
+		    setTimeout(function() {
+		      	that.nofify(true)
+		    }, 3000);
+		}
+	}
+
+	var delegate = new ExchangeDelegate()
+
+	delegate.on('open', function(){
+		util.log("delegate opend")
+	})
+
+	delegate.on('close', function(){
+		util.log("delegate closed")
+	})
+
+	delegate.test()
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test33()
+  	test34()
 }

@@ -1,37 +1,39 @@
 const ccxt = require ('ccxt')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
-const Available = require('../available.js')
-const Bitfinex = require('./Bitfinex')
+const Available = require('./available.js')
+const EventEmitter = require('events')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 const Interval = 200
 const ApiTimeout = 20000
 
-const apis = { 
-    bitfinex: Bitfinex
-}
 
-class ExchangeDelegate {
-	constructor(info) {
-        if (apis[info.id]) {
-            this.api = new apis[info.id](info)
-        }else {
-            this.api = new ccxt[info.id](info)    
-        }
+class ExchangeDelegate extends EventEmitter {
+	constructor(api) {      
+        this.api = api
+        this.id = api.id
+        this.available = new Available(this._checkAvailable)        
+        this.setupEvent()
+    }
 
-		this.id = info.id		
-		this.available = new Available(this._checkAvailable)
-		this.api.timeout = ApiTimeout
-        this.api.nonce = function(){ return this.milliseconds () }
-	}
+    setupEvent() {
+        var that = this
+        this.available.on('open', function(){
+            that._nofify('open')
+        })
 
-	get isAvailable() {
-		return this.available.isAvailable
-	}
-	
-	async fetchOrderBook(symbol) {
+        this.available.on('close', function(){
+            that._nofify('close')
+        }) 
+    }
+
+    get isAvailable() {
+        return this.available.isAvailable
+    }
+    
+    async fetchOrderBook(symbol) {
         var orderBooks = null
         try{          
             orderBooks = await util.promiseWithTimeout(                
@@ -49,39 +51,39 @@ class ExchangeDelegate {
             // orderBooks = null
         }
         return orderBooks
-	}
+    }
 
-	async fetchAccount(symbol) {
-		var data = null
-		try {
+    async fetchAccount(symbol) {
+        var data = null
+        try {
             data = await this.api.fetchBalance()                                      
             this._status = true
         }catch(e) {
-        	this._status = false
+            this._status = false
             this._log(e, 'red')
         }
         return this._parseAccount(data, symbol)
-	}
+    }
 
-	async createLimitOrder(symbol, type, amount, price, balanceInfo) {
-		try{
+    async createLimitOrder(symbol, type, amount, price, balanceInfo) {
+        try{
             this._logAccount(balanceInfo)
-        	if(type == ORDER_TYPE_BUY) {
-				await this.api.createLimitBuyOrder(symbol, amount, price)
-			}else {
-				await this.api.createLimitSellOrder(symbol, amount, price)	
-			}			
-			this._status = true			
+            if(type == ORDER_TYPE_BUY) {
+                await this.api.createLimitBuyOrder(symbol, amount, price)
+            }else {
+                await this.api.createLimitSellOrder(symbol, amount, price)  
+            }           
+            this._status = true         
         }catch(e){
-        	this._status = false
+            this._status = false
             this._log(e, 'red')            
         }
         await util.sleep(Interval)
-        return await this._cancelPendingOrders(symbol, amount, balanceInfo)		
-	}
+        return await this._cancelPendingOrders(symbol, amount, balanceInfo)     
+    }
 
-	async _cancelPendingOrders(symbol, amount, balanceInfo) {
-		this._log("开始轮询订单状态")
+    async _cancelPendingOrders(symbol, amount, balanceInfo) {
+        this._log("开始轮询订单状态")
                 
         var beforeAccount = balanceInfo
         var retryTimes = 0        
@@ -123,18 +125,18 @@ class ExchangeDelegate {
             }         
         }
         if(completed) {
-        	this._status = true
-        	this._log("订单轮询处理完成", "green")
+            this._status = true
+            this._log("订单轮询处理完成", "green")
         }else {
-        	this._status = false
-        	this._log("订单轮询处理失败", "red")
+            this._status = false
+            this._log("订单轮询处理失败", "red")
         }        
         return {amount, dealAmount, balanceChanged, completed}
-	}
+    }
 
-	_parseAccount(data, symbol) {
+    _parseAccount(data, symbol) {
         if(!data) return null
-		var pair = this._parseSymbol(symbol)
+        var pair = this._parseSymbol(symbol)
         var fiat = pair.fiat, crypto = pair.crypto
         var account = {
             balance: data[fiat]? data[fiat].free: 0,
@@ -143,10 +145,10 @@ class ExchangeDelegate {
             frozenStocks: data[crypto]? data[crypto].used: 0
         }
         this._logAccount(account)
-		return account
-	}
+        return account
+    }
 
-	async _fetchOpenOrders(symbol) {
+    async _fetchOpenOrders(symbol) {
         try {
             return await this.api.fetchOpenOrders(symbol)
         }catch(e) {
@@ -165,11 +167,11 @@ class ExchangeDelegate {
     }
 
     _parseSymbol(symbol) {
-    	var pair = _.split(symbol, '/')
-    	return {
-    		crypto: pair[0],
-    		fiat: pair[1]
-    	}
+        var pair = _.split(symbol, '/')
+        return {
+            crypto: pair[0],
+            fiat: pair[1]
+        }
     }
 
     _logAccount(account) {
@@ -180,16 +182,11 @@ class ExchangeDelegate {
         util.log[color](this.id, message)
     }
 
-    set _status(success) {
-        this.available.checkin(success)
-    }
-
     async _checkAvailable() {
         this._log(`自动检测 ${this.id} API可用性`)
         var account, cancelResult
         try{            
-            account = await this.fetchAccount()            
-            if(account)
+            account = await this.fetchAccount()
         }catch(e) {
             return false
         }
@@ -199,12 +196,13 @@ class ExchangeDelegate {
         return true
     }
 
-    // hasFrozenAsset(account) {
-	// 	if(account.frozenBalance > 0 || account.frozenStocks > 0) {
-	// 		return true
-	// 	}
-	// 	return false
-	// }
+    _nofify(status) {
+        this.emit(status)
+    }
+
+    set _status(success) {
+        this.available.checkin(success)
+    }
 }
 
 module.exports = ExchangeDelegate

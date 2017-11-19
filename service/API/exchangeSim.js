@@ -77,16 +77,6 @@ class ExchangeSim {
 		return balance
 	}
 
-	async createLimitOrder(symbol, type, amount, price, balanceInfo) {
-		if(type == "buy") {
-			await this.createLimitBuyOrder(symbol, amount, price)
-		}else {
-			await this.createLimitSellOrder(symbol, amount, price)
-		}
-
-		return await this.cancelPendingOrders(symbol, balanceInfo)
-	}
-
 	async createLimitBuyOrder(symbol, amount, price) {
 		this.currID++
 
@@ -167,53 +157,6 @@ class ExchangeSim {
 		return {id: order.id}
 	}
 
-	async cancelPendingOrders(symbol, balanceInfo) {
-		this.log("开始轮询订单状态")
-                
-        var beforeAccount = balanceInfo
-        var retryTimes = 0        
-        var dealAmount = 0
-        var balanceChanged = 0
-        var hasPendingOrders = false
-        var completed = false            
-
-        while(retryTimes < 10) {   
-            retryTimes++
-            var orders = await this.fetchOpenOrders(symbol)
-            if(orders && orders.length > 0) {
-                hasPendingOrders = true
-                for(var order of orders) {
-                    await this.cancelOrder(order.id, symbol)                        
-                    await util.sleep(Interval)
-                }
-                continue
-            }
-
-            var newAccount = await this.fetchAccount()
-
-            // 没有挂单，但余额没变，需要重新刷新
-            if(!hasPendingOrders && beforeAccount.balance == newAccount.balance && beforeAccount.stocks == newAccount.stocks) {                
-                continue
-            }        
-
-            if(newAccount.frozenStocks == 0 && newAccount.frozenBalance == 0) {
-                dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
-                balanceChanged = newAccount.balance - beforeAccount.balance
-                completed = true
-                break
-            }         
-        }
-        if(completed) {
-        	this._status = true
-        	this._log("订单轮询处理完成", "green")
-        }else {
-        	this._status = false
-        	this._log("订单轮询处理失败", "red")
-        }        
-
-        return {amount, dealAmount, balanceChanged, completed}
-	}
-
 	async fetchOrder(orderID) {
 		await util.sleep(Delay)
 		return this.orderList[orderID]		
@@ -265,5 +208,62 @@ class ExchangeSim {
             return false;
         }
     }
+
+    // async createLimitOrder(symbol, type, amount, price, balanceInfo) {
+	// 	if(type == "buy") {
+	// 		await this.createLimitBuyOrder(symbol, amount, price)
+	// 	}else {
+	// 		await this.createLimitSellOrder(symbol, amount, price)
+	// 	}
+
+	// 	return await this.cancelPendingOrders(symbol, balanceInfo)
+	// }
+
+    	// async cancelPendingOrders(symbol, balanceInfo) {
+	// 	this.log("开始轮询订单状态")
+                
+ //        var beforeAccount = balanceInfo
+ //        var retryTimes = 0        
+ //        var dealAmount = 0
+ //        var balanceChanged = 0
+ //        var hasPendingOrders = false
+ //        var completed = false            
+
+ //        while(retryTimes < 10) {   
+ //            retryTimes++
+ //            var orders = await this.fetchOpenOrders(symbol)
+ //            if(orders && orders.length > 0) {
+ //                hasPendingOrders = true
+ //                for(var order of orders) {
+ //                    await this.cancelOrder(order.id, symbol)                        
+ //                    await util.sleep(Interval)
+ //                }
+ //                continue
+ //            }
+
+ //            var newAccount = await this.fetchAccount()
+
+ //            // 没有挂单，但余额没变，需要重新刷新
+ //            if(!hasPendingOrders && beforeAccount.balance == newAccount.balance && beforeAccount.stocks == newAccount.stocks) {                
+ //                continue
+ //            }        
+
+ //            if(newAccount.frozenStocks == 0 && newAccount.frozenBalance == 0) {
+ //                dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
+ //                balanceChanged = newAccount.balance - beforeAccount.balance
+ //                completed = true
+ //                break
+ //            }         
+ //        }
+ //        if(completed) {
+ //        	this._status = true
+ //        	this._log("订单轮询处理完成", "green")
+ //        }else {
+ //        	this._status = false
+ //        	this._log("订单轮询处理失败", "red")
+ //        }        
+
+ //        return {amount, dealAmount, balanceChanged, completed}
+	// }
 }
 module.exports = ExchangeSim
