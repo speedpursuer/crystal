@@ -168,21 +168,21 @@ async function display() {
 		// Log(value)
 	})
 
-	Log("By Profit")
+	// Log("By Profit")
 
-	var byProfit = _.orderBy(pairs, 'profit', 'desc')
+	// var byProfit = _.orderBy(pairs, 'profit', 'desc')
 
-	_.forEach(byProfit, function(value, key) {
-		Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
-	})
+	// _.forEach(byProfit, function(value, key) {
+	// 	Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
+	// })
 
-	Log("By Times")
+	// Log("By Times")
 
-	var byTimes = _.orderBy(pairs, 'times', 'desc')
+	// var byTimes = _.orderBy(pairs, 'times', 'desc')
 
-	_.forEach(byTimes, function(value, key) {
-		Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
-	})
+	// _.forEach(byTimes, function(value, key) {
+	// 	Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
+	// })
 	
 	process.exit()
 }
