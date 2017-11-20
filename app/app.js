@@ -25,16 +25,16 @@ async function test(){
     try {              
         // var backtest = new Backtest("2017-11-01 00:00:00", "2017-11-08 00:00:00", false)
         // var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55", true)        
-        var backtest = new Backtest("2017-11-01 00:00:00", null, false)
+        var backtest = new Backtest("2017-11-15 00:00:00", null, false)
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
-        // await backtest.LTC()
-        // await backtest.XMR()
-        // await backtest.XRP()
+        // await backtest.LTC()        
 
-        // await backtest.BTC()
+        await backtest.BTC()
         await backtest.LTC()
-        // await backtest.ETH()
-        // await backtest.BCH()
+        await backtest.ETH()
+        await backtest.BCH()
+        await backtest.XMR()
+        await backtest.XRP()
         // await backtest.BCHTest(['Bitfinex', 'okex'])  
         // await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'Bitfinex'])     
         process.exit()
@@ -51,4 +51,4 @@ async function testBatch(){
     // await backtest.batchBTCTest(['Bitfinex', 'okex'])
 }
 
-main()
+test()
