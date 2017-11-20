@@ -1,9 +1,6 @@
 const util = require ('../util/util.js')
 const factory = require ('./API/exchangeFactory.js')
-const database = require('./database.js')
 const _ = require('lodash')
-const ccxt = require ('ccxt')
-const exchangeInfo = require('../config/exchangeInfo.js')
 
 const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'

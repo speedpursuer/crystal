@@ -6,7 +6,8 @@ const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 43000 / 2
+const total_budget = 376500 / 2
+// const total_budget = 37650 / 2
 const btc_price = 6600
 const ltc_price = 60
 const eth_price = 314
@@ -15,7 +16,7 @@ const xmr_price = 122
 const xrp_price = 0.2
 
 class Backtest {
-	constructor(start, end, debug) {		
+	constructor(start, end, debug) {
 		this.start = util.timestampFromTime(start)
 		this.end = util.timestampFromTime(end)
 		this.debug = debug
