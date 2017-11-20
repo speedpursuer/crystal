@@ -6,32 +6,32 @@ const EventEmitter = require('events')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
-const Interval = 200
-const ApiTimeout = 20000
 
 
 class ExchangeDelegate extends EventEmitter {
-	constructor(api) {      
+	constructor(api) {   
+        super()   
         this.api = api
         this.id = api.id
-        this.available = new Available(this._checkAvailable)        
-        this.setupEvent()
+        this.interval = api.interval
+        // this.available = new Available(this._checkAvailable)        
+        // this.setupEvent()
     }
 
-    setupEvent() {
-        var that = this
-        this.available.on('open', function(){
-            that._nofify('open')
-        })
+    // setupEvent() {
+    //     var that = this
+    //     this.available.on('open', function(){
+    //         that._nofify('open')
+    //     })
 
-        this.available.on('close', function(){
-            that._nofify('close')
-        }) 
-    }
+    //     this.available.on('close', function(){
+    //         that._nofify('close')
+    //     }) 
+    // }
 
-    get isAvailable() {
-        return this.available.isAvailable
-    }
+    // get isAvailable() {
+    //     return this.available.isAvailable
+    // }
     
     async fetchOrderBook(symbol) {
         var orderBooks = null
@@ -44,7 +44,7 @@ class ExchangeDelegate extends EventEmitter {
                     'depth': 5,
                     'size': 5,            
                 }),
-                10000
+                1000
             )
 
         }catch(e){
@@ -57,35 +57,35 @@ class ExchangeDelegate extends EventEmitter {
         var data = null
         try {
             data = await this.api.fetchBalance()                                      
-            this._status = true
+            // this._status = true
         }catch(e) {
-            this._status = false
+            // this._status = false
             this._log(e, 'red')
         }
         return this._parseAccount(data, symbol)
     }
 
-    async createLimitOrder(symbol, type, amount, price, balanceInfo) {
+    async createLimitOrder(symbol, type, amount, price, accountInfo) {
         try{
-            this._logAccount(balanceInfo)
+            this._logAccount(accountInfo)
             if(type == ORDER_TYPE_BUY) {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
             }else {
                 await this.api.createLimitSellOrder(symbol, amount, price)  
             }           
-            this._status = true         
+            // this._status = true         
         }catch(e){
-            this._status = false
+            // this._status = false
             this._log(e, 'red')            
         }
-        await util.sleep(Interval)
-        return await this._cancelPendingOrders(symbol, amount, balanceInfo)     
+        await util.sleep(this.interval)
+        return await this._cancelPendingOrders(symbol, amount, accountInfo)     
     }
 
-    async _cancelPendingOrders(symbol, amount, balanceInfo) {
+    async _cancelPendingOrders(symbol, amount, accountInfo) {
         this._log("开始轮询订单状态")
                 
-        var beforeAccount = balanceInfo
+        var beforeAccount = accountInfo
         var retryTimes = 0        
         var dealAmount = 0
         var balanceChanged = 0
@@ -93,14 +93,14 @@ class ExchangeDelegate extends EventEmitter {
         var completed = false            
 
         while(retryTimes < 10) {   
-            await util.sleep(Interval)  
+            await util.sleep(this.interval)  
             retryTimes++
             var orders = await this._fetchOpenOrders(symbol)
             if(orders && orders.length > 0) {
                 hasPendingOrders = true
                 for(var order of orders) {
                     await this._cancelOrder(order.id, symbol)                        
-                    await util.sleep(Interval)
+                    await util.sleep(this.interval)
                 }
                 continue
             }
@@ -125,10 +125,10 @@ class ExchangeDelegate extends EventEmitter {
             }         
         }
         if(completed) {
-            this._status = true
+            // this._status = true
             this._log("订单轮询处理完成", "green")
         }else {
-            this._status = false
+            // this._status = false
             this._log("订单轮询处理失败", "red")
         }        
         return {amount, dealAmount, balanceChanged, completed}
@@ -182,27 +182,27 @@ class ExchangeDelegate extends EventEmitter {
         util.log[color](this.id, message)
     }
 
-    async _checkAvailable() {
-        this._log(`自动检测 ${this.id} API可用性`)
-        var account, cancelResult
-        try{            
-            account = await this.fetchAccount()
-        }catch(e) {
-            return false
-        }
-        if(account.balance + account.stocks == 0 || orderBooks == null) {
-            return false
-        }
-        return true
-    }
+    // async _checkAvailable() {
+    //     this._log(`自动检测 ${this.id} API可用性`)
+    //     var account, cancelResult
+    //     try{            
+    //         account = await this.fetchAccount()
+    //     }catch(e) {
+    //         return false
+    //     }
+    //     if(account.balance + account.stocks == 0 || orderBooks == null) {
+    //         return false
+    //     }
+    //     return true
+    // }
 
-    _nofify(status) {
-        this.emit(status)
-    }
+    // _nofify(status) {
+    //     this.emit(status)
+    // }
 
-    set _status(success) {
-        this.available.checkin(success)
-    }
+    // set _status(success) {
+    //     this.available.checkin(success)
+    // }
 }
 
 module.exports = ExchangeDelegate

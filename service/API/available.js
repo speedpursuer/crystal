@@ -1,4 +1,4 @@
-const util = require('../util/util.js')
+const util = require('../../util/util.js')
 const EventEmitter = require('events')
 
 const maxFailureTimes = 2
@@ -6,6 +6,7 @@ const retryInterval = 5 * 1000 //* 60
 
 class Available extends EventEmitter {
 	constructor(checkMethod) {
+		super()
 		this._isAvailable = true
 		this.failureTimes = 0
 		this.checkMethod = checkMethod

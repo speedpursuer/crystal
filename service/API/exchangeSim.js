@@ -62,7 +62,7 @@ class ExchangeSim {
 		}	
 	}
 
-	async fetchAccount() {
+	async fetchBalance() {
 		await util.sleep(Delay)
 		var balance = {}
 		balance[this.crypto] = {
