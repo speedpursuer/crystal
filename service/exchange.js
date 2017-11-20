@@ -16,7 +16,7 @@ class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
         var info = util.getExchangeInfo(id)
 		
-        this.exchangeDelegate = factory.createExchange(info, crypto, fiat, initBalance, initStocks)  
+        this.exchangeDelegate = factory.createExchange(info, crypto, fiat, initBalance, initStocks, debug)  
 
         this.id = info.id
         this.fee = info.fee        
@@ -149,9 +149,11 @@ class Exchange {
             orderPrice = _.floor(this.sellPrice, 8)
             orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
-        }   
+        }
 
-        return await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
+        var result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
+        this.account = result.newAccount
+        return result.info
     }
 
     getOrderBooksData(path) {

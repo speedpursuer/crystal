@@ -9,11 +9,12 @@ const ORDER_TYPE_SELL = 'sell'
 
 
 class ExchangeDelegate extends EventEmitter {
-	constructor(api) {   
+	constructor(api, debug) {   
         super()   
         this.api = api
         this.id = api.id
         this.interval = api.interval
+        this.debug = debug
         // this.available = new Available(this._checkAvailable)        
         // this.setupEvent()
     }
@@ -86,6 +87,7 @@ class ExchangeDelegate extends EventEmitter {
         this._log("开始轮询订单状态")
                 
         var beforeAccount = accountInfo
+        var newAccount = beforeAccount
         var retryTimes = 0        
         var dealAmount = 0
         var balanceChanged = 0
@@ -105,7 +107,7 @@ class ExchangeDelegate extends EventEmitter {
                 continue
             }
 
-            var newAccount = await this.fetchAccount(symbol)
+            newAccount = await this.fetchAccount(symbol)
 
             // 获取账户失败
             if(!newAccount) {
@@ -131,7 +133,10 @@ class ExchangeDelegate extends EventEmitter {
             // this._status = false
             this._log("订单轮询处理失败", "red")
         }        
-        return {amount, dealAmount, balanceChanged, completed}
+        return {
+            info: {amount, dealAmount, balanceChanged, completed},
+            newAccount
+        }        
     }
 
     _parseAccount(data, symbol) {
@@ -179,7 +184,7 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     _log(message, color='white') {
-        util.log[color](this.id, message)
+        if(this.debug) util.log[color](this.id, message)
     }
 
     // async _checkAvailable() {

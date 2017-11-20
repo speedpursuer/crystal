@@ -12,7 +12,7 @@ class ExchangeFactory {
         this.exchangePoor = {}
     }
 
-    createExchange(info, crypto, fiat, initBalance, initStocks) { 
+    createExchange(info, crypto, fiat, initBalance, initStocks, debug=false) { 
         if(!this.exchangePoor[info.id]) {         
             var api
             if(!global.realMode) {
@@ -28,7 +28,7 @@ class ExchangeFactory {
                 api.timeout = 20000
                 api.nonce = function(){ return this.milliseconds () }    
             }
-            this.exchangePoor[info.id] = new ExchangeDelegate(api)
+            this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
         }
         return this.exchangePoor[info.id]
 

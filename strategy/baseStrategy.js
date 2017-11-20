@@ -30,8 +30,7 @@ class Strategy {
 			this.initBalance = this.currBalance
 			this.initStock = this.currStock
 			this.database = await database.initAccount(this.constructor.name, this.initBalance, this.initStock, _.keys(this._exchanges))
-		}		
-		util.log(this.currBalance, this.initBalance, this.currStock, this.initStock)
+		}
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock
 		
