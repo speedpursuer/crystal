@@ -3,7 +3,7 @@ const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
 
 
-describe('测试 exchange', async function() {	
+describe.only('测试 exchange', async function() {
 
 	this.timeout(50000)
 
@@ -19,26 +19,28 @@ describe('测试 exchange', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		global.realMode = true
     		global.realSim = false
-    		var exchange = new Exchange('Poloniex', 'BCH', 'BTC', 1, 3)
+    		var exchange = new Exchange('huobipro', 'BCH', 'BTC', 1, 3)
     		await exchange.fetchAccount()
     		await exchange.fetchOrderBook()
-    		// util.log(await exchange.limitBuy(0.1))
-    		util.log(await exchange.limitBuy(0.01))
+            util.log(exchange.sell1Price)
+            util.log(exchange.buy1Price)
+    		util.log(await exchange.limitBuy(0.1))
+    		// util.log(await exchange.limitSell(0.001))
     	})
   	})
 
-	describe('真实测试交易所下单取消', async function() {  		
+	describe.only('BCH真实测试交易所下单取消', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
-    		var sellPrice = 4900
-    		var amount = 0.181
-    		// var exchangeIDs = ['Bitfinex']
-    		var exchangeIDs = ['okex']
+    		var sellPrice = 0.9
+    		var amount = 0.083
+
+    		var exchangeIDs = ['hitbtc']
 
     		// var list = []
     		for(var id of exchangeIDs) {
-    			var exchange = new Exchange(id, base, quote, 0.1, 3)
+    			var exchange = new Exchange(id, base, quote, 100, 2)
     			await exchange.testOrder(buyPrice, sellPrice, amount)
     			// list.push(exchange.testOrder(buyPrice, sellPrice, amount))
     		}
@@ -46,31 +48,24 @@ describe('测试 exchange', async function() {
     	})
   	})
 
-  	describe('下单和取消', async function() {  		
-    	it('后确保所有订单都取消', async function() {  
+    describe('BTC真实测试交易所下单取消', async function() {
+        it('查询账户、订单簿、下单、取消', async function() {
+            var base = 'BTC', quote = 'USD'
+            var buyPrice = 1
+            var sellPrice = 9000
+            var amount = 0.01
 
-    		var list = ['okex', 'hitbtc']  
-    		// var list = ['Bitfinex', 'Poloniex', 'Bittrex']  
-			var result = []	
-			var exchanges = []  	
+            var exchangeIDs = ['hitbtc']
 
-			for(var id of list) {		
-				var exchange = new Exchange(id, 'BCH', 'BTC')
-				await exchange.fetchOrderBook()
-				util.log(`${exchange.id} buy: ${exchange.buy1Price} sell: ${exchange.sell1Price}`)
-				// exchanges.push(exchange)					
-				// result.push(exchange.testOrder())
-				// result.push(exchange.fetchOrderBook)
-			}	      		
-      				
-			// await Promise.all(result)
-
-			// for(var exchange of exchanges) {		
-			// 	exchange.frozenBalance.should.equal(0)
-			// 	exchange.frozenStocks.should.equal(0)
-			// }
-    	})
-  	})
+            // var list = []
+            for(var id of exchangeIDs) {
+                var exchange = new Exchange(id, base, quote, 100, 2)
+                await exchange.testOrder(buyPrice, sellPrice, amount)
+                // list.push(exchange.testOrder(buyPrice, sellPrice, amount))
+            }
+            // await Promise.all(list)
+        })
+    })
 
   	describe('获取市场深度', async function() {  		
     	it('返回数量压缩不超过5', async function() {   

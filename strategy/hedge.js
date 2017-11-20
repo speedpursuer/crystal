@@ -4,17 +4,17 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.2
-const minProfit = 0.3
-const minMargin = 0.00002
+const minMargin = 0.0001
+// const minProfit = 0.3
 
 class Hedge extends Strategy {
     
-	async doTrade() {	
+	async doTrade() {
         if(this.exchanges.length == 0) {
             this.log("无对冲数据，请检查配置")
         }else if(!await this.balance()) {
             await this.hedge()
-        }   
+        }
 	}
 
 	async hedge() {
@@ -28,7 +28,7 @@ class Hedge extends Strategy {
         }
 
         if(this.bestPair.points > 0) {
-            this.action(`存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 收益: ${this.bestPair.profit}, 差价: ${this.bestPair.margin}`)          
+            this.action(`对冲: 存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 收益: ${this.bestPair.profit}, 差价: ${this.bestPair.margin}`)
             var [buyResult, sellResult] = await Promise.all([                
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount),
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount)
@@ -67,7 +67,7 @@ class Hedge extends Strategy {
             for(var exchange of descList) {
                 var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
                 if(orderAmount >= exchange.minTrade) {
-                    this.action(`存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)                    
+                    this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)
                     return true
                 }
@@ -77,10 +77,45 @@ class Hedge extends Strategy {
             for(var exchange of ascList) {
                 var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
                 if(orderAmount >= exchange.minTrade) {
-                    this.action(`存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
+                    this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount)
                     return true
                 }
+            }
+        }
+        return false
+    }
+
+    async buyCoin() {
+        if(this.avgPrice < 0.11) {
+            var totalBalance = this.avgPrice * this.currStock + this.currBalance
+            if(this.currBalance/totalBalance  > 0.6) {
+                // await this.buyLowest("买入BCH", )
+            }
+        }
+    }
+
+    async sellHighest(message, amount) {
+        var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
+        for(var exchange of descList) {
+            var orderAmount = Math.min(amount, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
+            if(orderAmount >= exchange.minTrade) {
+                this.action(`${message}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
+                await exchange.limitSell(orderAmount)
+                return true
+            }
+        }
+        return false
+    }
+
+    async buyLowest(message, amount) {
+        var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
+        for(var exchange of ascList) {
+            var orderAmount = Math.min(amount, exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)
+            if(orderAmount >= exchange.minTrade) {
+                this.action(`${message}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
+                await exchange.limitBuy(orderAmount)
+                return true
             }
         }
         return false

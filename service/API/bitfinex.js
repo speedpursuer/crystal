@@ -1,7 +1,7 @@
 const ccxt = require ('ccxt')
 
 class Bitfinex {
-	constructor(info) {		
+	constructor(info) {
 		this.v1 = new ccxt['bitfinex'](info)
 		this.v2 = new ccxt['bitfinex2'](info)
 		this.id = 'bitfinex'
@@ -9,7 +9,7 @@ class Bitfinex {
 
 	set timeout(timeout) {
 		this.v1.timeout = timeout
-		this.v2.timeout = timeout		
+		this.v2.timeout = timeout
 	}
 
 	set nonce(nonce) {

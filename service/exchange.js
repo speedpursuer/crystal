@@ -11,6 +11,8 @@ const ORDER_TYPE_SELL = 'sell'
 
 const slippage = 0.0005
 const defaultMinTrade = 0.005
+const defaultPrecision = 5
+
 
 class Exchange {
 	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
@@ -23,6 +25,7 @@ class Exchange {
         this.fiat = fiat == 'USD'? info.fiat: fiat,
         this.specialBuy = info.specialBuy
         this.minTrade = info.minTrade? info.minTrade: defaultMinTrade
+        this.precision = info.amountPrecision? info.amountPrecision: defaultPrecision
         
         this.slippage = slippage
         this.crypto = crypto
@@ -143,11 +146,11 @@ class Exchange {
 
         if(type == ORDER_TYPE_BUY) {
             orderPrice = _.ceil(this.buyPrice, 8)
-            orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), 5): _.floor(amount, 3)
+            orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), this.precision): _.floor(amount, this.precision)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
             orderPrice = _.floor(this.sellPrice, 8)
-            orderAmount = this.needMoreCoinForBuy?_.floor(amount, 5): _.floor(amount, 3)
+            orderAmount = _.floor(amount, this.precision)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
 

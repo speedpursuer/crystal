@@ -47,18 +47,21 @@ class Strategy {
 	}
 
 	get condition() {
-		if(this.currProfit < -0.001) {
+		if(this.currProfit < -0.0001) {
 			util.log.red("账户异常，退出交易")
 			return false
 		}
 		return true
 	}
 
-	get currProfit() {		
-		var avgPrice = _.mean(_.map(this.exchanges, function(e) {
+	get currProfit() {
+		return this.balanceDiff + (this.stockDiff) * this.avgPrice
+	}
+
+	get avgPrice() {
+		return _.mean(_.map(this.exchanges, function(e) {
 		  	return e.sellPrice
 		}))
-		return this.balanceDiff + (this.stockDiff) * avgPrice
 	}
 
 	get exchanges() {

@@ -152,9 +152,36 @@ async function display() {
 	//   	return result
 	// }, {gap: 0})
 
+	var pairs = {}
+	_.forEach(details, function(value, key) {
+		var key = value.sell + "->" + value.buy
+		if(pairs[key]){
+			pairs[key].times += 1
+			pairs[key].profit += value.profit
+		}else{
+			pairs[key] = {
+				times: 1,
+				profit: value.profit,
+				key: key
+			}
+		}
+		// Log(value)
+	})
 
-	// _.forEach(details, function(value, key) {
-	// 	Log(value)  			
+	// Log("By Profit")
+
+	// var byProfit = _.orderBy(pairs, 'profit', 'desc')
+
+	// _.forEach(byProfit, function(value, key) {
+	// 	Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
+	// })
+
+	// Log("By Times")
+
+	// var byTimes = _.orderBy(pairs, 'times', 'desc')
+
+	// _.forEach(byTimes, function(value, key) {
+	// 	Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
 	// })
 	
 	process.exit()
