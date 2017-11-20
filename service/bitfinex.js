@@ -7,6 +7,16 @@ class Bitfinex {
 		this.id = 'bitfinex'
 	}
 
+	set timeout(timeout) {
+		this.v1.timeout = timeout
+		this.v2.timeout = timeout
+	}
+
+	set nonce(nonce) {
+		this.v1.nonce = nonce
+		this.v2.nonce = nonce
+	}
+
 	async fetchOrderBook (symbol, params = {}) {
 		return await this.v2.fetchOrderBook(symbol, params)
 	}
