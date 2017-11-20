@@ -7,7 +7,7 @@ async function main(){
     global.realMode = true
     global.realSim = true
 	try {          
-        var exchangeIDs = ['bittrex', 'okex', 'poloniex', 'huobipro', 'bitfinex']
+        var exchangeIDs = ['bittrex', 'okex', 'poloniex', 'bitfinex']
         // var exchangeIDs = ['hitbtc', 'bittrex', 'okex', 'poloniex']
         // var exchangeIDs = ['hitbtc', 'bitfinex', 'bittrex', 'poloniex', 'okex']    
         // var exchangeIDs = ['hitbtc', 'okex', 'poloniex', 'bittrex', 'huobipro']    
@@ -51,4 +51,4 @@ async function testBatch(){
     // await backtest.batchBTCTest(['Bitfinex', 'okex'])
 }
 
-test()
+main()
