@@ -9,7 +9,7 @@ const ORDER_TYPE_SELL = 'sell'
 
 
 class ExchangeDelegate extends EventEmitter {
-	constructor(api, debug) {   
+	constructor(api, debug=true) {
         super()   
         this.api = api
         this.id = api.id
@@ -35,9 +35,8 @@ class ExchangeDelegate extends EventEmitter {
     // }
     
     async fetchOrderBook(symbol) {
-        var orderBooks = null
         try{          
-            orderBooks = await util.promiseWithTimeout(                
+            return await util.promiseWithTimeout(
                 () => this.api.fetchOrderBook(symbol, {
                     'limit_bids': 5,
                     'limit_asks': 5,
@@ -47,23 +46,20 @@ class ExchangeDelegate extends EventEmitter {
                 }),
                 1000
             )
-
         }catch(e){
-            // orderBooks = null
+            return null
         }
-        return orderBooks
     }
 
     async fetchAccount(symbol) {
-        var data = null
         try {
-            data = await this.api.fetchBalance()                                      
+            return this._parseAccount(await this.api.fetchBalance(), symbol)
             // this._status = true
         }catch(e) {
             // this._status = false
             this._log(e, 'red')
+            return null
         }
-        return this._parseAccount(data, symbol)
     }
 
     async createLimitOrder(symbol, type, amount, price, accountInfo) {
@@ -72,7 +68,7 @@ class ExchangeDelegate extends EventEmitter {
             if(type == ORDER_TYPE_BUY) {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
             }else {
-                await this.api.createLimitSellOrder(symbol, amount, price)  
+                await this.api.createLimitSellOrder(symbol, amount, price)
             }           
             // this._status = true         
         }catch(e){
@@ -158,8 +154,8 @@ class ExchangeDelegate extends EventEmitter {
             return await this.api.fetchOpenOrders(symbol)
         }catch(e) {
             this._log(e, "red")
-        }   
-        return null
+            return null
+        }
     }
 
     async _cancelOrder(orderID, symbol) {
