@@ -7,7 +7,7 @@ const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
 const slippage = 0.0005
-const defaultMinTrade = 0.005
+const defaultMinTrade = 0.0005
 const defaultPrecision = 5
 
 
@@ -19,7 +19,7 @@ class Exchange {
 
         this.id = info.id
         this.fee = info.fee        
-        this.fiat = fiat == 'USD'? info.fiat: fiat,
+        this.fiat = fiat == 'USD'? info.fiat: fiat
         this.specialBuy = info.specialBuy
         this.minTrade = info.minTrade? info.minTrade: defaultMinTrade
         this.precision = info.amountPrecision? info.amountPrecision: defaultPrecision

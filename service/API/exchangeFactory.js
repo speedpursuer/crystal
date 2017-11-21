@@ -12,62 +12,45 @@ class ExchangeFactory {
         this.exchangePoor = {}
     }
 
-    createExchange(info, crypto, fiat, initBalance, initStocks, debug=false) { 
-        if(!this.exchangePoor[info.id]) {         
-            var api
-            if(!global.realMode) {
-                api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
-                api.interval = 0
-            }else {
+    createExchange(info, crypto, fiat, initBalance, initStocks, debug=false) {
+        let api
+        if(!global.realMode) {
+            api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)
+            api.interval = 0
+            return new ExchangeDelegate(api, debug)
+        }else {
+            if(!this.exchangePoor[info.id]) {
                 if (apis[info.id]) {
                     api = new apis[info.id](info)
                 }else {
-                    api = new ccxt[info.id](info)        
+                    api = new ccxt[info.id](info)
                 }
                 api.interval = 200
                 api.timeout = 20000
-                api.nonce = function(){ return this.milliseconds () }    
+                api.nonce = function(){ return this.milliseconds () }
+                this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
             }
-            this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
+            return this.exchangePoor[info.id]
         }
-        return this.exchangePoor[info.id]
-
-        // var exchangeDelegate = {}
-        // if(!global.realMode) {
-        //     exchangeDelegate = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
-        // }else {
-        //     exchangeDelegate = new ExchangeDelegate(info)            
+        // if(!this.exchangePoor[info.id]) {
+        //     var api
+        //     if(!global.realMode) {
+        //         api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)
+        //         api.interval = 0
+        //     }else {
+        //         if (apis[info.id]) {
+        //             api = new apis[info.id](info)
+        //         }else {
+        //             api = new ccxt[info.id](info)
+        //         }
+        //         api.interval = 200
+        //         api.timeout = 20000
+        //         api.nonce = function(){ return this.milliseconds () }
+        //     }
+        //     this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
         // }
-        // return exchangeDelegate
+        // return this.exchangePoor[info.id]
     }
-
-    // createExchange(eid, crypto, fiat, initBalance, initStocks) {    
-    //     var id = eid.toLowerCase()
-    //     var info = exchangeInfo[id]
-        
-    //     if(!info) throw id + " 没有找到"        
-
-    //     let exchange = {}
-    //     if(global.realMode) {
-    //         if(id == 'bitfinex') {
-    //             exchange = new Bitfinex(info)
-    //         }else {
-    //             exchange = new ccxt[id](info)    
-    //         }            
-    //         exchange.fiat = info.fiat
-    //         exchange.fee = info.fee   
-    //         exchange.specialBuy = info.specialBuy             
-    //         exchange.minTrade = info.minTrade
-    //         exchange.timeout = 20000
-    //         exchange.nonce = function(){ return this.milliseconds () }
-    //         exchange.delay = 200
-    //     }else {                
-    //         exchange = new ExhangeSim(id, info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)    
-    //         exchange.delay = 0
-    //     }
-        
-    //     return exchange
-    // }
 }
 var exchangeFactory = new ExchangeFactory()
 module.exports = exchangeFactory

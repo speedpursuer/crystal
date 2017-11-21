@@ -67,8 +67,8 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     async createLimitOrder(symbol, type, amount, price, accountInfo) {
+        this._logAccount(accountInfo)
         try{
-            this._logAccount(accountInfo)
             if(type == ORDER_TYPE_BUY) {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
             }else {

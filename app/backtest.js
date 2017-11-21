@@ -6,8 +6,7 @@ const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 376500 / 2
-// const total_budget = 37650 / 2
+const total_budget = 37650 / 2
 const btc_price = 6600
 const ltc_price = 60
 const eth_price = 314
