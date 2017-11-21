@@ -1,7 +1,7 @@
 const ccxt = require ('ccxt')
 const ExhangeSim = require ('./exchangeSim')
 const ExchangeDelegate = require ('./exchangeDelegate')
-const Bitfinex = require('./Bitfinex')
+const Bitfinex = require('./bitfinex')
 
 const apis = { 
     bitfinex: Bitfinex
