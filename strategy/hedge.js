@@ -48,8 +48,8 @@ class Hedge extends Strategy {
 
             // this.log(`findPair - sellExchange: ${sellExchange.id}, buyExchange: ${buyExchange.id}, profit: ${profit}, Earn: ${sellExchange.earnForSellOne}, Pay: ${buyExchange.payForBuyOne}, margin: ${margin}, tradeAmount: ${tradeAmount}`)
 
-            if(tradeAmount >= sellExchange.minTrade && 
-                tradeAmount >= buyExchange.minTrade &&
+            if(sellExchange.canSellSuch(tradeAmount) &&
+                buyExchange.canBuySuch(tradeAmount) &&
                 margin > minMargin &&
                 points > this.bestPair.points) {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
@@ -66,7 +66,7 @@ class Hedge extends Strategy {
             var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
                 var orderAmount = Math.min(this.stockDiff, this.maxAmountCanSell(exchange), exchange.buy1Amount * orderRate, maxAmountOnce)
-                if(orderAmount >= exchange.minTrade) {
+                if(exchange.canSellSuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)
                     return true
@@ -76,7 +76,7 @@ class Hedge extends Strategy {
             var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
             for(var exchange of ascList) {
                 var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
-                if(orderAmount >= exchange.minTrade) {
+                if(exchange.canBuySuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount)
                     return true

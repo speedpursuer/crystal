@@ -9,6 +9,7 @@ const ORDER_TYPE_SELL = 'sell'
 const slippage = 0.0005
 const defaultMinTrade = 0.0005
 const defaultPrecision = 5
+const defaultMinOrderSize = 0.0001
 
 
 class Exchange {
@@ -21,8 +22,9 @@ class Exchange {
         this.fee = info.fee        
         this.fiat = fiat == 'USD'? info.fiat: fiat
         this.specialBuy = info.specialBuy
-        this.minTrade = info.minTrade? info.minTrade: defaultMinTrade
-        this.precision = info.amountPrecision? info.amountPrecision: defaultPrecision
+        this.minTrade = this.getValue(info.minTrade, defaultMinTrade)
+        this.precision = this.getValue(info.amountPrecision, defaultPrecision)
+        this.minOrderSize = this.getValue(info.minOrderSize, defaultMinOrderSize)
         
         this.slippage = slippage
         this.crypto = crypto
@@ -34,6 +36,10 @@ class Exchange {
         this.frozenStocks = 0
         this.orderBooks = null
 	}
+
+	getValue(value, defaultValue) {
+	    return value? value: defaultValue
+    }
 
     get symbol() {
         return `${this.crypto}/${this.fiat}`
@@ -107,7 +113,15 @@ class Exchange {
 
     get needMoreCoinForBuy() {
         return !this.specialBuy
-    }    
+    }
+
+    canBuySuch(amount) {
+        return this.payForBuyOne * amount >= this.minOrderSize && amount >= this.minTrade
+    }
+
+    canSellSuch(amount) {
+        return this.earnForSellOne * amount >= this.minOrderSize && amount >= this.minTrade
+    }
 
     limitBuy(amount) {  
         return this.placeLimitOrder(ORDER_TYPE_BUY, amount)
@@ -139,7 +153,7 @@ class Exchange {
             throw "orderBooks not available"
         }
 
-        var orderPrice, orderAmount
+        var orderPrice, orderAmount, result
 
         if(type == ORDER_TYPE_BUY) {
             orderPrice = _.ceil(this.buyPrice, 8)
@@ -151,7 +165,7 @@ class Exchange {
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
 
-        var result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
+        result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
         this.account = result.newAccount
         return result.info
     }
