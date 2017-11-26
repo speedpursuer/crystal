@@ -1,58 +1,63 @@
 const util = require('../../util/util.js')
 const EventEmitter = require('events')
 
-const maxFailureTimes = 2
-const retryInterval = 5 * 1000 //* 60 
+const failureInterval = 1000 * 60
+const maxFailureTimes = 4
+const retryInterval = 3000 * 60
 
 class Available extends EventEmitter {
-	constructor(checkMethod) {
-		super()
-		this._isAvailable = true
+	constructor() {
+	    super()
+		this.isAvailable = true
 		this.failureTimes = 0
-		this.checkMethod = checkMethod
+		this.lastFailureTime = util.timestamp
 	}
 
-	set isAvailable(value) {
-		this._isAvailable = value
-		this._nofify(value)
+    reportIssue(isFatal=false) {
+	    if(isFatal) {
+	        this._reportFatal()
+        }else {
+	        this._reportIssue()
+        }
+    }
+
+    reportCheck(fixed) {
+        if(fixed) {
+            this.isAvailable = true
+            this.failureTimes = 0
+        }else {
+            this.isAvailable = false
+            this.failureTimes++
+            this._checkLater()
+        }
+    }
+
+	_reportIssue() {
+	    if(!this.isAvailable) return
+        if(util.timestamp - this.lastFailureTime < failureInterval) {
+            this.failureTimes++
+            if(this.failureTimes > maxFailureTimes) {
+                this.isAvailable = false
+                this._checkLater()
+            }
+        }else {
+            this.failureTimes = 1
+            this.lastFailureTime = util.timestamp
+        }
 	}
 
-	get isAvailable() {
-		return this._isAvailable
-	}
-	
-	checkin(isSuccess, reset=false) {
-		if(!this.isAvailable && !reset) return
-		this.failureTimes = isSuccess? 0: this.failureTimes+1
-		if(this.failureTimes > maxFailureTimes) {
-			this.isAvailable = false
-			var that = this
-			setTimeout(function(){
-				that.checkAvailable()
-			}, retryInterval * (this.failureTimes - maxFailureTimes))	
-		}
-		if(reset && isSuccess) {
-			this.isAvailable = true
-		}
-	}
+	_reportFatal() {
+        if(!this.isAvailable) return
+        this.isAvailable = false
+	    this.failureTimes = Math.max(this.failureTimes, maxFailureTimes) + 1
+        this._checkLater()
+    }
 
-	fatal() {
-		this.failureTimes = maxFailureTimes
-		this.checkin(false)
-	}
-	
-	checkAvailable() {
-		if(this.checkMethod()) {
-			util.log("checkAvailable good")
-			this.checkin(true, true)
-		}else {
-			util.log("checkAvailable bad")
-			this.checkin(false, true)
-		}
-	}
-
-	_nofify(flag) {
-        this.emit(flag? 'open': 'close')   
+    _checkLater() {
+        var that = this
+        setTimeout(function(){
+            that.emit("check")
+        }, retryInterval * (this.failureTimes - maxFailureTimes))
     }
 }
 module.exports = Available

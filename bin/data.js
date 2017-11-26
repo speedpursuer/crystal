@@ -49,7 +49,7 @@ async function display() {
 	var key
 
 	if (process.argv.length < 3) {
-		var keys = (await client.keysAsync('Hedge*')).sort()
+		var keys = (await client.keysAsync('*')).sort()
 		key = keys[keys.length-1]
 	}else if (process.argv.length == 3){
 		key = process.argv.slice(2)
@@ -152,26 +152,25 @@ async function display() {
 	//   	return result
 	// }, {gap: 0})
 
-	var pairs = {}
-	_.forEach(details, function(value, key) {
-		var key = value.sell + "->" + value.buy
-		if(pairs[key]){
-			pairs[key].times += 1
-			pairs[key].profit += value.profit
-		}else{
-			pairs[key] = {
-				times: 1,
-				profit: value.profit,
-				key: key
-			}
-		}
-		// Log(value)
-	})
+	// var pairs = {}
+	// _.forEach(details, function(value, key) {
+	// 	var key = value.sell + "->" + value.buy
+	// 	if(pairs[key]){
+	// 		pairs[key].times += 1
+	// 		pairs[key].profit += value.profit
+	// 	}else{
+	// 		pairs[key] = {
+	// 			times: 1,
+	// 			profit: value.profit,
+	// 			key: key
+	// 		}
+	// 	}
+	// })
 
 	// Log("By Profit")
-
+    //
 	// var byProfit = _.orderBy(pairs, 'profit', 'desc')
-
+    //
 	// _.forEach(byProfit, function(value, key) {
 	// 	Log(`${value.key}, times: ${value.times}, profit: ${value.profit}`)
 	// })

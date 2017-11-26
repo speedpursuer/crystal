@@ -2,37 +2,23 @@ const ccxt = require ('ccxt')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const Available = require('./available.js')
-const EventEmitter = require('events')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
 
-class ExchangeDelegate extends EventEmitter {
+class ExchangeDelegate {
 	constructor(api, debug=true) {
-        super()   
         this.api = api
         this.id = api.id
         this.interval = api.interval
         this.debug = debug
-        // this.available = new Available(this._checkAvailable)        
-        // this.setupEvent()
+        this._configAvailable()
     }
 
-    // setupEvent() {
-    //     var that = this
-    //     this.available.on('open', function(){
-    //         that._nofify('open')
-    //     })
-
-    //     this.available.on('close', function(){
-    //         that._nofify('close')
-    //     }) 
-    // }
-
-    // get isAvailable() {
-    //     return this.available.isAvailable
-    // }
+    get isAvailable() {
+        return this.available.isAvailable
+    }
     
     async fetchOrderBook(symbol) {
         try{          
@@ -54,10 +40,8 @@ class ExchangeDelegate extends EventEmitter {
     async fetchAccount(symbol) {
         try {
             return this._parseAccount(await this.api.fetchBalance(), symbol)
-            // this._status = true
         }catch(e) {
-            // this._status = false
-            this._log(e, 'red')
+            this._reportIssue(e)
             return null
         }
     }
@@ -69,11 +53,9 @@ class ExchangeDelegate extends EventEmitter {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
             }else {
                 await this.api.createLimitSellOrder(symbol, amount, price)
-            }           
-            // this._status = true         
+            }
         }catch(e){
-            // this._status = false
-            this._log(e, 'red')            
+            this._reportIssue(e)
         }
         await util.sleep(this.interval)
         return await this._cancelPendingOrders(symbol, amount, accountInfo)     
@@ -123,11 +105,9 @@ class ExchangeDelegate extends EventEmitter {
             }         
         }
         if(completed) {
-            // this._status = true
             this._log("订单轮询处理完成", "green")
         }else {
-            // this._status = false
-            this._log("订单轮询处理失败", "red")
+            this._reportIssue("订单轮询处理失败", true)
         }        
         return {
             info: {amount, dealAmount, balanceChanged, completed},
@@ -153,7 +133,7 @@ class ExchangeDelegate extends EventEmitter {
         try {
             return await this.api.fetchOpenOrders(symbol)
         }catch(e) {
-            this._log(e, "red")
+            this._reportIssue(e)
             return null
         }
     }
@@ -183,27 +163,31 @@ class ExchangeDelegate extends EventEmitter {
         if(this.debug) util.log[color](this.id, message)
     }
 
-    // async _checkAvailable() {
-    //     this._log(`自动检测 ${this.id} API可用性`)
-    //     var account, cancelResult
-    //     try{            
-    //         account = await this.fetchAccount()
-    //     }catch(e) {
-    //         return false
-    //     }
-    //     if(account.balance + account.stocks == 0 || orderBooks == null) {
-    //         return false
-    //     }
-    //     return true
-    // }
+    _reportIssue(err, isFatal=false) {
+        this._log(err, 'red')
+        this.available.reportIssue(isFatal)
+    }
 
-    // _nofify(status) {
-    //     this.emit(status)
-    // }
+    _configAvailable() {
+        var that = this
+        this.available = new Available()
+        this.available.on('check', function(){
+            that._checkAvailable()
+        })
+    }
 
-    // set _status(success) {
-    //     this.available.checkin(success)
-    // }
+    async _checkAvailable() {
+        this._log(`自动检测 ${this.id} API可用性`)
+        try{
+            if(await this.api.fetchBalance()) {
+                this._log(`API恢复正常`, "green")
+                return this.available.reportCheck(true)
+            }
+        }catch(e) {
+        }
+        this._log(`AIP恢复失败`, "red")
+        this.available.reportCheck(false)
+    }
 }
 
 module.exports = ExchangeDelegate

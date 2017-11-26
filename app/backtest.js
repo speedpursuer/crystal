@@ -2,6 +2,7 @@ const util = require('../util/util.js')
 const database = require('../service/database.js')
 const Hedge = require('../strategy/hedge.js')
 const Arbitrage = require('../strategy/arbitrage.js')
+const Sta = require('../strategy/sta.js')
 const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
@@ -21,8 +22,9 @@ class Backtest {
 		this.debug = debug
 	}
 
-	async BTC() {	  
-	    var exchangeIDs = ['Poloniex', 'Bittrex', 'okex', 'hitbtc', 'huobipro']
+	async BTC() {
+        // var exchangeIDs = ['okex', 'huobipro']
+	    var exchangeIDs = ['Poloniex', 'Bittrex', 'okex', 'Bitfinex', 'huobipro']
 	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'hitbtc', 'huobipro']
 	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro']
 	    await this._BTC(exchangeIDs)
@@ -34,7 +36,9 @@ class Backtest {
 	}
 
 	async ETH() {
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'huobipro']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
 	    await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
 	}
 
@@ -93,10 +97,11 @@ class Backtest {
 
 	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
-		// var trade = new Trade(exchangeIDs, new Arbitrage(base, quote), initBalance, initStocks)		
-		var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)		
-		await trade.init()					
-		
+		// var trade = new Trade(exchangeIDs, new Arbitrage(base, quote), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
+        var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+		await trade.init()
+
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market		
 
 		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)			

@@ -29,7 +29,8 @@ class Database {
 
     async initAccount(strategyName, totalBalance, totalStock, exchanges) {
         var time = util.now
-        this.key = `${strategyName}, ${time}`
+        this.key = `${time}`
+        // this.key = `${strategyName}, ${time}`
         var data = {
             exchanges: exchanges,
             initTotalBalance: totalBalance,

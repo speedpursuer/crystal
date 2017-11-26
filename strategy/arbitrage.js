@@ -28,8 +28,12 @@ class Arbitrage extends Strategy {
     
 	async doTrade() {
 
-        var posDiff = this.exchanges['bitfinex'].earnForSell - this.exchanges['okex'].payForBuy
-        var negDiff = this.exchanges['okex'].earnForSell - this.exchanges['bitfinex'].payForBuy
+        if(_.size(this.exchanges) != 2) return
+
+        var list = _.values(this.exchanges)
+
+        var posDiff = list[0].earnForSellOne - list[1].payForBuyOne
+        var negDiff = list[1].earnForSellOne - list[0].payForBuyOne
 
         this.posDiff.push(posDiff)
         this.negDiff.push(negDiff)
