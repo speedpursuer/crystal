@@ -178,5 +178,27 @@ class Exchange {
     log(message, color='white') {
         if(this.debug) util.log[color](this.id, message)
     }
+
+    async testOrder(buyPrice, sellPrice, amount) {
+        amount = _.floor(amount, this.precision)
+        var result = {}
+        try{
+            await this.fetchOrderBook()
+            this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
+            this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
+            await this.fetchAccount()
+            if(this.balance > 0) {
+                this.log(`开始下买单, 数量: ${amount}, 金额: ${buyPrice}`, 'green')
+                result = await this.exchangeDelegate.createLimitOrder(this.symbol, 'buy', amount, buyPrice, this.account)
+                this.log(result)
+            }else {
+                this.log(`开始下卖单, 数量: ${amount}, 金额: ${sellPrice}`, 'blue')
+                result = await this.exchangeDelegate.createLimitOrder(this.symbol, 'sell', amount, sellPrice, this.account)
+                this.log(result)
+            }
+        }catch(e){
+            this.log(e, 'red')
+        }
+    }
 }
 module.exports = Exchange

@@ -1,17 +1,18 @@
 const util = require('../util/util.js')
 const database = require('../service/database.js')
 const Hedge = require('../strategy/hedge.js')
+const Hedge_new = require('../strategy/hedge_new')
 const Arbitrage = require('../strategy/arbitrage.js')
 const Sta = require('../strategy/sta.js')
 const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 37650 / 2
-const btc_price = 6600
-const ltc_price = 60
-const eth_price = 314
-const bch_price = 1266
+const total_budget = 227000 / 6
+const btc_price = 11300
+const ltc_price = 99
+const eth_price = 465
+const bch_price = 1519
 const xmr_price = 122
 const xrp_price = 0.2
 
@@ -23,10 +24,9 @@ class Backtest {
 	}
 
 	async BTC() {
-        // var exchangeIDs = ['okex', 'huobipro']
-	    var exchangeIDs = ['Poloniex', 'Bittrex', 'okex', 'Bitfinex', 'huobipro']
-	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'hitbtc', 'huobipro']
-	    // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro']
+        var exchangeIDs = ['okex', 'huobipro', 'Quoine']
+        // var exchangeIDs = ['Poloniex', 'huobipro', 'Quoine', 'zb', 'Binance']
+        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb']
 	    await this._BTC(exchangeIDs)
 	}
 
@@ -36,17 +36,24 @@ class Backtest {
 	}
 
 	async ETH() {
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro']
+        var exchangeIDs = ['hitbtc', 'okex', 'binance', 'huobipro', 'Bittrex', 'Bitfinex']
+        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro', 'okex', 'hitbtc', 'Binance']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'huobipro']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-	    await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
+        // await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
+        await this._ETH(exchangeIDs)
 	}
 
 	async BCH() {
 	    // var exchangeIDs = ['hitbtc', 'okex']
 	    // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'huobipro']
+        var exchangeIDs = ['Bitfinex', 'huobipro', 'Poloniex', 'Bittrex', 'okex', 'Binance']
+        // var exchangeIDs = ['Bittrex', 'okex', 'Binance']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'Binance', 'huobipro', 'hitbtc']
 	    await this._BCH(exchangeIDs)
 	}
 
@@ -63,6 +70,10 @@ class Backtest {
 	async _BCH(exchangeIDs) {
 		return await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
 	}
+
+    async _ETH(exchangeIDs) {
+        await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
+    }
 
 	async _BTC(exchangeIDs) {
 	    return await this.backtest(exchangeIDs, "BTC", "USD", total_budget/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)

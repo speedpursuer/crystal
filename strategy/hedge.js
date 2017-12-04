@@ -2,9 +2,9 @@ const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
-const maxAmountOnce = 1
+const maxAmountOnce = 0.5
 const orderRate = 0.2
-const minMargin = 0.0001
+const minMargin = 10
 const stockLeft = 0
 
 
@@ -18,8 +18,8 @@ class Hedge extends Strategy {
         }
 	}
 
-	async hedge() {
-		this.bestPair = {points: 0}
+    async hedge() {
+        this.bestPair = {points: 0}
 
         for(var i in this.exchanges) {
             for(var j in this.exchanges) {
@@ -30,15 +30,15 @@ class Hedge extends Strategy {
 
         if(this.bestPair.points > 0) {
             this.action(`对冲: 存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 收益: ${this.bestPair.profit}, 差价: ${this.bestPair.margin}`)
-            var [buyResult, sellResult] = await Promise.all([                
+            var [buyResult, sellResult] = await Promise.all([
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount),
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount)
             ])
-            await this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)            
+            await this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)
         }
     }
 
-    findPair(sellExchange, buyExchange) {  
+    findPair(sellExchange, buyExchange) {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
             var tradeAmount = Math.min(this.maxAmountCanSell(sellExchange), buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
@@ -53,7 +53,7 @@ class Hedge extends Strategy {
                 margin > minMargin &&
                 points > this.bestPair.points) {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
-            }                                               
+            }
         }
     }
 

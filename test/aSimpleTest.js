@@ -622,7 +622,7 @@ function test29() {
 
 function test30() {
 	// util.log(util.timestampFromTime("2017-11-09 00:00:00"))
-	util.log(util.timestampFromTime("2017-11-24 00:00:00"))
+	util.log(util.timestampFromTime("2017-11-30 00:00:00"))
 }
 
 function test31() {
@@ -734,6 +734,10 @@ function test34() {
 	})
 
 	delegate.test()
+}
+
+function test35() {
+    util.log(_.indexOf([1, 2, 3], 4))
 }
 
 if (require.main === module) {

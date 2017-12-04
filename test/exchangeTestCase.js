@@ -15,21 +15,26 @@ describe.only('测试 exchange', async function() {
 		
 	})
 
-  	describe('模拟测试交易所API', async function() {  		
+  	describe.only('模拟测试交易所API', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		global.realMode = true
     		global.realSim = false
-    		var exchange = new Exchange('huobipro', 'BCH', 'BTC', 1, 3)
-    		await exchange.fetchAccount()
-    		await exchange.fetchOrderBook()
-            util.log(exchange.sell1Price)
-            util.log(exchange.buy1Price)
-    		util.log(await exchange.limitBuy(0.1))
-    		// util.log(await exchange.limitSell(0.001))
+
+            var base = 'BTC', quote = 'USD'
+            var exchangeIDs = ['okex', 'huobipro', 'Quoine']
+
+            for(var id of exchangeIDs) {
+                var exchange = new Exchange(id, base, quote, 100, 2)
+                await exchange.fetchAccount()
+                await exchange.fetchOrderBook()
+                util.log(exchange.sell1Price)
+                util.log(exchange.buy1Price)
+                // util.log(await exchange.limitBuy(0.1))
+            }
     	})
   	})
 
-	describe.only('BCH真实测试交易所下单取消', async function() {
+	describe('BCH真实测试交易所下单取消', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
@@ -48,14 +53,15 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-    describe('BTC真实测试交易所下单取消', async function() {
+    describe.only('BTC真实测试交易所下单取消', async function() {
         it('查询账户、订单簿、下单、取消', async function() {
             var base = 'BTC', quote = 'USD'
             var buyPrice = 1
-            var sellPrice = 9000
+            var sellPrice = 20000
             var amount = 0.01
 
-            var exchangeIDs = ['hitbtc']
+            var exchangeIDs = ['huobipro']
+            // var exchangeIDs = ['okex', 'huobipro', 'Quoine']
 
             // var list = []
             for(var id of exchangeIDs) {

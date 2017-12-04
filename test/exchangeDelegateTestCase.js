@@ -9,19 +9,21 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var symbol = "BCH/BTC"
+    var symbol = "BTC/USD"
+    // var symbol = "BCH/BTC"
     var balance = {}
 
 	before(async function() {
-        global.realMode = false
-    	var info = util.getExchangeInfo('okex')
+        global.realMode = true
+    	var info = util.getExchangeInfo('quoine')
         balance = {
             balance: 10,
             frozenBalance: 0,
             stocks: 100,
             frozenStocks: 0
         }
-        exchangeDelegate = factory.createExchange(info, "BCH", "BTC", balance.balance, balance.stocks, true)
+        exchangeDelegate = factory.createExchange(info, "BTC", "USD", balance.balance, balance.stocks, true)
+        // exchangeDelegate = factory.createExchange(info, "BCH", "BTC", balance.balance, balance.stocks, true)
 	})
 
 	beforeEach(async function(){
@@ -53,7 +55,7 @@ describe('单元测试ExchangeDelegate', async function() {
         })
     })
 
-    describe.only('异常处理', async function() {
+    describe('异常处理', async function() {
         it('模拟_fetchOpenOrders抛出异常，报错后重试成功', async function() {
             await exchangeDelegate._fetchOpenOrders(symbol)
             exchangeDelegate.isAvailable.should.equal(true)
