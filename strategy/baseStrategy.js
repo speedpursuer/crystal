@@ -67,7 +67,7 @@ class Strategy {
 	get exchanges() {
 		var that = this
 		return _.filter(this._exchanges, function(e) { 
-			if(!e.orderBooks) {
+			if(!e.orderBooks || !e.isAvailable) {
 				return false
 			}else if(!cryptoInfo[that.market]){
 				return true				

@@ -33,6 +33,10 @@ class ExchangeSim {
         this.ccxtExchange = new ccxt[info.id](info)
 	}
 
+    get isAvailable() {
+        return true
+    }
+
 	async fetchOrderBook() {
 		if(this.realOrderBook){
 			return await this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)	        

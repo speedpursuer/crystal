@@ -41,6 +41,10 @@ class Exchange {
 	    return value? value: defaultValue
     }
 
+    get isAvailable() {
+	    return this.exchangeDelegate.isAvailable
+    }
+
     get symbol() {
         return `${this.crypto}/${this.fiat}`
     }

@@ -34,7 +34,7 @@ describe.only('测试 exchange', async function() {
     	})
   	})
 
-	describe('BCH真实测试交易所下单取消', async function() {
+	describe.only('BCH真实测试交易所下单取消', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
     		var base = 'BCH', quote = 'BTC'
     		var buyPrice = 0.01
