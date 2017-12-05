@@ -33,6 +33,7 @@ class ExchangeDelegate {
                 1000
             )
         }catch(e){
+            // this._log("未获取到orderbook")
             return null
         }
     }
