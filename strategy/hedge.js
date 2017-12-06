@@ -2,9 +2,9 @@ const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
-const maxAmountOnce = 1
+const maxAmountOnce = 0.5
 const orderRate = 0.2
-const minMargin = 0.0001
+const minMargin = 5
 const stockLeft = 0
 
 

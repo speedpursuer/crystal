@@ -47,7 +47,7 @@ class ExchangeDelegate {
                 1200
             )
         }catch(e){
-            // this._log(`未获取到orderbook: ${e}`)
+            // this._log(`未获取到orderbook: ${e.message}`)
             return null
         }
     }
@@ -122,7 +122,7 @@ class ExchangeDelegate {
         if(completed) {
             this._log("订单轮询处理完成", "green")
         }else {
-            this._reportIssue("订单轮询处理失败", true)
+            this._reportIssue({message: "订单轮询处理失败"}, true)
         }        
         return {
             info: {amount, dealAmount, balanceChanged, completed},
@@ -179,7 +179,6 @@ class ExchangeDelegate {
     }
 
     _reportIssue(err, isFatal=false) {
-        // this._log(err, 'red')
         this._log(err.message, 'red')
         this.available.reportIssue(isFatal)
     }

@@ -5,12 +5,16 @@ const Backtest = require('./backtest.js')
 
 
 async function btc() {
-    await main('BTC', 'USD', ['okex', 'huobipro', 'quoine'])
+    await main('BTC', 'USD', ['okex', 'huobipro', 'quoine', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function bch() {
     // await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc'])
     await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
+}
+
+async function eth() {
+    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function main(base, quote, exchangeIDs){
@@ -54,10 +58,10 @@ async function testBatch(){
     // var backtest = new Backtest("2017-11-19 00:00:00", null, false)
     // await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'])
     // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'Binance', 'okex', 'huobipro'], 'BCH')
-    await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'BCH')
+    await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'ETH')
     // await backtest.batchTest(['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb'], 'BTC')
     // await backtest.batchTest(['Poloniex', 'okex'], 'BCH')
     // await backtest.batchTest(['Bittrex', 'okex'], 'BCH')
 }
 
-bch()
+btc()

@@ -9,9 +9,9 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'binance'
+    var exchange = 'Bitfinex'
     // var symbol = "BTC/USDT"
-    var base = "BCH", quote = "BTC"
+    var base = "IOT", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
 
