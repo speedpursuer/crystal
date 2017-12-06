@@ -2,7 +2,7 @@ const util = require('../../util/util.js')
 const EventEmitter = require('events')
 
 const failureInterval = 1000 * 60
-const maxFailureTimes = 4
+const maxFailureTimes = 3
 const retryInterval = 3000 * 60
 
 class Available extends EventEmitter {

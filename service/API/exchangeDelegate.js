@@ -179,7 +179,8 @@ class ExchangeDelegate {
     }
 
     _reportIssue(err, isFatal=false) {
-        this._log(err, 'red')
+        // this._log(err, 'red')
+        this._log(err.message, 'red')
         this.available.reportIssue(isFatal)
     }
 
