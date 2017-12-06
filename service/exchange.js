@@ -23,7 +23,7 @@ class Exchange {
         this.fiat = fiat == 'USD'? info.fiat: fiat
         this.specialBuy = info.specialBuy
         this.minTrade = this.getValue(info.minTrade, defaultMinTrade)
-        this.precision = this.getValue(info.amountPrecision, defaultPrecision)
+        this.precision = this.getValue(info.precision, defaultPrecision)
         this.minOrderSize = this.getValue(info.minOrderSize, defaultMinOrderSize)
         
         this.slippage = slippage

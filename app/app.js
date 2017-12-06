@@ -9,7 +9,8 @@ async function btc() {
 }
 
 async function bch() {
-    await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc'])
+    // await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc'])
+    await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function main(base, quote, exchangeIDs){
@@ -17,7 +18,7 @@ async function main(base, quote, exchangeIDs){
     global.realSim = true
     try {
         var trade = new Trade(exchangeIDs, new Hedge(base, quote))
-        await trade.run()
+        trade.run()
     }catch (e) {
         util.log.bright.yellow(e)
         process.exit()

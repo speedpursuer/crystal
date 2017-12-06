@@ -47,7 +47,7 @@ class ExchangeDelegate {
                 1200
             )
         }catch(e){
-            this._log(`未获取到orderbook: ${e}`)
+            // this._log(`未获取到orderbook: ${e}`)
             return null
         }
     }
