@@ -33,17 +33,18 @@ class ExchangeDelegate {
     }
     
     async fetchOrderBook(symbol) {
-        try{          
+        try{
+            var pram = this.id == "binance"? {}: {
+                'limit_bids': 5,
+                'limit_asks': 5,
+                'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
+                'depth': 5,
+                'size': 5,
+                // 'type': 'step5'
+            }
             return await util.promiseWithTimeout(
-                () => this.api.fetchOrderBook(symbol, {
-                    'limit_bids': 5,
-                    'limit_asks': 5,
-                    'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
-                    'depth': 5,
-                    'size': 5,
-                    // 'type': 'step5'
-                }),
-                1000
+                () => this.api.fetchOrderBook(symbol, pram),
+                1200
             )
         }catch(e){
             this._log(`未获取到orderbook: ${e}`)
@@ -72,7 +73,7 @@ class ExchangeDelegate {
             this._reportIssue(e)
         }
         await util.sleep(this.interval)
-        return await this._cancelPendingOrders(symbol, amount, accountInfo)     
+        return await this._cancelPendingOrders(symbol, amount, accountInfo)
     }
 
     async _cancelPendingOrders(symbol, amount, accountInfo) {
