@@ -9,20 +9,22 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var symbol = "BTC/USD"
-    // var symbol = "BCH/BTC"
+    var exchange = 'binance'
+    // var symbol = "BTC/USDT"
+    var base = "BCH", quote = "BTC"
+    var symbol = `${base}/${quote}`
     var balance = {}
 
 	before(async function() {
         global.realMode = true
-    	var info = util.getExchangeInfo('quoine')
+    	var info = util.getExchangeInfo(exchange)
         balance = {
             balance: 10,
             frozenBalance: 0,
             stocks: 100,
             frozenStocks: 0
         }
-        exchangeDelegate = factory.createExchange(info, "BTC", "USD", balance.balance, balance.stocks, true)
+        exchangeDelegate = factory.createExchange(info, base, quote, balance.balance, balance.stocks, true)
         // exchangeDelegate = factory.createExchange(info, "BCH", "BTC", balance.balance, balance.stocks, true)
 	})
 
@@ -30,11 +32,17 @@ describe('单元测试ExchangeDelegate', async function() {
 
 	})
 
-  	describe.only('fetchOrderBook', async function() {
+  	describe('fetchTicker', async function() {
     	it('可正常工作', async function() {              
-            util.log(await exchangeDelegate.fetchOrderBook(symbol))
+            util.log(await exchangeDelegate.fetchTicker(symbol))
     	})
   	})
+
+    describe.only('fetchOrderBook', async function() {
+        it('可正常工作', async function() {
+            util.log(JSON.stringify(await exchangeDelegate.fetchOrderBook(symbol)))
+        })
+    })
 
     describe.only('fetchAccount', async function() {
         it('可正常工作', async function() {              
@@ -42,10 +50,15 @@ describe('单元测试ExchangeDelegate', async function() {
         })
     })
 
-    describe('createLimitOrder', async function() {
-        it('可正常工作', async function() {      
-
-            util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.1, 0.000001, balance))
+    describe.only('createLimitOrder', async function() {
+        it('可正常工作', async function() {
+            var account = await exchangeDelegate.fetchAccount(symbol)
+            util.log(account)
+            if(account.balance > 0) {
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.1, 0.01, account))
+            }else {
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 0.1, 1, account))
+            }
         })
     })
 

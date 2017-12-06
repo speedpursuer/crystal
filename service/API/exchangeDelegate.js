@@ -19,6 +19,18 @@ class ExchangeDelegate {
     get isAvailable() {
         return this.available.isAvailable
     }
+
+    async fetchTicker(symbol) {
+        try{
+            return await util.promiseWithTimeout(
+                () => this.api.fetchTicker(symbol),
+                1000
+            )
+        }catch(e){
+            this._log(`未获取到Ticker: ${e}`)
+            return null
+        }
+    }
     
     async fetchOrderBook(symbol) {
         try{          
@@ -28,12 +40,13 @@ class ExchangeDelegate {
                     'limit_asks': 5,
                     'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
                     'depth': 5,
-                    'size': 5,            
+                    'size': 5,
+                    // 'type': 'step5'
                 }),
                 1000
             )
         }catch(e){
-            // this._log("未获取到orderbook")
+            this._log(`未获取到orderbook: ${e}`)
             return null
         }
     }

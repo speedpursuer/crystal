@@ -1,7 +1,6 @@
 const util = require ('../util/util.js')
 var assert = require('assert')
 // var _ = require('lodash/core');
-const keys = require('../config/exchangeInfo.js')
 const _ = require('lodash')
 
 var mongoose = require('mongoose');
@@ -166,10 +165,6 @@ async function test8() {
 	}
 
 	util.log(await Promise.all([f1(), f2()]))
-}
-
-function test9() {
-	util.log(keys['kraken'])
 }
 
 function test10() {
@@ -740,8 +735,50 @@ function test35() {
     util.log(_.indexOf([1, 2, 3], 4))
 }
 
+function test36() {
+	let result = [
+		{
+			exchanges: ['a', 'b'],
+			profit: 1
+		},
+		{
+			exchanges: ['a', 'c'],
+            profit: 2
+		},
+		{
+            exchanges: ['b', 'c'],
+            profit: 3
+		}
+	]
+
+    let finalResult = {}
+
+    _.forEach(result, function (value) {
+        setValue(finalResult, value.exchanges[0], value.profit)
+        setValue(finalResult, value.exchanges[1], value.profit)
+    })
+
+    finalResult = _.sortBy(finalResult, [function(o) { return o.total }])
+
+    _.forEach(finalResult, function(v) {
+        util.log(v.id, v.total)
+    });
+
+    function setValue(result, key, value) {
+		if(result[key]) {
+            result[key].total += value
+		}else{
+			result[key] = {
+				id: key,
+				total: value
+			}
+		}
+    }
+
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test30()
+  	test36()
 }

@@ -8,7 +8,8 @@ const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 227000 / 6
+const total_budget = 25000
+// const total_budget = 227000 / 8
 const btc_price = 11300
 const ltc_price = 99
 const eth_price = 465
@@ -51,9 +52,12 @@ class Backtest {
 	    // var exchangeIDs = ['hitbtc', 'okex']
 	    // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-        var exchangeIDs = ['Bitfinex', 'huobipro', 'Poloniex', 'Bittrex', 'okex', 'Binance']
+        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'hitbtc']
+        // var exchangeIDs = ['Bitfinex', 'huobipro', 'Bittrex', 'okex', 'Binance', 'hitbtc']
         // var exchangeIDs = ['Bittrex', 'okex', 'Binance']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'Binance', 'huobipro', 'hitbtc']
+        // var exchangeIDs = ['okex', 'binance', 'Bittrex', 'huobipro']
+        var exchangeIDs = ['okex', 'Bitfinex', 'binance', 'Bittrex', 'hitbtc']
 	    await this._BCH(exchangeIDs)
 	}
 
@@ -91,19 +95,43 @@ class Backtest {
 	            }
 	        }
 
-	        result = _.sortBy(result, [function(o) { return o.profit }])
+            result = _.sortBy(result, [function(o) { return o.profit }])
 
-	        _.forEach(result, function(v) {
-	            util.log.yellow(`******** Exchanges: ${v.exchanges}, ${v.start} - ${v.end} ********`)
-	            util.log.green(`Profit: ${v.profit}, Diff: ${v.diff}`)
-	            util.log("-------------------------------------------")
-	        });
+            _.forEach(result, function(v) {
+                util.log.yellow(`******** Exchanges: ${v.exchanges}, ${v.start} - ${v.end} ********`)
+                util.log.green(`Profit: ${v.profit}, Diff: ${v.diff}`)
+                util.log("-------------------------------------------")
+            });
+
+            let finalResult = {}
+
+            _.forEach(result, function (value) {
+                setValue(finalResult, value.exchanges[0], value.profit)
+                setValue(finalResult, value.exchanges[1], value.profit)
+            })
+
+            finalResult = _.sortBy(finalResult, [function(o) { return o.total }])
+
+            _.forEach(finalResult, function(v) {
+                util.log(v.id, v.total)
+            })
 
 	        process.exit()
 	    }catch (e) {        
 	        util.log.bright.yellow(e)
 	        process.exit()  
 	    }
+
+        function setValue(result, key, value) {
+            if(result[key]) {
+                result[key].total += value
+            }else{
+                result[key] = {
+                    id: key,
+                    total: value
+                }
+            }
+        }
 	}
 
 	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
