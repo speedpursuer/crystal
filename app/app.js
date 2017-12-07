@@ -15,7 +15,7 @@ async function bch() {
 }
 
 async function eth() {
-    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance', 'poloniex', 'huobipro'])
+    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function main(base, quote, exchangeIDs){
@@ -67,4 +67,4 @@ async function testBatch(){
     // await backtest.batchTest(['Bittrex', 'okex'], 'BCH')
 }
 
-btc()
+eth()
