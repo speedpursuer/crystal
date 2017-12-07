@@ -44,7 +44,7 @@ class ExchangeDelegate {
             }
             return await util.promiseWithTimeout(
                 () => this.api.fetchOrderBook(symbol, pram),
-                1200
+                1000
             )
         }catch(e){
             // this._log(`未获取到orderbook: ${e.message}`)

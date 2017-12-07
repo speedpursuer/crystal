@@ -8,14 +8,16 @@ const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 25000
+const total_budget = 32000
 // const total_budget = 227000 / 8
 const btc_price = 11300
 const ltc_price = 99
-const eth_price = 465
+const eth_price = 421
 const bch_price = 1519
 const xmr_price = 122
 const xrp_price = 0.2
+const eos_price = 4.2
+const iot_price = 3.6
 
 class Backtest {
 	constructor(start, end, debug) {
@@ -37,7 +39,8 @@ class Backtest {
 	}
 
 	async ETH() {
-        var exchangeIDs = ['hitbtc', 'okex', 'binance', 'huobipro', 'Bittrex', 'Bitfinex']
+        var exchangeIDs = ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance']
+        // var exchangeIDs = ['okex', 'hitbtc', 'binance', 'poloniex']
         // var exchangeIDs = ['Bitfinex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro', 'okex', 'hitbtc', 'Binance']
@@ -70,6 +73,16 @@ class Backtest {
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp']
 	    await this.backtest(exchangeIDs, "XRP", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xrp_price/exchangeIDs.length)
 	}
+
+	async EOS() {
+        var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc', 'zb']
+        await this.backtest(exchangeIDs, "EOS", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
+	}
+
+    async IOT() {
+        var exchangeIDs = ['Bitfinex', 'Binance', 'OKEx']
+        await this.backtest(exchangeIDs, "IOTA", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/iot_price/exchangeIDs.length)
+    }
 
 	async _BCH(exchangeIDs) {
 		return await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)

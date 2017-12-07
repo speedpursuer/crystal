@@ -15,7 +15,7 @@ async function bch() {
 }
 
 async function eth() {
-    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
+    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance', 'poloniex', 'huobipro'])
 }
 
 async function main(base, quote, exchangeIDs){
@@ -41,10 +41,12 @@ async function test(){
 
         // await backtest.BTC()
         // await backtest.LTC()
-        // await backtest.ETH()
-        await backtest.BCH()
+        await backtest.ETH()
+        // await backtest.BCH()
         // await backtest.XMR()
         // await backtest.XRP()
+        // await backtest.EOS()
+        // await backtest.IOT()
         // await backtest.BCHTest(['Bitfinex', 'okex'])
         // await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'Bitfinex'])     
         process.exit()

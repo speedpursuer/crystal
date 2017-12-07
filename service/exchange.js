@@ -60,10 +60,10 @@ class Exchange {
 
     set account(account) {
         if(account) {
-            this.balance = account.balance
-            this.frozenBalance = account.frozenBalance
-            this.stocks = account.stocks
-            this.frozenStocks = account.frozenStocks
+            this.balance = _.round(account.balance, defaultPrecision)
+            this.frozenBalance = _.round(account.frozenBalance, defaultPrecision)
+            this.stocks = _.round(account.stocks, defaultPrecision)
+            this.frozenStocks = _.round(account.frozenStocks, defaultPrecision)
         }
     }
 
@@ -160,11 +160,11 @@ class Exchange {
         var orderPrice, orderAmount, result
 
         if(type == ORDER_TYPE_BUY) {
-            orderPrice = _.ceil(this.buyPrice, 8)
+            orderPrice = _.ceil(this.buyPrice, defaultPrecision)
             orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), this.precision): _.floor(amount, this.precision)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
-            orderPrice = _.floor(this.sellPrice, 8)
+            orderPrice = _.floor(this.sellPrice, defaultPrecision)
             orderAmount = _.floor(amount, this.precision)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
