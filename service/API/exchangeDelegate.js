@@ -135,10 +135,10 @@ class ExchangeDelegate {
         var pair = this._parseSymbol(symbol)
         var fiat = pair.fiat, crypto = pair.crypto
         var account = {
-            balance: data[fiat]? data[fiat].free: 0,
-            frozenBalance: data[fiat]? data[fiat].used: 0,
-            stocks: data[crypto]? data[crypto].free: 0,
-            frozenStocks: data[crypto]? data[crypto].used: 0
+            balance: data[fiat]? this._round(data[fiat].free): 0,
+            frozenBalance: data[fiat]? this._round(data[fiat].used): 0,
+            stocks: data[crypto]? this._round(data[crypto].free): 0,
+            frozenStocks: data[crypto]? this._round(data[crypto].used): 0
         }
         this._logAccount(account)
         return account
@@ -176,6 +176,10 @@ class ExchangeDelegate {
 
     _log(message, color='white') {
         if(this.debug) util.log[color](this.id, message)
+    }
+
+    _round(number) {
+	    return _.round(number, 5)
     }
 
     _reportIssue(err, isFatal=false) {

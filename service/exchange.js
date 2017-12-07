@@ -5,6 +5,7 @@ const _ = require('lodash')
 const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
+const precision = 5
 
 const slippage = 0.0005
 const defaultMinTrade = 0.0005
@@ -60,10 +61,10 @@ class Exchange {
 
     set account(account) {
         if(account) {
-            this.balance = _.round(account.balance, defaultPrecision)
-            this.frozenBalance = _.round(account.frozenBalance, defaultPrecision)
-            this.stocks = _.round(account.stocks, defaultPrecision)
-            this.frozenStocks = _.round(account.frozenStocks, defaultPrecision)
+            this.balance = account.balance
+            this.frozenBalance = account.frozenBalance
+            this.stocks = account.stocks
+            this.frozenStocks = account.frozenStocks
         }
     }
 
