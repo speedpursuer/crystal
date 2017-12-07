@@ -5,7 +5,7 @@ const Backtest = require('./backtest.js')
 
 
 async function btc() {
-    await main('BTC', 'USD', ['okex', 'quoine', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
+    await main('BTC', 'USD', ['okex', 'huobipro', 'quoine'])
     // await main('BTC', 'USD', ['okex', 'huobipro', 'quoine', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
