@@ -124,7 +124,7 @@ class Exchange {
         return this.sellPrice * (1-this.fee)
     }
 
-    get amountCanBuy() {        
+    get amountCanBuy() {
         return this.balance / this.payForBuyOne
     }
 
@@ -177,11 +177,11 @@ class Exchange {
         var orderPrice, orderAmount, result
 
         if(type == ORDER_TYPE_BUY) {
-            orderPrice = _.ceil(this.buyPrice, defaultPrecision)
-            orderAmount = this.needMoreCoinForBuy? _.floor(amount/(1-this.fee), this.precision): _.floor(amount, this.precision)
+            orderPrice = _.floor(this.buyPrice, 8)
+            orderAmount = _.floor(this.needMoreCoinForBuy? amount/(1-this.fee): amount, this.precision)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
-            orderPrice = _.floor(this.sellPrice, defaultPrecision)
+            orderPrice = _.floor(this.sellPrice, 8)
             orderAmount = _.floor(amount, this.precision)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }

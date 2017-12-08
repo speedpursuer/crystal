@@ -47,7 +47,7 @@ class Strategy {
 	}
 
 	get condition() {
-		if(this.currProfit < -10) {
+		if(this.stockDiff >= 0 && this.currProfit < -0.0005) {
 			util.log.red("账户异常，退出交易")
 			return false
 		}
