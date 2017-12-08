@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.2
-const minMargin = 0.00001
+const minMargin = 0.00002
 const stockLeft = 0
 
 

@@ -15,7 +15,7 @@ async function bch() {
 }
 
 async function eth() {
-    await main('ETH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
+    await main('ETH', 'BTC', ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function main(base, quote, exchangeIDs){
