@@ -1,9 +1,9 @@
 const Promise = require('bluebird');
 const log = require ('ololog').configure ({ locate: false, time: true })
 const moment = require('moment')
-// const exchangeInfo = require('../config/exchangeInfo.js')
+const exchangeInfo = require('../config/exchangeInfo.js')
 // const exchangeInfo = require('../config/exchangeInfo_bch.js')
-const exchangeInfo = require('../config/exchangeInfo_eth.js')
+// const exchangeInfo = require('../config/exchangeInfo_eth.js')
 
 class Util{
 	sleep(ms) {

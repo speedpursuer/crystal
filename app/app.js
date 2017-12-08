@@ -67,4 +67,4 @@ async function testBatch(){
     // await backtest.batchTest(['Bittrex', 'okex'], 'BCH')
 }
 
-eth()
+btc()
