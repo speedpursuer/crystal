@@ -80,16 +80,32 @@ class Exchange {
         return this.getOrderBooksData('bids.0.0')    
     }
 
-    get buy1Amount() {
-        return this.getOrderBooksData('bids.0.1')
-    }
-
     get sell1Price() {
         return this.getOrderBooksData('asks.0.0')
     }
 
+    get buy1Amount() {
+        // return this.getOrderBooksData('bids.0.1')
+        if(this.getOrderBooksData('bids.0.1') == 0) return 0
+        let minBuyPrice = this.getOrderBooksData('bids.0.0') * 0.99999
+        return _.reduce(this.getOrderBooksData('bids'), function(total, value) {
+            if(value[0] && value[0] >= minBuyPrice) {
+                total += value[1]
+            }
+            return total
+        }, 0)
+    }
+
     get sell1Amount() {
-        return this.getOrderBooksData('asks.0.1')
+        // return this.getOrderBooksData('asks.0.1')
+        if(this.getOrderBooksData('asks.0.1') == 0) return 0
+        let maxSellPrice = this.getOrderBooksData('asks.0.0') * 1.00001
+        return _.reduce(this.getOrderBooksData('asks'), function(total, value) {
+            if(value[0] && value[0] <= maxSellPrice) {
+                total += value[1]
+            }
+            return total
+        }, 0)
     }
 
     get buyPrice() {

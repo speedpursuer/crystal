@@ -41,11 +41,11 @@ async function test(){
 
         // await backtest.BTC()
         // await backtest.LTC()
-        await backtest.ETH()
+        // await backtest.ETH()
         // await backtest.BCH()
         // await backtest.XMR()
         // await backtest.XRP()
-        // await backtest.EOS()
+        await backtest.EOS()
         // await backtest.IOT()
         // await backtest.BCHTest(['Bitfinex', 'okex'])
         // await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'Bitfinex'])     

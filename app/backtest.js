@@ -27,8 +27,8 @@ class Backtest {
 	}
 
 	async BTC() {
+        // var exchangeIDs = ['okex', 'huobipro', 'Quoine']
         var exchangeIDs = ['okex', 'huobipro', 'Quoine']
-        // var exchangeIDs = ['Poloniex', 'huobipro', 'Quoine', 'zb', 'Binance']
         // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb']
 	    await this._BTC(exchangeIDs)
 	}

@@ -777,8 +777,35 @@ function test36() {
 
 }
 
+function test37() {
+
+	var orderBooks = {
+		"bids":[[16105.24,0.91676356],[16105.23,0.44694327],[16105.151,0.03],[16105.05,0.1],[16105,0.43487769]],
+        "asks":[[16140.51,0.01],[16148.04,0.02],[16153.1139,0.00311305],[16165.54,0.01],[16177.0058,0.00311305]],
+	}
+
+    function getOrderBooksData(path) {
+        var value = util.deepGet(orderBooks, path)
+        return value === undefined? 0: value
+    }
+
+    function buy1Amount() {
+        if(getOrderBooksData('bids.0.1') == 0) return 0
+		let minBuyPrice = getOrderBooksData('bids.0.0') * 0.99999
+        return _.reduce(getOrderBooksData('bids'), function(total, value) {
+            if(value[0] && value[0] >= minBuyPrice) {
+                util.log("amount", value[1])
+                total += value[1]
+            }
+            return total
+        }, 0)
+    }
+
+    util.log(buy1Amount())
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test36()
+  	test37()
 }

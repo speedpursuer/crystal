@@ -20,15 +20,18 @@ describe.only('测试 exchange', async function() {
     		global.realMode = true
     		global.realSim = false
 
-            var base = 'BTC', quote = 'USD'
-            var exchangeIDs = ['okex', 'huobipro', 'Quoine']
+            var base = 'ETH', quote = 'BTC'
+            var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex']
 
             for(var id of exchangeIDs) {
                 var exchange = new Exchange(id, base, quote, 100, 2)
                 await exchange.fetchAccount()
-                await exchange.fetchOrderBook()
-                util.log(exchange.sell1Price)
-                util.log(exchange.buy1Price)
+                util.log(JSON.stringify(await exchange.fetchOrderBook()))
+                util.log('sell1Price', exchange.sell1Price)
+				util.log('sell1Amount', exchange.sell1Amount)
+				util.log("---------------------")
+                util.log('buy1Price', exchange.buy1Price)
+                util.log('buy1Amount', exchange.buy1Amount)
                 // util.log(await exchange.limitBuy(0.1))
             }
     	})

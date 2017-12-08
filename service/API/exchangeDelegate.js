@@ -35,11 +35,11 @@ class ExchangeDelegate {
     async fetchOrderBook(symbol) {
         try{
             var pram = this.id == "binance"? {}: {
-                'limit_bids': 5,
-                'limit_asks': 5,
+                'limit_bids': 10,
+                'limit_asks': 10,
                 'group': 1, // 1 = orders are grouped by price, 0 = orders are separate
-                'depth': 5,
-                'size': 5,
+                'depth': 10,
+                'size': 10,
                 // 'type': 'step5'
             }
             return await util.promiseWithTimeout(
