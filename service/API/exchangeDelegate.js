@@ -72,7 +72,7 @@ class ExchangeDelegate {
         }catch(e){
             this._reportIssue(e)
         }
-        await util.sleep(this.interval)
+        await util.sleep(this.interval * 2)
         return await this._cancelPendingOrders(symbol, amount, accountInfo)
     }
 
