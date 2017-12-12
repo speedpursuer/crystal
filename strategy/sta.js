@@ -3,7 +3,7 @@ const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 const math = require('mathjs')
 
-const maxAmountOnce = 1
+const maxAmountOnce = 0.5
 const orderRate = 0.2
 
 class Sta extends Strategy {
@@ -21,12 +21,12 @@ class Sta extends Strategy {
 
         if(_.size(this.exchanges) != 2) return
 
-        const posAvg = -0.0006923310433175871
-        const posStd = 0.00041901255355557596
+        const posAvg = 141.810411872397
+        const posStd = 190.37781386561332
         const posRate = _.ceil(-posAvg / posStd, 2)
 
-        const negAvg = -0.0008652779838271322
-        const negStd = 0.0004367074956012717
+        const negAvg = -262.87676815725695
+        const negStd = 191.45540414064567
         const negRate = _.ceil(-negAvg / negStd, 2)
 
         var list = _.values(this.exchanges)
@@ -34,11 +34,11 @@ class Sta extends Strategy {
         var posDiff = list[0].earnForSellOne - list[1].payForBuyOne
         var negDiff = list[1].earnForSellOne - list[0].payForBuyOne
 
-        if(posDiff - posAvg >= posStd * posRate) {
+        if(posDiff - posAvg >= posStd) {
             await this.action(list[0], list[1], posDiff)
         }
 
-        if(negDiff - negAvg >= negStd * negRate) {
+        if(negDiff - negAvg >= negStd) {
             await this.action(list[1], list[0], negDiff)
         }
     }

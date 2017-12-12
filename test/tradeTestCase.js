@@ -16,7 +16,8 @@ describe('测试trade和stratege', async function() {
 		global.realMode = false
 		global.realSim = false
 
-		//await initBTC_USD()
+		await initETH_BTC()
+		// await initBTC_USD()
 		// await initLTC_BTC()						
 	})
 
@@ -24,84 +25,12 @@ describe('测试trade和stratege', async function() {
 		exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']  
 		trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))		
 		await trade.init()
-
-        trade.exchanges['bitfinex'].orderBooks = 
-        {
-        	asks: [
-				[5000, 0.1],
-				[5003, 0.2]
-			],
-			bids: [
-				[5055, 0.5],
-				[5004, 0.3],
-			]			
-		}
-
-		trade.exchanges['bitstamp'].orderBooks = 
-        {
-			asks: [
-				[5000, 0.1],
-				[5003, 0.2]
-			],
-			bids: [
-				[5005, 0.5],
-				[5004, 0.3],
-			]
-		}
-
-		trade.exchanges['poloniex'].orderBooks = 
-        {
-			asks: [
-				[5000, 0.1],
-				[5003, 0.2]
-			],
-			bids: [
-				[5005, 0.5],
-				[5004, 0.3],
-			]
-		}
 	}
 
-	async function initLTC_BTC() {
-		exchangeIDs = ['Bitfinex', 'bittrex', 'Poloniex']  
-		trade = new Trade(exchangeIDs, new Hedge('LTC', 'BTC', true), 1000, 10, true)
+	async function initETH_BTC() {
+		exchangeIDs = ['binance', 'bittrex']
+		trade = new Trade(exchangeIDs, new Hedge('ETH', 'BTC', true), 1, 30, true)
 		await trade.init()
-
-        trade.exchanges['bitfinex'].orderBooks = 
-        {
-        	asks: [
-				[0.0096498, 37.40638333],
-				[0.0096503, 36.52366319]
-			],
-			bids: [
-				[0.0097449, 2.6916],
-				[0.0096252, 69.64302913],
-			]			
-		}
-
-		trade.exchanges['bittrex'].orderBooks = 
-        {
-			asks: [
-				[0.00964, 0.00532428],
-				[0.0096559, 0.31919169]
-			],
-			bids: [
-				[0.00959504, 96.106],
-				[0.00959503, 5.18574049],
-			]
-		}
-
-		trade.exchanges['poloniex'].orderBooks = 
-        {
-			asks: [
-				[0.0096588, 30.357],
-				[0.00965881, 12.54265169]
-			],
-			bids: [
-				[0.00963501, 1.47132072],
-				[0.009635, 89.63993175],
-			]
-		}
 	}
 
 	async function initBTC_BCH() {
@@ -112,14 +41,23 @@ describe('测试trade和stratege', async function() {
 	}
 
 	after(async function(){
-		trade.strategy.database.deleteData()
 	})
 
-  	describe('对冲交易', async function() {  		
-    	it('单次交易币差可能为正、负、零', async function() {    		      		
+  	describe('单次对冲交易', async function() {
+    	it('查看对冲细节', async function() {
+    		// await trade.updateOrderBook()
+            trade.exchanges['binance'].orderBooks = {
+            	"bids":[[0.02873272,0.23]],
+                "asks":[[0.02686814,0.453]]
+            }
+
+            trade.exchanges['bittrex'].orderBooks = {
+                "bids":[[0.02673272,0.345]],
+                "asks":[[0.025,0.134]]
+            }
+
       		await trade.strategy.doTrade()
       		await trade.strategy.updateBalance()
-			// trade.strategy.stockDiff.should.not.equal(0)			
     	})
   	})
 
@@ -129,7 +67,7 @@ describe('测试trade和stratege', async function() {
   			trade.strategy.stockDiff = diff
     		trade.strategy.initStock = trade.strategy.currStock - diff
 
-    		trade.strategy.updateBalance()
+    		await trade.strategy.updateBalance()
 
     		await simTrade(function() {
     			return _.round(trade.strategy.stockDiff, 3) == 0

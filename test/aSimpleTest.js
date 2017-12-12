@@ -617,7 +617,7 @@ function test29() {
 
 function test30() {
 	// util.log(util.timestampFromTime("2017-11-09 00:00:00"))
-	util.log(util.timestampFromTime("2017-11-30 00:00:00"))
+	util.log(util.timestampFromTime("2017-12-10 00:00:00"))
 }
 
 function test31() {
@@ -807,5 +807,5 @@ function test37() {
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-  	test37()
+    test30()
 }

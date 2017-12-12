@@ -36,13 +36,14 @@ class Trade{
 	}
 
  	async updateOrderBook(){
-		var start = (new Date()).getTime()
-		var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')		
-		var lag = (new Date()).getTime() - start		
+        await util.promiseFor(this.exchanges, 'fetchOrderBook')
+		// var start = (new Date()).getTime()
+		// var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')
+		// var lag = (new Date()).getTime() - start
 		// this.log(`获取 ${_.filter(list, function(o) { return o!=null }).length} 个交易数据，时间 ${lag} ms`)	
-		if(lag > 1500) {
-			throw '超时，跳过本轮'
-		}
+		// if(lag > 1500) {
+		// 	throw '超时，跳过本轮'
+		// }
 	}
 
 	async loop(){
