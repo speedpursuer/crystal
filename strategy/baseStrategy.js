@@ -95,6 +95,9 @@ class Strategy {
 	log(message) {
 		if(this.debug) util.log(message)	
 	}
+
+    before() {
+	}
 	
 	doTrade() {
 		util.log.red("doTrade() must be implemented, exiting app")

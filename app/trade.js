@@ -33,6 +33,7 @@ class Trade{
 		this.log(`*********************************************************`)		
 
 		await this.strategy.init(this.exchanges)
+        this.strategy.before()
 	}
 
  	async updateOrderBook(){
