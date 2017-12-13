@@ -1,5 +1,5 @@
 const util = require ('../util/util.js')
-const Exchange = require('../service/exchange.js')
+const Exchange = require('./exchange.js')
 const _ = require('lodash')
 const Interval = 2000
 
@@ -7,7 +7,7 @@ class Trade{
 	constructor(ids, strategy, initBalance, initStocks, debug=true){				
 		this.debug = debug
 		this.strategy = strategy
-		this.exchangesIDs = _.map(ids, function(i) {return i.toLowerCase()})
+		this.exchangesIDs = _.sortBy(_.map(ids, function(i) {return i.toLowerCase()}) )
 		this.exchanges = {}
 		for(var id of this.exchangesIDs) {
 			this.exchanges[id] = new Exchange(id, this.strategy.crypto, this.strategy.fiat, initBalance, initStocks, this.debug)

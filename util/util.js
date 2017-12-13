@@ -28,6 +28,10 @@ class Util{
         return moment().format("YYYY-MM-DD HH:mm:ss")
     }
 
+    get time() {
+        return (new Date()).getTime()
+    }
+
     get timestamp() {
         return moment().unix() * 1000
     }

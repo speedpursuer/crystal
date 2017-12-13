@@ -1,7 +1,7 @@
 const util = require('../util/util.js')
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const Trade = require('./trade.js')
+const Trade = require('../service/trade.js')
 const Backtest = require('./backtest.js')
 
 
@@ -37,7 +37,7 @@ async function test(){
     try {              
         // var backtest = new Backtest("2017-11-01 00:00:00", "2017-11-08 00:00:00", false)
         // var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55", true)        
-        var backtest = new Backtest("2017-12-08 11:14:40", null, true)
+        var backtest = new Backtest("2017-12-12 10:14:40", null, false)
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
 
         await backtest.BTC()

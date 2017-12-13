@@ -1,11 +1,9 @@
 const util = require('../util/util.js')
 const database = require('../service/database.js')
 const Hedge = require('../strategy/hedge.js')
-const Hedge_new = require('../strategy/hedge_new')
-const Arbitrage = require('../strategy/arbitrage.js')
 const Sta = require('../strategy/sta.js')
 const StaHedge = require('../strategy/staHedge.js')
-const Trade = require('./trade.js')
+const Trade = require('../service/trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
@@ -28,7 +26,7 @@ class Backtest {
 	}
 
 	async BTC() {
-        // var exchangeIDs = ['okex', 'zb']
+        // var exchangeIDs = ['okex', 'huobipro']
         var exchangeIDs = ['okex', 'huobipro', 'quoine', 'zb']
         // var exchangeIDs = ['okex', 'huobipro', 'Quoine', 'zb']
         // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb']

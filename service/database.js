@@ -25,6 +25,19 @@ class Database {
         })
 
         this.OrderBook = mongoose.model('OrderBook', orderBookSchema)
+
+        var staSchema = mongoose.Schema({
+            pair: {type: String},
+            market: {type: String},
+            // from: { type: Number },
+            // to: { type: Number },
+            posAvg: { type: Number},
+            posStd: { type: Number},
+            negAvg: { type: Number},
+            negStd: { type: Number},
+        })
+
+        this.staData = mongoose.model('StaData', staSchema)
     }
 
     async initAccount(strategyName, totalBalance, totalStock, exchanges) {
@@ -107,6 +120,11 @@ class Database {
         }   
         util.log("回测数据收集完成, 数据量: ", i)
         return result
+    }
+
+    async recordStaData(data) {
+        var staData = new this.staData(data)
+        await staData.save()
     }
 
     orderBookKey(orderBook) {
