@@ -1,5 +1,6 @@
 const util = require('../util/util.js')
 const Hedge = require('../strategy/hedge.js')
+const StaHedge = require('../strategy/staHedge.js')
 const Trade = require('./trade.js')
 const Backtest = require('./backtest.js')
 
@@ -22,7 +23,7 @@ async function main(base, quote, exchangeIDs){
     global.realMode = true
     global.realSim = true
     try {
-        var trade = new Trade(exchangeIDs, new Hedge(base, quote))
+        var trade = new Trade(exchangeIDs, new StaHedge(base, quote))
         trade.run()
     }catch (e) {
         util.log.bright.yellow(e)
