@@ -4,6 +4,7 @@ const Hedge = require('../strategy/hedge.js')
 const Hedge_new = require('../strategy/hedge_new')
 const Arbitrage = require('../strategy/arbitrage.js')
 const Sta = require('../strategy/sta.js')
+const StaHedge = require('../strategy/staHedge.js')
 const Trade = require('./trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
@@ -27,7 +28,8 @@ class Backtest {
 	}
 
 	async BTC() {
-        var exchangeIDs = ['zb', 'Quoine']
+        // var exchangeIDs = ['okex', 'zb']
+        var exchangeIDs = ['okex', 'huobipro', 'quoine', 'zb']
         // var exchangeIDs = ['okex', 'huobipro', 'Quoine', 'zb']
         // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb']
 	    await this._BTC(exchangeIDs)
@@ -150,13 +152,14 @@ class Backtest {
 	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
 		// var trade = new Trade(exchangeIDs, new Arbitrage(base, quote), initBalance, initStocks, this.debug)
-        var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 		await trade.init()
 
-		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market		
+		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
 
-		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)			
+		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)
 		timeline.sort(function(a, b){ return a - b})
 		util.log.yellow(`---- 正在回测 - market: ${market}, exchanges: ${trade.exchangesIDs} 开始: ${util.timeFromTimestamp(_.head(timeline))}, 结束: ${util.timeFromTimestamp(_.last(timeline))} ----`)
 		var orderBook = await database.getOrderBooks(market, trade.exchangesIDs, from, to)
@@ -166,23 +169,23 @@ class Backtest {
 		}
 
 		var bar = new ProgressBar(':bar', { total: timeline.length, clear: true})
-		
-		for(var time of timeline) {		
+
+		for(var time of timeline) {
 			if(this.debug) util.log(`******************************* 测试时间: ${util.timeFromTimestamp(time)} *******************************`)
-			
+
 			for(var id of trade.exchangesIDs) {
 				var key = `${market}-${id}-${time}`
 				if(orderBook[key]) {
 					trade.exchanges[id].orderBooks = orderBook[key]
 				}else {
 					trade.exchanges[id].orderBooks = null
-				}							
+				}
 			}
 
-			await trade.strategy.doTrade()
+			await trade.strategy.doTrade(util.timeFromTimestamp(time))
             await trade.strategy.updateBalance()
-            
-            if(!this.debug) bar.tick()                     
+
+            if(!this.debug) bar.tick()
 		}
 
 		if(trade.strategy.after) {
@@ -190,7 +193,7 @@ class Backtest {
 		}
 
 		await trade.strategy.logProfit()
-		util.log.green("回测完成")			
+		util.log.green("回测完成")
 
 		return {
 			exchanges: exchangeIDs,
@@ -198,7 +201,7 @@ class Backtest {
 			end: util.timeFromTimestamp(_.last(timeline)),
 			profit: trade.strategy.currProfit,
 			diff: trade.strategy.stockDiff
-		}		
+		}
 	}
 }
 module.exports = Backtest

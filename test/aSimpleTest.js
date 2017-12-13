@@ -617,7 +617,7 @@ function test29() {
 
 function test30() {
 	// util.log(util.timestampFromTime("2017-11-09 00:00:00"))
-	util.log(util.timestampFromTime("2017-12-10 00:00:00"))
+	util.log(util.timestampFromTime("2017-12-09 00:00:00"))
 }
 
 function test31() {
@@ -802,6 +802,31 @@ function test37() {
     }
 
     util.log(buy1Amount())
+}
+
+async function test38() {
+	async function f1(flag, time=1000) {
+		if(flag) {
+            await util.sleep(time)
+			util.log("after wait")
+		}
+        util.log("no wait", flag)
+    }
+    let list = []
+
+	util.log("1")
+	list.push(f1(true))
+    util.log("2")
+    list.push(f1(false))
+    util.log("3")
+	list.push(f1(true))
+    util.log("4")
+    list.push(f1(true, 5000))
+    util.log("5")
+
+	await Promise.all(list)
+
+	util.log("finished")
 }
 
 if (require.main === module) {

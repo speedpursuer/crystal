@@ -36,7 +36,7 @@ async function test(){
     try {              
         // var backtest = new Backtest("2017-11-01 00:00:00", "2017-11-08 00:00:00", false)
         // var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55", true)        
-        var backtest = new Backtest("2017-12-09 11:14:40", null, false)
+        var backtest = new Backtest("2017-12-08 11:14:40", null, true)
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
 
         await backtest.BTC()
@@ -57,14 +57,14 @@ async function test(){
 }
 
 async function testBatch(){
-    var backtest = new Backtest("2017-11-28 00:00:00", null, false)
+    var backtest = new Backtest("2017-12-09 00:00:00", null, false)
     // var backtest = new Backtest("2017-11-19 00:00:00", null, false)
     // await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'])
     // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'Binance', 'okex', 'huobipro'], 'BCH')
-    await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'ETH')
+    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'ETH')
     // await backtest.batchTest(['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb'], 'BTC')
     // await backtest.batchTest(['Poloniex', 'okex'], 'BCH')
-    // await backtest.batchTest(['Bittrex', 'okex'], 'BCH')
+    await backtest.batchTest(['okex', 'huobipro', 'quoine', 'zb'], 'BTC')
 }
 
 btc()

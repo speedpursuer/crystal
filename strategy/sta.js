@@ -21,12 +21,12 @@ class Sta extends Strategy {
 
         if(_.size(this.exchanges) != 2) return
 
-        const posAvg = 141.810411872397
-        const posStd = 190.37781386561332
+        const posAvg = -41.65236954698026
+        const posStd = 212.48245504868436
         const posRate = _.ceil(-posAvg / posStd, 2)
 
-        const negAvg = -262.87676815725695
-        const negStd = 191.45540414064567
+        const negAvg = -37.58858009673795
+        const negStd = 210.78266061255508
         const negRate = _.ceil(-negAvg / negStd, 2)
 
         var list = _.values(this.exchanges)

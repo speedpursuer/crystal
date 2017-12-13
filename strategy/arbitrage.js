@@ -8,6 +8,8 @@ class Arbitrage extends Strategy {
     before() {
         this.posDiff = []
         this.negDiff = []
+        this.timeline = []
+        this.gap = []
     }
 
     after() {
@@ -16,6 +18,18 @@ class Arbitrage extends Strategy {
 
         this.log(`posGood: ${this.filter(this.posDiff).length}`)
         this.log(`negGood: ${this.filter(this.negDiff).length}`)
+
+        // this.getData(this.posDiff)
+        // this.getData(this.negDiff)
+        // this.getData(this.timeline)
+        // this.getData(this.gap)
+    }
+    
+    getData(diff) {
+        util.log(JSON.stringify(diff))
+        // _.each(diff, function (value) {
+        //
+        // })
     }
 
     print(name, diff) {
@@ -26,7 +40,7 @@ class Arbitrage extends Strategy {
         return _.filter(diff, function(o) { return o > 0 })
     }
     
-	async doTrade() {
+	async doTrade(time) {
 
         if(_.size(this.exchanges) != 2) return
 
@@ -37,6 +51,8 @@ class Arbitrage extends Strategy {
 
         this.posDiff.push(posDiff)
         this.negDiff.push(negDiff)
+        this.timeline.push(time)
+        this.gap.push(posDiff + negDiff)
 	}
 }
 module.exports = Arbitrage
