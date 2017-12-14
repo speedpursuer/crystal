@@ -12,7 +12,8 @@ async function btc() {
 
 async function bch() {
     // await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc'])
-    await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
+    await main('BCH', 'BTC', ['okex', 'Bitfinex', 'huobipro'])
+    // await main('BCH', 'BTC', ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'])
 }
 
 async function eth() {
@@ -23,7 +24,7 @@ async function main(base, quote, exchangeIDs){
     global.realMode = true
     global.realSim = true
     try {
-        var trade = new Trade(exchangeIDs, new StaHedge(base, quote))
+        var trade = new Trade(exchangeIDs, new Hedge(base, quote))
         trade.run()
     }catch (e) {
         util.log.bright.yellow(e)
@@ -37,13 +38,14 @@ async function test(){
     try {              
         // var backtest = new Backtest("2017-11-01 00:00:00", "2017-11-08 00:00:00", false)
         // var backtest = new Backtest("2017-11-02 09:14:55", "2017-11-03 09:14:55", true)        
-        var backtest = new Backtest("2017-12-12 10:14:40", null, false)
+        var backtest = new Backtest("2017-12-13 10:14:49", null, false)
+        // var backtest = new Backtest("2017-12-13 04:14:40", "2017-12-13 10:14:40", false)
         // var backtest = new Backtest("2017-11-01 09:14:55", "2017-11-02 09:14:55")
 
-        await backtest.BTC()
+        // await backtest.BTC()
         // await backtest.LTC()
         // await backtest.ETH()
-        // await backtest.BCH()
+        await backtest.BCH()
         // await backtest.XMR()
         // await backtest.XRP()
         // await backtest.EOS()
@@ -68,4 +70,4 @@ async function testBatch(){
     await backtest.batchTest(['okex', 'huobipro', 'quoine', 'zb'], 'BTC')
 }
 
-btc()
+bch()

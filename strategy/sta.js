@@ -31,10 +31,6 @@ class Sta extends Strategy {
         var that = this
         var result = {}
         _.forEach(this.data, function (value, key) {
-            // util.log("-----------------------")
-            // util.log(key)
-            // that.print("Pos", value.posDiff)
-            // that.print("Neg", value.negDiff)
             result[key] = {
                 posAvg: math.mean(value.posDiff),
                 posStd: math.std(value.posDiff),

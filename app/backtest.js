@@ -7,16 +7,16 @@ const Trade = require('../service/trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 13800
+const total_budget = 15800
 // const total_budget = 227000 / 8
-const btc_price = 13800
-const ltc_price = 99
-const eth_price = 421
+const btc_price = 15800
+const ltc_price = 290
+const eth_price = 712
 const bch_price = 1519
 const xmr_price = 122
 const xrp_price = 0.2
-const eos_price = 4.2
-const iot_price = 4
+const eos_price = 7.3
+const iot_price = 4.06
 
 class Backtest {
 	constructor(start, end, debug) {
@@ -39,7 +39,7 @@ class Backtest {
 	}
 
 	async ETH() {
-        var exchangeIDs = ['okex', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance']
+        var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance']
         // var exchangeIDs = ['okex', 'hitbtc', 'binance', 'poloniex']
         // var exchangeIDs = ['Bitfinex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
@@ -149,10 +149,9 @@ class Backtest {
 
 	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
-		// var trade = new Trade(exchangeIDs, new Arbitrage(base, quote), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
-        // var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
-        var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 		await trade.init()
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
