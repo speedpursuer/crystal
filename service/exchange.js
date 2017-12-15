@@ -125,11 +125,11 @@ class Exchange {
     }
 
     get amountCanBuy() {
-        return this.balance / this.payForBuyOne
+        return this.adjustedOrderAmount(this.balance / this.payForBuyOne)
     }
 
     get amountCanSell() {
-        return this.stocks
+        return this.adjustedOrderAmount(this.stocks)
     }
 
     get needMoreCoinForBuy() {
@@ -137,11 +137,11 @@ class Exchange {
     }
 
     canBuySuch(amount) {
-        return this.payForBuyOne * amount >= this.minOrderSize && amount >= this.minTrade
+        return this.payForBuyOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && amount >= this.minTrade
     }
 
     canSellSuch(amount) {
-        return this.earnForSellOne * amount >= this.minOrderSize && amount >= this.minTrade
+        return this.earnForSellOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && amount >= this.minTrade
     }
 
     limitBuy(amount) {  
@@ -150,7 +150,19 @@ class Exchange {
 
     limitSell(amount) {  
         return this.placeLimitOrder(ORDER_TYPE_SELL, amount)
-    }   
+    }
+
+    adjustedOrderAmount(amount) {
+        return _.floor(amount, this.precision)
+    }
+
+    adjustedBuyAmount(amount) {
+        return this.adjustedOrderAmount(this.needMoreCoinForBuy? amount/(1-this.fee): amount)
+    }
+
+    adjustedOrderPrice(price) {
+	    return _.floor(price, 8)
+    }
 
     async fetchOrderBook() {
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
@@ -177,12 +189,12 @@ class Exchange {
         var orderPrice, orderAmount, result
 
         if(type == ORDER_TYPE_BUY) {
-            orderPrice = _.floor(this.buyPrice, 8)
-            orderAmount = _.floor(this.needMoreCoinForBuy? amount/(1-this.fee): amount, this.precision)
+            orderPrice = this.adjustedOrderPrice(this.buyPrice)
+            orderAmount = this.adjustedBuyAmount(amount)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
         }else {
-            orderPrice = _.floor(this.sellPrice, 8)
-            orderAmount = _.floor(amount, this.precision)
+            orderPrice = this.adjustedOrderPrice(this.sellPrice)
+            orderAmount = this.adjustedOrderAmount(amount)
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
 
