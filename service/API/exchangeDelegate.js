@@ -131,14 +131,14 @@ class ExchangeDelegate {
     }
 
     _parseAccount(data, symbol) {
-        if(!data) return null
         var pair = this._parseSymbol(symbol)
         var fiat = pair.fiat, crypto = pair.crypto
+        if(!data || !data[fiat] || !data[crypto]) return null
         var account = {
-            balance: data[fiat]? this._adjust(data[fiat].free): 0,
-            frozenBalance: data[fiat]? this._adjust(data[fiat].used): 0,
-            stocks: data[crypto]? this._adjust(data[crypto].free): 0,
-            frozenStocks: data[crypto]? this._adjust(data[crypto].used): 0
+            balance: this._adjust(data[fiat].free),
+            frozenBalance: this._adjust(data[fiat].used),
+            stocks: this._adjust(data[crypto].free),
+            frozenStocks: this._adjust(data[crypto].used)
         }
         this._logAccount(account)
         return account
