@@ -8,7 +8,7 @@ describe.only('测试 exchange', async function() {
 	this.timeout(50000)
 
 	before(async function() {
-		global.realMode = true
+		global.realMode = false
 	})
 
 	afterEach(async function(){
@@ -92,8 +92,8 @@ describe.only('测试 exchange', async function() {
             global.realMode = false
             global.realSim = false
 
-            var base = 'ETH', quote = 'BTC'
-            var exchange = new Exchange('binance', base, quote, 0.0205084017, 12.3493044)
+            var base = 'BCH', quote = 'BTC'
+            var exchange = new Exchange('Bitfinex', base, quote, 10, 100)
 
 			await exchange.fetchAccount()
 
@@ -101,9 +101,9 @@ describe.only('测试 exchange', async function() {
 
             var tradeAmount = Math.min(exchange.amountCanBuy)
 
-			util.log(exchange.canSellSuch(0.02))
+			// util.log(exchange.canSellSuch(0.02))
 
-            // exchange.limitBuy(tradeAmount)
+            exchange.limitBuy(tradeAmount)
         })
     })
 })

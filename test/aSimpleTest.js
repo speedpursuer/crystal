@@ -834,8 +834,16 @@ function test39() {
     util.log(_.sortBy(_.map(ids, function(i) {return i.toLowerCase()}) ))
 }
 
+function test40() {
+	function a(a, b=a) {
+		util.log.cyan(`${a}, ${b}`)
+	}
+	a(1)
+    a(1, 2)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test39()
+    test40()
 }

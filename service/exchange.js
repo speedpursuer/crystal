@@ -198,7 +198,7 @@ class Exchange {
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
 
-        result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
+        result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account, amount)
         this.account = result.newAccount
         return result.info
     }

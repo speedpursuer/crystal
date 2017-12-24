@@ -9,13 +9,13 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'binance'
+    var exchange = 'bittrex'
     var base = "BCH", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
 
 	before(async function() {
-        global.realMode = true
+        global.realMode = false
     	var info = util.getExchangeInfo(exchange)
         balance = {
             balance: 10,
