@@ -88,4 +88,4 @@ async function testBatch(){
     await backtest.batchTest(['hitbtc', 'Poloniex', 'Bitfinex', 'Bittrex', 'Binance'], 'XMR')
 }
 
-bch()
+eth()
