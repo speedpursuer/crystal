@@ -10,7 +10,7 @@ class Sta extends Strategy {
         this.data = {}
     }
 
-    setData(e1, e2) {
+    setData(e1, e2, time) {
         var posDiff = e1.earnForSellOne - e2.payForBuyOne
         var negDiff = e2.earnForSellOne - e1.payForBuyOne
 
@@ -19,16 +19,22 @@ class Sta extends Strategy {
         if(!this.data[key]) {
             this.data[key] = {
                 posDiff: [],
-                negDiff: []
+                negDiff: [],
+                time: []
             }
         }else {
             this.data[key].posDiff.push(posDiff)
             this.data[key].negDiff.push(negDiff)
+            this.data[key].time.push(time)
         }
     }
 
-    after() {
-        var that = this
+    async after() {
+        this.showData()
+        // util.log(JSON.stringify(result))
+    }
+
+    showData() {
         var result = {}
         _.forEach(this.data, function (value, key) {
             result[key] = {
@@ -41,6 +47,40 @@ class Sta extends Strategy {
         util.log(JSON.stringify(result))
     }
 
+
+    async saveData() {
+        var result = []
+        _.forEach(this.data, function (value, key) {
+
+            // util.log(key)
+            // that.printArray("time", )
+            // that.printArray("pos", value.posDiff)
+            // that.printArray("neg", )
+
+            // result.push({
+            //     pos: value.posDiff,
+            //     neg: value.negDiff,
+            //     time: value.time,
+            //     name: key
+            // })
+
+            result[key] = {
+                posAvg: math.mean(value.posDiff),
+                posStd: math.std(value.posDiff),
+                negAvg: math.mean(value.negDiff),
+                negStd: math.std(value.negDiff),
+            }
+        })
+
+        util.log(JSON.stringify(result))
+
+        // await this.database.saveDataWithKey(result, this.crypto)
+    }
+
+    printArray(name, array) {
+        util.log(name, JSON.stringify(array))
+    }
+
     print(name, diff, result) {
         this.log(`${name} "总数:" ${diff.length}, "方差:" ${math.std(diff)}, "平均:" ${math.mean(diff)}, "最大:" ${math.max(diff)}, "最小:" ${math.min(diff)}`)
 
@@ -51,7 +91,7 @@ class Sta extends Strategy {
 
         for(var i=0; i<list.length; i++) {
             for(var j=i+1; j<list.length; j++) {
-                this.setData(list[i], list[j])
+                this.setData(list[i], list[j], time)
             }
         }
 	}

@@ -139,6 +139,10 @@ class Database {
         await client.setAsync(this.key, JSON.stringify(data))
     }
 
+    async saveDataWithKey(data, key) {
+        await client.setAsync(key, JSON.stringify(data))
+    }
+
     async deleteData() {
         return await client.delAsync(this.key)
     }

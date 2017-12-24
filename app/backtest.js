@@ -7,16 +7,17 @@ const Trade = require('../service/trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 15800
-// const total_budget = 227000 / 8
-const btc_price = 15800
-const ltc_price = 290
-const eth_price = 712
-const bch_price = 1519
-const xmr_price = 122
-const xrp_price = 0.2
-const eos_price = 7.3
-const iot_price = 4.06
+const total_budget = 13873 * 3
+const btc_price = 13873
+const ltc_price = 351
+const eth_price = 676
+const bch_price = 1719
+const xmr_price = 357
+const xrp_price = 0.73
+const eos_price = 8.64
+const dash_price = 1090
+const iot_price = 4
+const qtum_price = 55
 
 class Backtest {
 	constructor(start, end, debug) {
@@ -34,7 +35,8 @@ class Backtest {
 	}
 
 	async LTC() {
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
 	    await this.backtest(exchangeIDs, "LTC", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/ltc_price/exchangeIDs.length)
 	}
 
@@ -60,14 +62,21 @@ class Backtest {
         // var exchangeIDs = ['Bittrex', 'okex', 'Binance']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'Binance', 'huobipro', 'hitbtc']
         // var exchangeIDs = ['okex', 'binance', 'Bittrex', 'huobipro']
-        var exchangeIDs = ['okex', 'Bitfinex', 'binance', 'Bittrex', 'hitbtc']
+        var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'huobipro']
+        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
 	    await this._BCH(exchangeIDs)
 	}
 
 	async XMR() {
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc']
-	    await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xmr_price/exchangeIDs.length)
+	    var exchangeIDs = ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance']
+        // var exchangeIDs = ['hitbtc', 'Poloniex', 'Bitfinex', 'Bittrex', 'Binance']
+        await this._XMR(exchangeIDs)
 	}
+
+    async DASH() {
+        var exchangeIDs = ['hitbtc', 'Binance', 'Poloniex', 'Bittrex', 'Bitfinex']
+        await this._DASH(exchangeIDs)
+    }
 
 	async XRP() {
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp']
@@ -75,8 +84,19 @@ class Backtest {
 	}
 
 	async EOS() {
-        var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc', 'zb']
+        var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc']
+        // var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc']
         await this.backtest(exchangeIDs, "EOS", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
+	}
+
+    async EOSETH() {
+        var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'hitbtc']
+        await this.backtest(exchangeIDs, "EOS", "ETH", total_budget/eth_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
+    }
+
+    async QTUM() {
+        var exchangeIDs = ['Bittrex', 'Bitfinex', 'Binance', 'OKEx', 'huobipro']
+        await this.backtest(exchangeIDs, "QTUM", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/qtum_price/exchangeIDs.length)
 	}
 
     async IOT() {
@@ -96,6 +116,14 @@ class Backtest {
 	    return await this.backtest(exchangeIDs, "BTC", "USD", total_budget/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
 	}
 
+    async _DASH(exchangeIDs) {
+        await this.backtest(exchangeIDs, "DASH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/dash_price/exchangeIDs.length)
+    }
+
+    async _XMR(exchangeIDs) {
+        await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xmr_price/exchangeIDs.length)
+	}
+
 	async batchTest(list, test) {
 		global.realMode = false
 	    global.realSim = true
@@ -108,13 +136,13 @@ class Backtest {
 	            }
 	        }
 
-            result = _.sortBy(result, [function(o) { return o.profit }])
-
-            _.forEach(result, function(v) {
-                util.log.yellow(`******** Exchanges: ${v.exchanges}, ${v.start} - ${v.end} ********`)
-                util.log.green(`Profit: ${v.profit}, Diff: ${v.diff}`)
-                util.log("-------------------------------------------")
-            });
+            // result = _.sortBy(result, [function(o) { return o.profit }])
+            //
+            // _.forEach(result, function(v) {
+            //     util.log.yellow(`******** Exchanges: ${v.exchanges}, ${v.start} - ${v.end} ********`)
+            //     util.log.green(`Profit: ${v.profit}, Diff: ${v.diff}`)
+            //     util.log("-------------------------------------------")
+            // });
 
             let finalResult = {}
 
@@ -186,7 +214,7 @@ class Backtest {
 		}
 
 		if(trade.strategy.after) {
-			trade.strategy.after()
+			await trade.strategy.after()
 		}
 
 		await trade.strategy.logProfit()

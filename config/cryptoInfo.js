@@ -1,7 +1,7 @@
 var cryptoInfo = {
 	"BCH/BTC": {
-		max: 0.2,
-		min: 0.06,
+		max: 0.3,
+		min: 0.1,
 	}
 }
 
