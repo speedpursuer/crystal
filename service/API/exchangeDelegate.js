@@ -61,7 +61,7 @@ class ExchangeDelegate {
         }
     }
 
-    async createLimitOrder(symbol, type, amount, price, accountInfo, realAmount=amount) {
+    async createLimitOrder(symbol, type, amount, price, accountInfo) {
         this._logAccount(accountInfo)
         try{
             if(type == ORDER_TYPE_BUY) {
@@ -73,10 +73,10 @@ class ExchangeDelegate {
             this._reportIssue(e)
         }
         await util.sleep(this.interval * 2)
-        return await this._cancelPendingOrders(symbol, amount, accountInfo, realAmount)
+        return await this._cancelPendingOrders(symbol, amount, accountInfo)
     }
 
-    async _cancelPendingOrders(symbol, amount, accountInfo, realAmount) {
+    async _cancelPendingOrders(symbol, amount, accountInfo) {
         this._log("开始轮询订单状态")
                 
         var beforeAccount = accountInfo
@@ -114,16 +114,8 @@ class ExchangeDelegate {
 
             if(newAccount.frozenStocks == 0 && newAccount.frozenBalance == 0) {
                 dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
-
-                // if(_.round(realAmount - dealAmount, 5) != 0) {
-                //     continue
-                // }
-
                 balanceChanged = newAccount.balance - beforeAccount.balance
                 completed = true
-
-                this._log(`订单量: ${amount}, 实际数量: ${realAmount}, 账户差: ${dealAmount}, 差值: ${_.round(realAmount - dealAmount, 5)}`, "cyan")
-
                 break
             }         
         }
