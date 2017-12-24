@@ -1,7 +1,7 @@
 const util = require('../util/util.js')
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/HedgeTest.js')
+const HedgeTest = require('../strategy/hedgeTest.js')
 const Trade = require('../service/trade.js')
 const Backtest = require('./backtest.js')
 
