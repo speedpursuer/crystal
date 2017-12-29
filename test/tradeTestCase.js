@@ -1,5 +1,5 @@
 const should = require('should');
-const Hedge = require('../strategy/hedge.js')
+const Hedge = require('../strategy/hedgeTest.js')
 const Trade = require('../service/trade.js')
 const util = require('../util/util.js')
 const _ = require('lodash')

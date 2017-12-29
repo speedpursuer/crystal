@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.1
-const minMargin = 0.00002
+const minMargin = 0.00003
 
 
 class HedgeTest extends Strategy {
@@ -43,7 +43,7 @@ class HedgeTest extends Strategy {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
             var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
-            tradeAmount = _.floor(tradeAmount, buyExchange.precision)
+            tradeAmount = this.adjustedTradeAmount(sellExchange, buyExchange, tradeAmount)
             var margin = sellExchange.earnForSellOne - buyExchange.payForBuyOne
             var profit = margin * tradeAmount
             var points = this.getPoints(profit, margin)
@@ -59,7 +59,7 @@ class HedgeTest extends Strategy {
         }
     }
 
-    async balance() {        
+    async balance() {
         if(this.stockDiff > 0) {
             var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
@@ -73,7 +73,7 @@ class HedgeTest extends Strategy {
         }else {
             var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
             for(var exchange of ascList) {
-                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
+                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)
                 if(exchange.canBuySuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount)
@@ -86,6 +86,10 @@ class HedgeTest extends Strategy {
 
     getPoints(profit, margin) {
         return profit * 0.2 + margin * 0.8
+    }
+
+    adjustedTradeAmount(e1, e2, amount) {
+        return _.floor(amount, Math.min(e1.precision, e2.precision))
     }
 }
 module.exports = HedgeTest
