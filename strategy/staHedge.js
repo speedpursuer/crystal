@@ -2,14 +2,14 @@ const Hedge = require('./hedge.js')
 const _ = require('lodash')
 
 const maxAmountOnce = 1
-const orderRate = 0.2
+const orderRate = 0.1
 const rate = 2
 
 
 class StaHedge extends Hedge {
 
     before() {
-        var data = "{\"bitfinex-bittrex\":{\"posAvg\":-0.0000943483143942751,\"posStd\":0.00018610554761110996,\"negAvg\":-0.00007276994876443928,\"negStd\":0.00017191347021522761},\"bitfinex-hitbtc\":{\"posAvg\":-0.00007862165560756253,\"posStd\":0.00010065501220192463,\"negAvg\":-0.00005595967222563729,\"negStd\":0.00008850773578591357},\"bitfinex-okex\":{\"posAvg\":-0.000016804896653209144,\"posStd\":0.00007173506755250118,\"negAvg\":-0.00009894292916033036,\"negStd\":0.00008636260674306781},\"bitfinex-poloniex\":{\"posAvg\":-0.00009543122056724283,\"posStd\":0.00009658736786047892,\"negAvg\":-0.0000769025760521426,\"negStd\":0.00008352403923610972},\"bittrex-hitbtc\":{\"posAvg\":-0.00007211280754663452,\"posStd\":0.00014329787327361558,\"negAvg\":-0.00007302251497195902,\"negStd\":0.00014984430478202842},\"bittrex-okex\":{\"posAvg\":-0.000009302864796499162,\"posStd\":0.00019827888300324404,\"negAvg\":-0.00011729718664567542,\"negStd\":0.00021163174798947227},\"bittrex-poloniex\":{\"posAvg\":-0.00008854409065791569,\"posStd\":0.00014481665013948948,\"negAvg\":-0.00009369957179748965,\"negStd\":0.00015263534812476765},\"hitbtc-okex\":{\"posAvg\":0.0000058611135220006355,\"posStd\":0.00011651512771520773,\"negAvg\":-0.0001004007055587701,\"negStd\":0.00012812467685263427},\"hitbtc-poloniex\":{\"posAvg\":-0.00007301071080778101,\"posStd\":0.00004264326721565012,\"negAvg\":-0.00007720613778162322,\"negStd\":0.00004347325191430685},\"okex-poloniex\":{\"posAvg\":-0.00011694977462223259,\"posStd\":0.00012540736851354695,\"negAvg\":-0.000014811593591945124,\"negStd\":0.00011016646505760629}}"
+        var data = "{\"binance-bitfinex\":{\"posAvg\":-0.001456818515422717,\"posStd\":0.0005287344405383319,\"negAvg\":-0.0005634407486586694,\"negStd\":0.00044538231383919197}}"
         this.list = JSON.parse(data)
         this.log(this.list)
     }
@@ -66,7 +66,12 @@ class StaHedge extends Hedge {
     }
 
     isSpreaded(spread, mean, std) {
-        if((spread - mean) / std >= rate) {
+
+        // var rt = Math.max(-mean / std, rate)
+
+        var rt = rate
+
+        if((spread - mean) / std >= rt) {
             return true
         }
         return false

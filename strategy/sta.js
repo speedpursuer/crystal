@@ -30,8 +30,8 @@ class Sta extends Strategy {
     }
 
     async after() {
-        this.showData()
-        // util.log(JSON.stringify(result))
+        this.showData()  // 测试用
+        // await this.saveData()
     }
 
     showData() {
@@ -52,29 +52,29 @@ class Sta extends Strategy {
         var result = []
         _.forEach(this.data, function (value, key) {
 
+            result.push({
+                pos: value.posDiff,
+                neg: value.negDiff,
+                time: value.time,
+                name: key
+            })
+
             // util.log(key)
             // that.printArray("time", )
             // that.printArray("pos", value.posDiff)
             // that.printArray("neg", )
 
-            // result.push({
-            //     pos: value.posDiff,
-            //     neg: value.negDiff,
-            //     time: value.time,
-            //     name: key
-            // })
-
-            result[key] = {
-                posAvg: math.mean(value.posDiff),
-                posStd: math.std(value.posDiff),
-                negAvg: math.mean(value.negDiff),
-                negStd: math.std(value.negDiff),
-            }
+            // result[key] = {
+            //     posAvg: math.mean(value.posDiff),
+            //     posStd: math.std(value.posDiff),
+            //     negAvg: math.mean(value.negDiff),
+            //     negStd: math.std(value.negDiff),
+            // }
         })
 
-        util.log(JSON.stringify(result))
+        // util.log(JSON.stringify(result))
 
-        // await this.database.saveDataWithKey(result, this.crypto)
+        await this.database.saveDataWithKey(result, this.crypto)
     }
 
     printArray(name, array) {

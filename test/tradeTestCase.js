@@ -28,13 +28,12 @@ describe('测试trade和stratege', async function() {
 	}
 
 	async function initETH_BTC() {
-		exchangeIDs = ['binance', 'bittrex']
+		exchangeIDs = ['okex', 'hitbtc']
 		trade = new Trade(exchangeIDs, new Hedge('ETH', 'BTC', true), 1, 30, true)
 		await trade.init()
 	}
 
 	async function initBTC_BCH() {
-		global.realMode = true
 		exchangeIDs = ['okex', 'hitbtc']
 		trade = new Trade(exchangeIDs, new Hedge('BCH', 'BTC', true), 1000, 10, true)
 		await trade.init()
@@ -46,14 +45,14 @@ describe('测试trade和stratege', async function() {
   	describe('单次对冲交易', async function() {
     	it('查看对冲细节', async function() {
     		// await trade.updateOrderBook()
-            trade.exchanges['binance'].orderBooks = {
-            	"bids":[[0.02873272,0.23]],
+            trade.exchanges['hitbtc'].orderBooks = {
+            	"bids":[[0.02873272,2.23]],
                 "asks":[[0.02686814,0.453]]
             }
 
-            trade.exchanges['bittrex'].orderBooks = {
+            trade.exchanges['okex'].orderBooks = {
                 "bids":[[0.02673272,0.345]],
-                "asks":[[0.025,0.134]]
+                "asks":[[0.025,1.92]]
             }
 
       		await trade.strategy.doTrade()
@@ -117,9 +116,5 @@ describe('测试trade和stratege', async function() {
         		break
         	}
         }
-	}
-
-	async function testTrade() {
-		global.realMode = true
 	}
 })

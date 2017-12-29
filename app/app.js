@@ -42,7 +42,7 @@ async function test(){
     global.realMode = false
     global.realSim = true
     try {
-        var backtest = new Backtest("2017-12-18 11:24:42", null, false)
+        var backtest = new Backtest("2017-12-23 00:00:00", "2017-12-26 09:18:26", false)
 
         // var backtest = new Backtest("2017-12-12 10:14:49", "2017-12-15 10:14:49", false)
         // var backtest = new Backtest("2017-12-12 10:14:49", "2017-12-13 00:14:49", false)
@@ -59,14 +59,14 @@ async function test(){
         // await backtest.BTC()
         // await backtest.LTC()
         // await backtest.ETH()
-        // await backtest.BCH()
+        await backtest.BCH()
         // await backtest.XMR()
         // await backtest.DASH()
         // await backtest.XRP()
-        await backtest.EOS()
+        // await backtest.EOS()
         // await backtest.EOSETH()
         // await backtest.QTUM()
-        // await backtest.IOT()
+        // await backtest.IOTA()
         // await backtest.BCHTest(['Bitfinex', 'okex'])
         // await backtest.BCHTest(['Poloniex', 'Bittrex', 'hitbtc', 'okex', 'Bitfinex'])     
         process.exit()

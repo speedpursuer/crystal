@@ -7,17 +7,17 @@ const Trade = require('../service/trade.js')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 13873 * 3
-const btc_price = 13873
+const total_budget = 13324 * 2
+const btc_price = 13324
 const ltc_price = 351
 const eth_price = 676
-const bch_price = 1719
+const bch_price = 2730
 const xmr_price = 357
 const xrp_price = 0.73
 const eos_price = 8.64
 const dash_price = 1090
-const iot_price = 4
-const qtum_price = 55
+const iot_price = 3.4
+const qtum_price = 47
 
 class Backtest {
 	constructor(start, end, debug) {
@@ -62,8 +62,10 @@ class Backtest {
         // var exchangeIDs = ['Bittrex', 'okex', 'Binance']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'Binance', 'huobipro', 'hitbtc']
         // var exchangeIDs = ['okex', 'binance', 'Bittrex', 'huobipro']
-        var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'huobipro']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
+
+        var exchangeIDs = ['Bitfinex', 'binance']
+        // var exchangeIDs = ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance']
 	    await this._BCH(exchangeIDs)
 	}
 
@@ -84,7 +86,7 @@ class Backtest {
 	}
 
 	async EOS() {
-        var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc']
+        var exchangeIDs = ['Bitfinex', 'huobipro', 'OKEx', 'hitbtc']
         // var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc']
         await this.backtest(exchangeIDs, "EOS", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
 	}
@@ -99,7 +101,7 @@ class Backtest {
         await this.backtest(exchangeIDs, "QTUM", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/qtum_price/exchangeIDs.length)
 	}
 
-    async IOT() {
+    async IOTA() {
         var exchangeIDs = ['Bitfinex', 'Binance', 'OKEx']
         await this.backtest(exchangeIDs, "IOTA", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/iot_price/exchangeIDs.length)
     }
@@ -178,8 +180,8 @@ class Backtest {
 	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
-        var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
-        // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 		await trade.init()
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market

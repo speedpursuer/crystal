@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.1
-const minMargin = 0.00002
+const minMargin = 0.00003
 
 
 class Hedge extends Strategy {
@@ -41,7 +41,7 @@ class Hedge extends Strategy {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
             var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
-            tradeAmount = _.floor(tradeAmount, buyExchange.precision)
+            tradeAmount = this.adjustedTradeAmount(sellExchange, buyExchange, tradeAmount)
             var margin = sellExchange.earnForSellOne - buyExchange.payForBuyOne
             var profit = margin * tradeAmount
             var points = this.getPoints(profit, margin)
@@ -55,6 +55,10 @@ class Hedge extends Strategy {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
             }
         }
+    }
+
+    adjustedTradeAmount(e1, e2, amount) {
+	    return _.floor(amount, Math.min(e1.precision, e2.precision))
     }
 
     async balance() {        
