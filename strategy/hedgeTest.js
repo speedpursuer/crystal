@@ -4,7 +4,7 @@ const _ = require('lodash')
 
 const maxAmountOnce = 1
 const orderRate = 0.1
-const minMargin = 0.00003
+const minMargin = 0.0001
 
 
 class HedgeTest extends Strategy {
