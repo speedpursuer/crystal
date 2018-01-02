@@ -2,12 +2,14 @@ const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
-const maxAmountOnce = 1
-const orderRate = 0.1
-const minMargin = 0.0001
-
 
 class HedgeTest extends Strategy {
+
+    before() {
+        this.maxAmountOnce = this.getConfig('maxAmountOnce')
+        this.orderRate = this.getConfig('orderRate')
+        this.minMargin = this.getConfig('minMargin')
+    }
     
 	async doTrade() {
         if(this.exchanges.length == 0) {
@@ -42,7 +44,7 @@ class HedgeTest extends Strategy {
     findPair(sellExchange, buyExchange) {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
-            var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
+            var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * this.orderRate, buyExchange.sell1Amount * this.orderRate, this.maxAmountOnce)
             tradeAmount = this.adjustedTradeAmount(sellExchange, buyExchange, tradeAmount)
             var margin = sellExchange.earnForSellOne - buyExchange.payForBuyOne
             var profit = margin * tradeAmount
@@ -52,7 +54,7 @@ class HedgeTest extends Strategy {
 
             if(sellExchange.canSellSuch(tradeAmount) &&
                 buyExchange.canBuySuch(tradeAmount) &&
-                margin > minMargin &&
+                margin > this.minMargin &&
                 points > this.bestPair.points) {
                 this.bestPair = {sellExchange, buyExchange, tradeAmount, profit, margin, points}
             }
@@ -63,7 +65,7 @@ class HedgeTest extends Strategy {
         if(this.stockDiff > 0) {
             var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
-                var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
+                var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * this.orderRate, this.maxAmountOnce)
                 if(exchange.canSellSuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)
@@ -73,7 +75,7 @@ class HedgeTest extends Strategy {
         }else {
             var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
             for(var exchange of ascList) {
-                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)
+                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * this.orderRate, this.maxAmountOnce)
                 if(exchange.canBuySuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount)

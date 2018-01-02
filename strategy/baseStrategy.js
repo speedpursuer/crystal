@@ -5,10 +5,12 @@ const cryptoInfo = require('../config/cryptoInfo.js')
 
 class Strategy {
 
-	constructor(crypto,fiat, debug=true){
+	constructor(crypto, fiat, config){
         this.crypto = crypto
         this.fiat = fiat
-        this.debug = debug    
+		this.config = config
+        this.debug = this.getConfig("debug")
+		this.maxLoss = this.getConfig("maxLoss")
     }
 
 	async init(exchanges){
@@ -47,7 +49,7 @@ class Strategy {
 	}
 
 	get condition() {
-		if(this.currProfit < -0.001) {
+		if(this.currProfit < this.maxLoss) {
 			util.log.red("账户异常，退出交易")
 			return false
 		}
@@ -98,6 +100,14 @@ class Strategy {
 
     before() {
 	}
+
+    getConfig(name) {
+        var value = util.deepGet(this.config, name)
+        if(value === undefined) {
+        	throw `${name} not found in config`
+		}
+		return value
+    }
 	
 	doTrade() {
 		util.log.red("doTrade() must be implemented, exiting app")

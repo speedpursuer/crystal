@@ -2,20 +2,19 @@ const util = require ('../util/util.js')
 const factory = require ('./API/exchangeFactory.js')
 const _ = require('lodash')
 
-const ORDER_STATE_PENDING = 'open'
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
-const precision = 5
+// const ORDER_STATE_PENDING = 'open'
+// const precision = 5
 
-const slippage = 0.0005
+const defaultSlippage = 0.0005
 const defaultMinTrade = 0.0005
 const defaultPrecision = 5
 const defaultMinOrderSize = 0.0001
 
 
 class Exchange {
-	constructor(id, crypto, fiat, initBalance, initStocks, debug=true) {
-        var info = util.getExchangeInfo(id)
+	constructor(info, crypto, fiat, initBalance, initStocks, debug=true) {
 		
         this.exchangeDelegate = factory.createExchange(info, crypto, fiat, initBalance, initStocks, debug)  
 
@@ -26,8 +25,8 @@ class Exchange {
         this.minTrade = this.getValue(info.minTrade, defaultMinTrade)
         this.precision = this.getValue(info.precision, defaultPrecision)
         this.minOrderSize = this.getValue(info.minOrderSize, defaultMinOrderSize)
-        
-        this.slippage = slippage
+        this.slippage = this.getValue(info.slippage, defaultSlippage)
+
         this.crypto = crypto
         this.debug = debug
 

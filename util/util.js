@@ -1,10 +1,7 @@
 const Promise = require('bluebird');
 const log = require ('ololog').configure ({ locate: false, time: true })
 const moment = require('moment')
-// const exchangeInfo = require('../config/exchangeInfo.js')
-const exchangeInfo = require('../config/exchangeInfo_bch.js')
-// const exchangeInfo = require('../config/exchangeInfo_eth.js')
-// const exchangeInfo = require('../config/exchangeInfo_xmr.js')
+
 
 class Util{
 	sleep(ms) {
@@ -72,13 +69,6 @@ class Util{
 
 		    return doIt(foundSoFar, remainingProperties);
 		}    
-	}
-
-	getExchangeInfo(id) {
-		var id = id.toLowerCase()
-        var info = exchangeInfo[id]
-        info.id = id
-        return info
 	}
 
 	getExRate(fiat) {

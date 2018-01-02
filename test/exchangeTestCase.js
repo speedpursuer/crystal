@@ -1,6 +1,7 @@
 const should = require('should');
 const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
+const TradeConfig = require('../config/tradeConfig')
 
 
 describe.only('测试 exchange', async function() {
@@ -23,8 +24,10 @@ describe.only('测试 exchange', async function() {
             var base = 'ETH', quote = 'BTC'
             var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex']
 
+            let config = getConfig(base, quote)
+
             for(var id of exchangeIDs) {
-                var exchange = new Exchange(id, base, quote, 100, 2)
+                var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
                 await exchange.fetchAccount()
                 util.log(JSON.stringify(await exchange.fetchOrderBook()))
                 util.log('sell1Price', exchange.sell1Price)
@@ -46,9 +49,11 @@ describe.only('测试 exchange', async function() {
 
     		var exchangeIDs = ['hitbtc']
 
+            let config = getConfig(base, quote)
+
     		// var list = []
     		for(var id of exchangeIDs) {
-    			var exchange = new Exchange(id, base, quote, 100, 2)
+    			var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
     			await exchange.testOrder(buyPrice, sellPrice, amount)
     			// list.push(exchange.testOrder(buyPrice, sellPrice, amount))
     		}
@@ -66,9 +71,11 @@ describe.only('测试 exchange', async function() {
             var exchangeIDs = ['huobipro']
             // var exchangeIDs = ['okex', 'huobipro', 'Quoine']
 
+            let config = getConfig(base, quote)
+
             // var list = []
             for(var id of exchangeIDs) {
-                var exchange = new Exchange(id, base, quote, 100, 2)
+                var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
                 await exchange.testOrder(buyPrice, sellPrice, amount)
                 // list.push(exchange.testOrder(buyPrice, sellPrice, amount))
             }
@@ -76,10 +83,12 @@ describe.only('测试 exchange', async function() {
         })
     })
 
-  	describe('获取市场深度', async function() {  		
-    	it('返回数量压缩不超过5', async function() {   
-    		// ['Bitfinex', 'Poloniex', 'Bittrex', 'Bitstamp', 'okcoinusd']   		      		
-    		var exchange = new Exchange('bitstamp', "BTC", true)
+  	describe.only('获取市场深度', async function() {
+    	it('返回数量压缩不超过5', async function() {
+            var base = 'BTC', quote = 'USD'
+            let config = getConfig(base, quote)
+
+    		var exchange = new Exchange(config.exchangeInfo('bitstamp'), base, quote, true)
     		var orderBook = await exchange.fetchOrderBook()
     		util.log(orderBook)		
     		orderBook.bids.length.should.not.be.above(5)
@@ -93,7 +102,9 @@ describe.only('测试 exchange', async function() {
             global.realSim = false
 
             var base = 'BCH', quote = 'BTC'
-            var exchange = new Exchange('Bitfinex', base, quote, 10, 100)
+            let config = getConfig(base, quote)
+
+            var exchange = new Exchange(config.exchangeInfo('Bitfinex'), base, quote, 10, 100)
 
 			await exchange.fetchAccount()
 
@@ -106,4 +117,9 @@ describe.only('测试 exchange', async function() {
             exchange.limitBuy(tradeAmount)
         })
     })
+
+
+    function getConfig(base, quote) {
+        return new TradeConfig(`${base}/${quote}`)
+    }
 })

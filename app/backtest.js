@@ -1,6 +1,6 @@
 const util = require('../util/util.js')
 const database = require('../service/database.js')
-const Hedge = require('../strategy/hedge.js')
+const HedgeTest = require('../strategy/hedgeTest.js')
 const Sta = require('../strategy/sta.js')
 const StaHedge = require('../strategy/staHedge.js')
 const Trade = require('../service/trade.js')
@@ -13,10 +13,10 @@ const ltc_price = 351
 const eth_price = 676
 const bch_price = 2730
 const xmr_price = 357
-const xrp_price = 0.73
+const xrp_price = 1.8
 const eos_price = 8.64
 const dash_price = 1090
-const iot_price = 3.4
+const iot_price = 3.7
 const qtum_price = 47
 
 class Backtest {
@@ -64,8 +64,8 @@ class Backtest {
         // var exchangeIDs = ['okex', 'binance', 'Bittrex', 'huobipro']
         // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
 
-        var exchangeIDs = ['Bitfinex', 'binance']
-        // var exchangeIDs = ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance']
+        // var exchangeIDs = ['Bitfinex', 'binance']
+        var exchangeIDs = ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance']
 	    await this._BCH(exchangeIDs)
 	}
 
@@ -107,7 +107,7 @@ class Backtest {
     }
 
 	async _BCH(exchangeIDs) {
-		return await this.backtest(exchangeIDs, "BCH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
+		return await this.backtest("Backtest_BCH/BTC", exchangeIDs, total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
 	}
 
     async _ETH(exchangeIDs) {
@@ -177,11 +177,13 @@ class Backtest {
         }
 	}
 
-	async backtest(exchangeIDs, base, quote, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
+	async backtest(key, exchangeIDs, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
-        // var trade = new Trade(exchangeIDs, new Hedge(base, quote, this.debug), initBalance, initStocks, this.debug)
-        var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new HedgeTest(base, quote, this.debug), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
+
+        var trade = new Trade(key, exchangeIDs, initBalance, initStocks, this.debug)
 		await trade.init()
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
@@ -231,4 +233,44 @@ class Backtest {
 		}
 	}
 }
-module.exports = Backtest
+
+async function test(){
+    global.realMode = false
+    global.realSim = true
+    try {
+        var backtest = new Backtest("2018-01-02 00:00:00", null , false)
+
+        // await backtest.BTC()
+        // await backtest.LTC()
+        // await backtest.ETH()
+        await backtest.BCH()
+        // await backtest.XMR()
+        // await backtest.DASH()
+        // await backtest.XRP()
+        // await backtest.EOS()
+        // await backtest.EOSETH()
+        // await backtest.QTUM()
+        // await backtest.IOTA()
+
+        process.exit()
+    }catch (e) {
+        util.log.bright.yellow(e)
+        process.exit()
+    }
+}
+
+async function testBatch(){
+    var backtest = new Backtest("2017-12-13 21:14:49", "2017-12-16 21:14:49", false)
+    // var backtest = new Backtest("2017-11-19 00:00:00", null, false)
+    // await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'])
+    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'Binance', 'okex', 'huobipro'], 'BCH')
+    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'ETH')
+    // await backtest.batchTest(['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb'], 'BTC')
+    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'BCH')
+    // await backtest.batchTest(['okex', 'huobipro', 'quoine', 'zb'], 'BTC')
+    await backtest.batchTest(['hitbtc', 'Poloniex', 'Bitfinex', 'Bittrex', 'Binance'], 'XMR')
+}
+
+test()
+
+// module.exports = Backtest

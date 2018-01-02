@@ -1,17 +1,20 @@
+const _ = require('lodash')
 const util = require ('../util/util.js')
 const Exchange = require('./exchange.js')
-const _ = require('lodash')
+const TradeConfig = require('../config/tradeConfig')
+
 const Interval = 2000
 
 class Trade{
-	constructor(ids, strategy, initBalance, initStocks, debug=true){				
-		this.debug = debug
-		this.strategy = strategy
-		this.exchangesIDs = _.sortBy(_.map(ids, function(i) {return i.toLowerCase()}) )
+	constructor(tradeName, exchangeIDs, initBalance, initStocks, debug=true){
+        let tradeConfig = new TradeConfig(tradeName)
+		this.strategy = tradeConfig.strategy
+		this.exchangesIDs = _.sortBy(_.map(exchangeIDs? exchangeIDs: tradeConfig.exchanges, function(i) {return i.toLowerCase()}) )
 		this.exchanges = {}
 		for(var id of this.exchangesIDs) {
-			this.exchanges[id] = new Exchange(id, this.strategy.crypto, this.strategy.fiat, initBalance, initStocks, this.debug)
+			this.exchanges[id] = new Exchange(tradeConfig.exchangeInfo(id), this.strategy.crypto, this.strategy.fiat, initBalance, initStocks, debug)
 		}
+        this.debug = debug
 	}
 
 	async init(){		

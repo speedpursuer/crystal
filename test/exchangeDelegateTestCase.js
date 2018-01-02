@@ -2,6 +2,7 @@ const should = require('should');
 const util = require('../util/util.js')
 const ExchangeDelegate = require('../service/API/exchangeDelegate')
 const factory = require ('../service/API/exchangeFactory.js')
+const TradeConfig = require('../config/tradeConfig')
 
 
 describe('单元测试ExchangeDelegate', async function() {
@@ -15,8 +16,11 @@ describe('单元测试ExchangeDelegate', async function() {
     var balance = {}
 
 	before(async function() {
-        global.realMode = false
-    	var info = util.getExchangeInfo(exchange)
+        global.realMode = true
+
+        let config = new TradeConfig(symbol)
+        let info = config.exchangeInfo(exchange)
+
         balance = {
             balance: 10,
             frozenBalance: 0,
@@ -24,7 +28,6 @@ describe('单元测试ExchangeDelegate', async function() {
             frozenStocks: 0
         }
         exchangeDelegate = factory.createExchange(info, base, quote, balance.balance, balance.stocks, true)
-        // exchangeDelegate = factory.createExchange(info, "BCH", "BTC", balance.balance, balance.stocks, true)
 	})
 
 	beforeEach(async function(){

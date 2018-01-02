@@ -1,5 +1,5 @@
 const should = require('should');
-const Hedge = require('../strategy/hedgeTest.js')
+const HedgeTest = require('../strategy/hedgeTest.js')
 const Trade = require('../service/trade.js')
 const util = require('../util/util.js')
 const _ = require('lodash')
@@ -22,20 +22,20 @@ describe('测试trade和stratege', async function() {
 	})
 
 	async function initBTC_USD() {
-		exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']  
-		trade = new Trade(exchangeIDs, new Hedge('BTC', 'USD'))		
+		exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']
+		trade = new Trade('BTC/USD', exchangeIDs)
 		await trade.init()
 	}
 
 	async function initETH_BTC() {
-		exchangeIDs = ['okex', 'hitbtc']
-		trade = new Trade(exchangeIDs, new Hedge('ETH', 'BTC', true), 1, 30, true)
+		exchangeIDs = ['bittrex', 'hitbtc']
+        trade = new Trade('ETH/BTC', exchangeIDs, 1, 30, true)
 		await trade.init()
 	}
 
 	async function initBTC_BCH() {
 		exchangeIDs = ['okex', 'hitbtc']
-		trade = new Trade(exchangeIDs, new Hedge('BCH', 'BTC', true), 1000, 10, true)
+        trade = new Trade('BCH/BTC', exchangeIDs, 1000, 10, true)
 		await trade.init()
 	}
 
@@ -50,7 +50,7 @@ describe('测试trade和stratege', async function() {
                 "asks":[[0.02686814,0.453]]
             }
 
-            trade.exchanges['okex'].orderBooks = {
+            trade.exchanges['bittrex'].orderBooks = {
                 "bids":[[0.02673272,0.345]],
                 "asks":[[0.025,1.92]]
             }
