@@ -49,7 +49,7 @@ async function display() {
 	var key
 
 	if (process.argv.length < 3) {
-		var keys = (await client.keysAsync('2018*')).sort()
+		var keys = (await client.keysAsync('*')).sort()
 		key = keys[keys.length-1]
 	}else if (process.argv.length == 3){
 		key = process.argv.slice(2)
