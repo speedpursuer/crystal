@@ -10,7 +10,6 @@ function getTradeName() {
 }
 
 async function main() {
-    global.realMode = true
     try {
         var trade = new Trade(getTradeName())
         trade.run()

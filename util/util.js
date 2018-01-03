@@ -110,6 +110,13 @@ class Util{
 
 	    return resolver.promise;
 	}
+
+	isArray(variable) {
+        if(variable instanceof Array) {
+        	return true
+		}
+		return false
+	}
 }
 var util = new Util()
 module.exports = util

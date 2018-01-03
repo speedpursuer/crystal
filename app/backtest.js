@@ -1,23 +1,20 @@
 const util = require('../util/util.js')
 const database = require('../service/database.js')
-const HedgeTest = require('../strategy/hedgeTest.js')
-const Sta = require('../strategy/sta.js')
-const StaHedge = require('../strategy/staHedge.js')
-const Trade = require('../service/trade.js')
+const TradeSim = require('../service/tradeSim')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const total_budget = 13324 * 2
-const btc_price = 13324
-const ltc_price = 351
-const eth_price = 676
-const bch_price = 2730
-const xmr_price = 357
-const xrp_price = 1.8
-const eos_price = 8.64
-const dash_price = 1090
-const iot_price = 3.7
-const qtum_price = 47
+const btc_price = 15040
+const total_budget = btc_price * 2
+const ltc_price = 249
+const eth_price = 873
+const bch_price = 2662
+const xmr_price = 391
+const xrp_price = 2.7
+const eos_price = 9.23
+const dash_price = 1181
+const iot_price = 4.01
+const qtum_price = 59
 
 class Backtest {
 	constructor(start, end, debug) {
@@ -26,115 +23,68 @@ class Backtest {
 		this.debug = debug
 	}
 
-	async BTC() {
-        // var exchangeIDs = ['okex', 'huobipro']
+    async BTC(pairExchangeIDs=null) {
         var exchangeIDs = ['okex', 'huobipro', 'quoine', 'zb']
-        // var exchangeIDs = ['okex', 'huobipro', 'Quoine', 'zb']
-        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb']
-	    await this._BTC(exchangeIDs)
-	}
+        await this.backtest("Backtest_BTC/USD", exchangeIDs, pairExchangeIDs, btc_price, 1)
+    }
 
-	async LTC() {
-	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-	    await this.backtest(exchangeIDs, "LTC", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/ltc_price/exchangeIDs.length)
-	}
-
-	async ETH() {
-        var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance']
-        // var exchangeIDs = ['okex', 'hitbtc', 'binance', 'poloniex']
-        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro', 'okex', 'hitbtc', 'Binance']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'huobipro', 'okex', 'hitbtc']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'huobipro']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-        // await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
-        await this._ETH(exchangeIDs)
-	}
-
-	async BCH() {
-	    // var exchangeIDs = ['hitbtc', 'okex']
-	    // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro']
-        // var exchangeIDs = ['Bitfinex', 'Bittrex', 'okex', 'hitbtc']
-        // var exchangeIDs = ['Bitfinex', 'huobipro', 'Bittrex', 'okex', 'Binance', 'hitbtc']
-        // var exchangeIDs = ['Bittrex', 'okex', 'Binance']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'okex', 'Binance', 'huobipro', 'hitbtc']
-        // var exchangeIDs = ['okex', 'binance', 'Bittrex', 'huobipro']
-        // var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance']
-
-        // var exchangeIDs = ['Bitfinex', 'binance']
+    async BCH(pairExchangeIDs=null) {
         var exchangeIDs = ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance']
-	    await this._BCH(exchangeIDs)
-	}
+        await this.backtest("Backtest_BCH/BTC", exchangeIDs, pairExchangeIDs, bch_price, btc_price)
+    }
 
-	async XMR() {
-	    var exchangeIDs = ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance']
-        // var exchangeIDs = ['hitbtc', 'Poloniex', 'Bitfinex', 'Bittrex', 'Binance']
-        await this._XMR(exchangeIDs)
-	}
+    async ETH(pairExchangeIDs=null) {
+        var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance']
+		await this.backtest("Backtest_ETH/BTC", exchangeIDs, pairExchangeIDs, eth_price, btc_price)
+    }
 
-    async DASH() {
+    async DASH(pairExchangeIDs=null) {
         var exchangeIDs = ['hitbtc', 'Binance', 'Poloniex', 'Bittrex', 'Bitfinex']
-        await this._DASH(exchangeIDs)
+		await this.backtest("Backtest_DASH/BTC", exchangeIDs, pairExchangeIDs, dash_price, btc_price)
     }
 
-	async XRP() {
+    async XMR(pairExchangeIDs=null) {
+        var exchangeIDs = ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance']
+		await this.backtest("Backtest_XMR/BTC", exchangeIDs, pairExchangeIDs, xmr_price, btc_price)
+    }
+
+	async LTC(pairExchangeIDs=null) {
+	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex']
+	    await this.backtest("Backtest_LTC/BTC", exchangeIDs, pairExchangeIDs, ltc_price, btc_price)
+	}
+
+	async XRP(pairExchangeIDs=null) {
 	    var exchangeIDs = ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp']
-	    await this.backtest(exchangeIDs, "XRP", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xrp_price/exchangeIDs.length)
+	    await this.backtest("Backtest_XRP/BTC", exchangeIDs, pairExchangeIDs, xrp_price, btc_price)
 	}
 
-	async EOS() {
+	async EOS(pairExchangeIDs=null) {
         var exchangeIDs = ['Bitfinex', 'huobipro', 'OKEx', 'hitbtc']
-        // var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc']
-        await this.backtest(exchangeIDs, "EOS", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
+        await this.backtest("Backtest_EOS/BTC", exchangeIDs, pairExchangeIDs, eos_price, btc_price)
 	}
 
-    async EOSETH() {
+    async EOSETH(pairExchangeIDs=null) {
         var exchangeIDs = ['Bitfinex', 'Binance', 'huobipro', 'hitbtc']
-        await this.backtest(exchangeIDs, "EOS", "ETH", total_budget/eth_price/exchangeIDs.length, total_budget/eos_price/exchangeIDs.length)
+        await this.backtest("Backtest_EOS/ETH", exchangeIDs, pairExchangeIDs, eos_price, eth_price)
     }
 
-    async QTUM() {
+    async QTUM(pairExchangeIDs=null) {
         var exchangeIDs = ['Bittrex', 'Bitfinex', 'Binance', 'OKEx', 'huobipro']
-        await this.backtest(exchangeIDs, "QTUM", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/qtum_price/exchangeIDs.length)
+        await this.backtest("Backtest_QTUM/BTC", exchangeIDs, pairExchangeIDs, qtum_price, btc_price)
 	}
 
-    async IOTA() {
+    async IOTA(pairExchangeIDs=null) {
         var exchangeIDs = ['Bitfinex', 'Binance', 'OKEx']
-        await this.backtest(exchangeIDs, "IOTA", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/iot_price/exchangeIDs.length)
+        await this.backtest("Backtest_IOTA/BTC", exchangeIDs, pairExchangeIDs, iot_price, btc_price)
     }
-
-	async _BCH(exchangeIDs) {
-		return await this.backtest("Backtest_BCH/BTC", exchangeIDs, total_budget/btc_price/exchangeIDs.length, total_budget/bch_price/exchangeIDs.length)
-	}
-
-    async _ETH(exchangeIDs) {
-        await this.backtest(exchangeIDs, "ETH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/eth_price/exchangeIDs.length)
-    }
-
-	async _BTC(exchangeIDs) {
-	    return await this.backtest(exchangeIDs, "BTC", "USD", total_budget/exchangeIDs.length, total_budget/btc_price/exchangeIDs.length)
-	}
-
-    async _DASH(exchangeIDs) {
-        await this.backtest(exchangeIDs, "DASH", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/dash_price/exchangeIDs.length)
-    }
-
-    async _XMR(exchangeIDs) {
-        await this.backtest(exchangeIDs, "XMR", "BTC", total_budget/btc_price/exchangeIDs.length, total_budget/xmr_price/exchangeIDs.length)
-	}
 
 	async batchTest(list, test) {
-		global.realMode = false
-	    global.realSim = true
-	    try {              	        
+	    try {
 	        var result = []
 
-	        for(var i=0; i<list.length; i++) {         
+	        for(var i=0; i<list.length; i++) {
 	            for(var j=i+1; j<list.length; j++) {
-	                result.push(await this[`_${test}`]([list[i], list[j]]))
+	                result.push(await this[`${test}`]([list[i], list[j]]))
 	            }
 	        }
 
@@ -160,9 +110,9 @@ class Backtest {
             })
 
 	        process.exit()
-	    }catch (e) {        
+	    }catch (e) {
 	        util.log.bright.yellow(e)
-	        process.exit()  
+	        process.exit()
 	    }
 
         function setValue(result, key, value) {
@@ -177,13 +127,17 @@ class Backtest {
         }
 	}
 
-	async backtest(key, exchangeIDs, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
+    async backtest(key, exchangeIDs, pairExchangeIDs, basePrice, quotePrice) {
+        return await this.test(key, pairExchangeIDs? pairExchangeIDs: exchangeIDs, total_budget/quotePrice/exchangeIDs.length, total_budget/basePrice/exchangeIDs.length)
+	}
+
+	async test(key, exchangeIDs, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new HedgeTest(base, quote, this.debug), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 
-        var trade = new Trade(key, exchangeIDs, initBalance, initStocks, this.debug)
+        var trade = new TradeSim(key, initBalance, initStocks, exchangeIDs, this.debug)
 		await trade.init()
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
@@ -235,22 +189,20 @@ class Backtest {
 }
 
 async function test(){
-    global.realMode = false
-    global.realSim = true
     try {
-        var backtest = new Backtest("2018-01-02 00:00:00", null , false)
+        var backtest = new Backtest("2017-12-30 00:00:00", '2018-01-03 00:00:00', false)
 
         // await backtest.BTC()
         // await backtest.LTC()
         // await backtest.ETH()
-        await backtest.BCH()
+        // await backtest.BCH()
         // await backtest.XMR()
         // await backtest.DASH()
         // await backtest.XRP()
         // await backtest.EOS()
         // await backtest.EOSETH()
         // await backtest.QTUM()
-        // await backtest.IOTA()
+        await backtest.IOTA()
 
         process.exit()
     }catch (e) {
@@ -272,5 +224,3 @@ async function testBatch(){
 }
 
 test()
-
-// module.exports = Backtest

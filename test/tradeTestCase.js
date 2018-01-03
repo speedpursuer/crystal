@@ -1,6 +1,6 @@
 const should = require('should');
 const HedgeTest = require('../strategy/hedgeTest.js')
-const Trade = require('../service/trade.js')
+const TradeSim = require('../service/tradeSim')
 const util = require('../util/util.js')
 const _ = require('lodash')
 
@@ -13,38 +13,36 @@ describe('测试trade和stratege', async function() {
 	this.timeout(50000)
 
 	before(async function() {
-		global.realMode = false
-		global.realSim = false
-
-		await initETH_BTC()
+		// await initETH_BTC()
 		// await initBTC_USD()
 		// await initLTC_BTC()						
 	})
 
+    after(async function(){
+    })
+
 	async function initBTC_USD() {
 		exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']
-		trade = new Trade('BTC/USD', exchangeIDs)
+		trade = new TradeSim('BTC/USD', 20000, 1, exchangeIDs)
 		await trade.init()
 	}
 
 	async function initETH_BTC() {
 		exchangeIDs = ['bittrex', 'hitbtc']
-        trade = new Trade('ETH/BTC', exchangeIDs, 1, 30, true)
+        trade = new TradeSim('ETH/BTC', 1, 30, exchangeIDs)
 		await trade.init()
 	}
 
 	async function initBTC_BCH() {
 		exchangeIDs = ['okex', 'hitbtc']
-        trade = new Trade('BCH/BTC', exchangeIDs, 1000, 10, true)
+        trade = new TradeSim('BCH/BTC', 1000, 10, exchangeIDs)
 		await trade.init()
 	}
 
-	after(async function(){
-	})
-
   	describe('单次对冲交易', async function() {
     	it('查看对冲细节', async function() {
-    		// await trade.updateOrderBook()
+            await initETH_BTC()
+
             trade.exchanges['hitbtc'].orderBooks = {
             	"bids":[[0.02873272,2.23]],
                 "asks":[[0.02686814,0.453]]
@@ -60,8 +58,7 @@ describe('测试trade和stratege', async function() {
     	})
   	})
 
-  	describe('平衡', async function() {  		
-
+  	describe('平衡', async function() {
   		async function testBalance(diff) {
   			trade.strategy.stockDiff = diff
     		trade.strategy.initStock = trade.strategy.currStock - diff

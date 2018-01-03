@@ -1,7 +1,7 @@
+const _ = require('lodash')
 const should = require('should');
-const Exchange = require('../service/exchange.js')
 const util = require('../util/util.js')
-const TradeConfig = require('../config/tradeConfig')
+const TradeBuilder = require('../service/tradeBuilder')
 
 
 describe.only('测试 exchange', async function() {
@@ -9,30 +9,26 @@ describe.only('测试 exchange', async function() {
 	this.timeout(50000)
 
 	before(async function() {
-		global.realMode = false
 	})
 
 	afterEach(async function(){
-		
 	})
 
   	describe.only('模拟测试交易所API', async function() {
     	it('查询账户、订单簿、下单、取消', async function() {  
-    		global.realMode = true
-    		global.realSim = false
 
             var base = 'ETH', quote = 'BTC'
             var exchangeIDs = ['okex', 'huobipro', 'Bitfinex', 'Bittrex']
 
-            let config = getConfig(base, quote)
+            let exchanges = getTradeBuilder(base, quote).buildExchanges(exchangeIDs)
 
-            for(var id of exchangeIDs) {
-                var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
+            for(var id in exchanges) {
+                let exchange = exchanges[id]
                 await exchange.fetchAccount()
                 util.log(JSON.stringify(await exchange.fetchOrderBook()))
                 util.log('sell1Price', exchange.sell1Price)
-				util.log('sell1Amount', exchange.sell1Amount)
-				util.log("---------------------")
+                util.log('sell1Amount', exchange.sell1Amount)
+                util.log("---------------------")
                 util.log('buy1Price', exchange.buy1Price)
                 util.log('buy1Amount', exchange.buy1Amount)
                 // util.log(await exchange.limitBuy(0.1))
@@ -49,11 +45,11 @@ describe.only('测试 exchange', async function() {
 
     		var exchangeIDs = ['hitbtc']
 
-            let config = getConfig(base, quote)
+            let exchanges = getTradeBuilder(base, quote).buildExchanges(exchangeIDs)
 
     		// var list = []
-    		for(var id of exchangeIDs) {
-    			var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
+    		for(var id in exchanges) {
+                let exchange = exchanges[id]
     			await exchange.testOrder(buyPrice, sellPrice, amount)
     			// list.push(exchange.testOrder(buyPrice, sellPrice, amount))
     		}
@@ -71,11 +67,11 @@ describe.only('测试 exchange', async function() {
             var exchangeIDs = ['huobipro']
             // var exchangeIDs = ['okex', 'huobipro', 'Quoine']
 
-            let config = getConfig(base, quote)
+            let exchanges = getTradeBuilder(base, quote).buildExchanges(exchangeIDs)
 
             // var list = []
-            for(var id of exchangeIDs) {
-                var exchange = new Exchange(config.exchangeInfo(id), base, quote, 100, 2)
+            for(var id in exchanges) {
+                let exchange = exchanges[id]
                 await exchange.testOrder(buyPrice, sellPrice, amount)
                 // list.push(exchange.testOrder(buyPrice, sellPrice, amount))
             }
@@ -85,10 +81,11 @@ describe.only('测试 exchange', async function() {
 
   	describe.only('获取市场深度', async function() {
     	it('返回数量压缩不超过5', async function() {
-            var base = 'BTC', quote = 'USD'
-            let config = getConfig(base, quote)
+            var base = 'BTC', quote = 'USD', id = 'bitstamp'
 
-    		var exchange = new Exchange(config.exchangeInfo('bitstamp'), base, quote, true)
+            let exchanges = getTradeBuilder(base, quote).buildExchanges([id])
+
+    		var exchange = exchanges[id]
     		var orderBook = await exchange.fetchOrderBook()
     		util.log(orderBook)		
     		orderBook.bids.length.should.not.be.above(5)
@@ -98,13 +95,12 @@ describe.only('测试 exchange', async function() {
 
     describe.only('测试下单数量', async function() {
         it('不能超出限额', async function() {
-            global.realMode = false
-            global.realSim = false
 
-            var base = 'BCH', quote = 'BTC'
-            let config = getConfig(base, quote)
+            var base = 'BCH', quote = 'BTC', id = 'Bitfinex'
 
-            var exchange = new Exchange(config.exchangeInfo('Bitfinex'), base, quote, 10, 100)
+            let exchanges = getTradeBuilder(base, quote).buildExchangesSim([id], 10, 100)
+
+            var exchange = exchanges[id]
 
 			await exchange.fetchAccount()
 
@@ -119,7 +115,7 @@ describe.only('测试 exchange', async function() {
     })
 
 
-    function getConfig(base, quote) {
-        return new TradeConfig(`${base}/${quote}`)
+    function getTradeBuilder(base, quote) {
+        return new TradeBuilder(`${base}/${quote}`)
     }
 })

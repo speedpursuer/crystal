@@ -1,23 +1,19 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
 const Exchange = require('./exchange.js')
-const TradeConfig = require('../config/tradeConfig')
+const TradeBuilder = require('./tradeBuilder')
 
 const Interval = 2000
 
 class Trade{
-	constructor(tradeName, exchangeIDs, initBalance, initStocks, debug=true){
-        let tradeConfig = new TradeConfig(tradeName)
-		this.strategy = tradeConfig.strategy
-		this.exchangesIDs = _.sortBy(_.map(exchangeIDs? exchangeIDs: tradeConfig.exchanges, function(i) {return i.toLowerCase()}) )
-		this.exchanges = {}
-		for(var id of this.exchangesIDs) {
-			this.exchanges[id] = new Exchange(tradeConfig.exchangeInfo(id), this.strategy.crypto, this.strategy.fiat, initBalance, initStocks, debug)
-		}
+	constructor(tradeName, debug=true){
         this.debug = debug
+        this.tradeBuilder = new TradeBuilder(tradeName, debug)
+		this.strategy = this.tradeBuilder.strategy
 	}
 
-	async init(){		
+	async init(){
+		this.createExchanges()
 		var list = await util.promiseFor(this.exchanges, 'fetchAccount')
 		
 		if(_.filter(list, function(o) { return (o.balance == 0 && o.stocks == 0) }).length > 0 ) {
@@ -39,15 +35,13 @@ class Trade{
         this.strategy.before()
 	}
 
+    createExchanges() {
+        this.exchangesIDs = _.sortBy(_.map(this.tradeBuilder.exchanges, function(i) {return i.toLowerCase()}) )
+        this.exchanges = this.tradeBuilder.buildExchanges(this.exchangesIDs)
+    }
+
  	async updateOrderBook(){
         await util.promiseFor(this.exchanges, 'fetchOrderBook')
-		// var start = (new Date()).getTime()
-		// var list = await util.promiseFor(this.exchanges, 'fetchOrderBook')
-		// var lag = (new Date()).getTime() - start
-		// this.log(`获取 ${_.filter(list, function(o) { return o!=null }).length} 个交易数据，时间 ${lag} ms`)	
-		// if(lag > 1500) {
-		// 	throw '超时，跳过本轮'
-		// }
 	}
 
 	async loop(){

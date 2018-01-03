@@ -12,26 +12,21 @@ class ExchangeFactory {
         this.exchangePoor = {}
     }
 
-    createExchange(info, crypto, fiat, initBalance, initStocks, debug=false) {
-        let api
-        if(!global.realMode) {
-            api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, global.realSim||false, 1, 1)
-            api.interval = 0
-            return new ExchangeDelegate(api, debug)
-        }else {
-            if(!this.exchangePoor[info.id]) {
-                if (apis[info.id]) {
-                    api = new apis[info.id](info)
-                }else {
-                    api = new ccxt[info.id](info)
-                }
-                api.interval = 200
-                api.timeout = 20000
-                api.nonce = function(){ return this.milliseconds () }
-                this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
-            }
-            return this.exchangePoor[info.id]
+    createExchange(info, debug=false) {
+        if(!this.exchangePoor[info.id]) {
+            let api = apis[info.id]? new apis[info.id](info): new ccxt[info.id](info)
+            api.interval = 200
+            api.timeout = 20000
+            api.nonce = function(){ return this.milliseconds () }
+            this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
         }
+        return this.exchangePoor[info.id]
+    }
+
+    createExchangeSim(info, crypto, fiat, initBalance, initStocks, realSim=false, debug=false) {
+        let api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, realSim, 1, 1)
+        api.interval = 0
+        return new ExchangeDelegate(api, debug)
     }
 }
 var exchangeFactory = new ExchangeFactory()

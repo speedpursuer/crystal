@@ -65,56 +65,6 @@ const tradeConfig = {
             debug: true
         }
     },
-
-    'Backtest_BCH/BTC': {
-        base: "BCH",
-        quote: "BTC",
-        exchanges: ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance'],
-        exchangeInfo: exchangeInfoBCH,
-        strategy: HedgeTest,
-        strategyConfig: {
-            maxAmountOnce: 1,
-            orderRate: 0.1,
-            minMargin: 0.0001,
-            maxLoss: -0.001,
-            debug: false
-        },
-    },
 }
 
-class TradeConfig{
-    constructor(key){
-        this.key = key
-        this.config = this.buildConfig(key)
-    }
-
-    buildConfig(key) {
-        let config = tradeConfig[key]
-        if(!config) throw `trade config for ${key} not found`
-        return {
-            exchanges: config.exchanges,
-            exchangeInfo: config.exchangeInfo,
-            strategy: new config.strategy(config.base, config.quote, config.strategyConfig)
-        }
-    }
-
-    get strategy() {
-        return this.config.strategy
-    }
-
-    get exchanges() {
-        return this.config.exchanges
-    }
-
-    exchangeInfo(id) {
-        var id = id.toLowerCase()
-        var info = this.config.exchangeInfo[id]
-        if(!info) {
-            throw `exchange ${id} not found in trade ${this.key}`
-        }
-        info.id = id
-        return info
-    }
-}
-
-module.exports = TradeConfig
+module.exports = tradeConfig
