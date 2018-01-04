@@ -17,7 +17,7 @@ class Exchange {
         this.id = info.id
         this.fee = info.fee        
         this.fiat = fiat == 'USD'? info.fiat: fiat
-        this.specialBuy = info.specialBuy
+        this.specialBuy = this.getValue(info.specialBuy, false)
         this.minTrade = this.getValue(info.minTrade, defaultMinTrade)
         this.precision = this.getValue(info.precision, defaultPrecision)
         this.minOrderSize = this.getValue(info.minOrderSize, defaultMinOrderSize)
