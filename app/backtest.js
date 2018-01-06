@@ -190,8 +190,9 @@ class Backtest {
 
 async function test(){
     try {
-        var backtest = new Backtest("2017-12-30 00:00:00", '2018-01-03 00:00:00', false)
-
+        let name = util.getTradeName()
+        var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 09:50:21', false)
+		await backtest[name]()
         // await backtest.BTC()
         // await backtest.LTC()
         // await backtest.ETH()
@@ -202,8 +203,7 @@ async function test(){
         // await backtest.EOS()
         // await backtest.EOSETH()
         // await backtest.QTUM()
-        await backtest.IOTA()
-
+        // await backtest.IOTA()
         process.exit()
     }catch (e) {
         util.log.bright.yellow(e)

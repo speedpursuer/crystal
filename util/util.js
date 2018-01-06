@@ -117,6 +117,14 @@ class Util{
 		}
 		return false
 	}
+
+    getTradeName() {
+        if (process.argv.length == 3){
+            return process.argv.slice(2)
+        }else {
+            throw 'No function name provided'
+        }
+    }
 }
 var util = new Util()
 module.exports = util

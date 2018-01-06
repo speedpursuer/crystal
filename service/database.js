@@ -10,7 +10,7 @@ mongoose.Promise = require('bluebird')
 class Database {
 
     initMongodb() {
-        mongoose.connect('mongodb://172.96.246.189/nike_11_13', {
+        mongoose.connect('mongodb://176.122.165.54/nike_11_13', {
             useMongoClient: true                
         })
 
