@@ -43,12 +43,12 @@ const backtestConfig = {
         base: "LTC",
         quote: "BTC",
         exchanges: ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'],
-        exchangeInfo: exchangeInfo,
+        exchangeInfo: exchangeInfoXRP,
         strategy: HedgeTest,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.0001,
+            minMargin: 0.00001,
             maxLoss: -0.001,
             debug: false
         },
