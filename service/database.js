@@ -1,13 +1,26 @@
 const bluebird = require("bluebird")
 const redis = require("redis")
-const client = redis.createClient()
 const util = require ('../util/util.js')
 bluebird.promisifyAll(redis.RedisClient.prototype)
 bluebird.promisifyAll(redis.Multi.prototype)
 const mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
+const redisConfig = require('../config/redisConfig')
 
 class Database {
+    constructor() {
+        this.initRedis()
+        this.initMongodb()
+    }
+
+    initRedis() {
+        this.client = redis.createClient({
+            host: redisConfig.host,
+            port: redisConfig.port,
+            password: redisConfig.password
+        })
+        this.client.auth(redisConfig.password)
+    }
 
     initMongodb() {
         mongoose.connect('mongodb://localhost/nike_11_13', {
@@ -132,21 +145,20 @@ class Database {
     }
 
     async getData() {
-        return JSON.parse(await client.getAsync(this.key))
+        return JSON.parse(await this.client.getAsync(this.key))
     }
 
     async saveData(data) {
-        await client.setAsync(this.key, JSON.stringify(data))
+        await this.client.setAsync(this.key, JSON.stringify(data))
     }
 
     async saveDataWithKey(data, key) {
-        await client.setAsync(key, JSON.stringify(data))
+        await this.client.setAsync(key, JSON.stringify(data))
     }
 
     async deleteData() {
-        return await client.delAsync(this.key)
+        return await this.client.delAsync(this.key)
     }
 }
 var database = new Database()
-database.initMongodb()   
 module.exports = database
