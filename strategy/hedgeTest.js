@@ -9,6 +9,7 @@ class HedgeTest extends Strategy {
         this.maxAmountOnce = this.getConfig('maxAmountOnce')
         this.orderRate = this.getConfig('orderRate')
         this.minMargin = this.getConfig('minMargin')
+        this.minSize = util.objectMinBy(this.allExchanges, 'minTrade')
     }
     
 	async doTrade() {
@@ -62,6 +63,9 @@ class HedgeTest extends Strategy {
     }
 
     async balance() {
+        if(Math.abs(this.stockDiff) < this.minSize) {
+            return false
+        }
         if(this.stockDiff > 0) {
             var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
@@ -83,7 +87,6 @@ class HedgeTest extends Strategy {
                 }
             }
         }
-        return false
     }
 
     getPoints(profit, margin) {

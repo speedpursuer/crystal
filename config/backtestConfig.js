@@ -28,7 +28,7 @@ const backtestConfig = {
     'Backtest_BCH/BTC': {
         base: "BCH",
         quote: "BTC",
-        exchanges: ['okex', 'Bitfinex', 'huobipro', 'Bittrex', 'binance'],
+        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance', 'hitbtc'],
         exchangeInfo: exchangeInfoBCH,
         strategy: HedgeTest,
         strategyConfig: {
@@ -38,6 +38,21 @@ const backtestConfig = {
             maxLoss: -0.001,
             debug: false
         },
+    },
+
+    'Backtest_ETH/BTC': {
+        base: "ETH",
+        quote: "BTC",
+        exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
+        exchangeInfo: exchangeInfoETH,
+        strategy: HedgeTest,
+        strategyConfig: {
+            maxAmountOnce: 1,
+            orderRate: 0.1,
+            minMargin: 0.00005,
+            maxLoss: -0.001,
+            debug: false
+        }
     },
 
     'Backtest_LTC/BTC': {
@@ -64,7 +79,7 @@ const backtestConfig = {
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.00001,
+            minMargin: 0.0001,
             maxLoss: -0.001,
             debug: false
         },
@@ -107,9 +122,24 @@ const backtestConfig = {
         exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 1,
+            maxAmountOnce: 15,
             orderRate: 0.1,
             minMargin: 0.000001,
+            maxLoss: -0.001,
+            debug: false
+        },
+    },
+
+    'Backtest_EOS/BTC': {
+        base: "EOS",
+        quote: "BTC",
+        exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc', 'zb'],
+        exchangeInfo: exchangeInfoCommon,
+        strategy: HedgeTest,
+        strategyConfig: {
+            maxAmountOnce: 1,
+            orderRate: 0.1,
+            minMargin: 0.000002,
             maxLoss: -0.001,
             debug: false
         },

@@ -852,8 +852,23 @@ function test41() {
 	test([2])
 }
 
+function test42() {
+	let a = util.objectMaxBy({
+		'a': {
+			minTrade: 10
+		},
+		'b': {
+            minTrade: 5
+		},
+		'c': {
+            minTrade: 13
+		}
+	}, 'minTrade')
+	util.log(a)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test41()
+    test42()
 }

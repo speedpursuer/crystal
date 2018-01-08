@@ -66,6 +66,10 @@ class Strategy {
 		}))
 	}
 
+	get allExchanges() {
+		return this._exchanges
+	}
+
 	get exchanges() {
 		var that = this
 		return _.filter(this._exchanges, function(e) { 

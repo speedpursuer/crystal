@@ -1,6 +1,7 @@
 const Promise = require('bluebird');
 const log = require ('ololog').configure ({ locate: false, time: true })
 const moment = require('moment')
+const _ = require('lodash')
 
 
 class Util{
@@ -118,12 +119,31 @@ class Util{
 		return false
 	}
 
-    getTradeName() {
+    getParameter() {
         if (process.argv.length == 3){
             return process.argv.slice(2)
         }else {
-            throw 'No function name provided'
+            throw 'No parameter provided'
         }
+    }
+
+
+
+    objectOrderBy(object, byValue, order='asc') {
+		try {
+            let array = _.orderBy(object, byValue, order)
+            return array.length > 0? array[0][byValue]: null
+		}catch (e){
+			throw e
+		}
+	}
+
+    objectMinBy(object, byValue) {
+        return this.objectOrderBy(object, byValue, 'asc')
+    }
+
+    objectMaxBy(object, byValue) {
+        return this.objectOrderBy(object, byValue, 'desc')
     }
 }
 var util = new Util()

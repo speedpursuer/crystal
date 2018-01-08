@@ -191,20 +191,9 @@ class Backtest {
 
 async function test(){
     try {
-        let name = util.getTradeName()
+        let name = util.getParameter()
         var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
 		await backtest[name]()
-        // await backtest.BTC()
-        // await backtest.LTC()
-        // await backtest.ETH()
-        // await backtest.BCH()
-        // await backtest.XMR()
-        // await backtest.DASH()
-        // await backtest.XRP()
-        // await backtest.EOS()
-        // await backtest.EOSETH()
-        // await backtest.QTUM()
-        // await backtest.IOTA()
         process.exit()
     }catch (e) {
         util.log.bright.yellow(e)
@@ -214,13 +203,6 @@ async function test(){
 
 async function testBatch(){
     var backtest = new Backtest("2017-12-13 21:14:49", "2017-12-16 21:14:49", false)
-    // var backtest = new Backtest("2017-11-19 00:00:00", null, false)
-    // await backtest.batchBCHTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'])
-    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'Binance', 'okex', 'huobipro'], 'BCH')
-    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'ETH')
-    // await backtest.batchTest(['Bitfinex', 'Bittrex', 'Bitstamp', 'Poloniex', 'okex', 'hitbtc', 'huobipro', 'binance', 'quoine', 'zb'], 'BTC')
-    // await backtest.batchTest(['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex', 'huobipro', 'binance'], 'BCH')
-    // await backtest.batchTest(['okex', 'huobipro', 'quoine', 'zb'], 'BTC')
     await backtest.batchTest(['hitbtc', 'Poloniex', 'Bitfinex', 'Bittrex', 'Binance'], 'XMR')
 }
 
