@@ -29,8 +29,8 @@ const tradeConfig = {
         strategy: HedgeTest,
         strategyConfig: {
             maxAmountOnce: 1,
-            orderRate: 0.06,
-            minMargin: 0.00005,
+            orderRate: 0.1,
+            minMargin: 0.0001,
             maxLoss: -0.001,
             debug: true
         }
@@ -44,8 +44,8 @@ const tradeConfig = {
         strategy: HedgeTest,
         strategyConfig: {
             maxAmountOnce: 1,
-            orderRate: 0.06,
-            minMargin: 0.00002,
+            orderRate: 0.1,
+            minMargin: 0.00004,
             maxLoss: -0.001,
             debug: true
         }
