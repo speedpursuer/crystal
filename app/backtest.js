@@ -1,5 +1,5 @@
 const util = require('../util/util.js')
-const database = require('../service/database.js')
+const MongoDB = require('../service/mongoDB.js')
 const TradeSim = require('../service/tradeSim')
 const ProgressBar = require('progress')
 const _ = require('lodash')
@@ -18,6 +18,7 @@ const qtum_price = 59
 
 class Backtest {
 	constructor(start, end, debug) {
+		this.mongoDB = new MongoDB()
 		this.start = util.timestampFromTime(start)
 		this.end = util.timestampFromTime(end)
 		this.debug = debug
@@ -142,10 +143,10 @@ class Backtest {
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
 
-		var timeline = await database.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)
+		var timeline = await this.mongoDB.getOrderBooksTimeline(market, trade.exchangesIDs, from, to)
 		timeline.sort(function(a, b){ return a - b})
 		util.log.yellow(`---- 正在回测 - market: ${market}, exchanges: ${trade.exchangesIDs} 开始: ${util.timeFromTimestamp(_.head(timeline))}, 结束: ${util.timeFromTimestamp(_.last(timeline))} ----`)
-		var orderBook = await database.getOrderBooks(market, trade.exchangesIDs, from, to)
+		var orderBook = await this.mongoDB.getOrderBooks(market, trade.exchangesIDs, from, to)
 
 		if(trade.strategy.before) {
 			trade.strategy.before()
@@ -191,7 +192,7 @@ class Backtest {
 async function test(){
     try {
         let name = util.getTradeName()
-        var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 09:50:21', false)
+        var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
 		await backtest[name]()
         // await backtest.BTC()
         // await backtest.LTC()

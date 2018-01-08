@@ -1,6 +1,5 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const Exchange = require('./exchange.js')
 const TradeBuilder = require('./tradeBuilder')
 
 const Interval = 2000

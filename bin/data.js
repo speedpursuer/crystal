@@ -1,61 +1,19 @@
 const _ = require('lodash')
-let bluebird = require("bluebird")
-let redis = require("redis"),
-    client = redis.createClient();
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
-const Log = require ('ololog').configure ({ locate: false })    
-
-function getRate(fiat) {
-	var fiats = {
-		"USD": 6.5807,
-		"USDT": 6.5807,
-		"JPY": 0.0585,
-		"EUR": 7.7678,
-		"WUSD": 6.5807,
-	}
-	return fiats[fiat]
-}
-
-function printDetails(details) {
-
-}
-
-function adjustFloat(v) {                 // 处理数据的自定义函数 ，可以把参数 v 处理 返回 保留3位小数（floor向下取整）
-    return Math.floor(v*1000)/1000;       // 先乘1000 让小数位向左移动三位，向下取整 整数，舍去所有小数部分，再除以1000 ， 小数点向右移动三位，即保留三位小数。
-}
-
-var print = function() {
-	var listAll = []
-    var listSell = []
-    var listBuy = []
-    var finalList = []
-    for(var item of listAll){
-        if(listSell.includes(item.sell) && listBuy.includes(item.sell) && 
-           listSell.includes(item.buy) && listBuy.includes(item.buy)) {
-            finalList.push(item)
-        }
-    }
-
-    finalList.sort(function(a, b){return b.profit - a.profit})
-
-    for(var item of finalList) {
-        Log(`Sell: ${item.sell}, Buy: ${item.buy}, Profit: ${item.profit}`)
-    }
-}
+const Log = require ('ololog').configure ({ locate: false })
+const redisDB = require('../service/redisDB')
 
 async function display() {
 
 	var key
 
 	if (process.argv.length < 3) {
-		var keys = (await client.keysAsync('*')).sort()
+		var keys = (await redisDB.getKeys('*')).sort()
 		key = keys[keys.length-1]
 	}else if (process.argv.length == 3){
 		key = process.argv.slice(2)
 	}
 
-	var data = JSON.parse(await client.getAsync(key))
+	var data = await redisDB.getDataWithKey(key)
 
     Log.bright.red("************************************************")	
     Log.bright.green("参与交易所：")
@@ -186,36 +144,4 @@ async function display() {
 	process.exit()
 }
 
-async function main() {
-
-	var keys = await client.keysAsync('Hedge:*')
-	var values = await client.mgetAsync(keys)
-	var result = []
-
-	Log.bright.red("************************************************")	
-	Log.bright.red("************************************************")
-
-	for(var i in values) {
-		var list = JSON.parse(values[i])
-
-		// list.sort(function(a, b) {return b.profit - a.profit})
-
-		Log.bright.green("***", keys[i], "***")
-		var total = 0
-		for(var item of list) {
-			total += item.profit
-			Log(`Sell: ${item.sell}, Buy: ${item.buy}, Profit: ${adjustFloat(item.profit)}, Time: ${item.timte}`)
-		}
-		result.push({
-			name: keys[i],
-			total: total
-		})
-	}
-
-	for(var i of result) {
-		Log(i.name, i.total)
-	}
-	
-	process.exit()
-}
 display()

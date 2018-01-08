@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const database = require('../service/database.js')
+const database = require('../service/redisDB')
 const cryptoInfo = require('../config/cryptoInfo.js')
 
 class Strategy {

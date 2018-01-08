@@ -1,6 +1,5 @@
 const util = require ('../util/util.js')
 const Strategy = require('./baseStrategy.js')
-const database = require('../service/database.js')
 const _ = require('lodash')
 const math = require('mathjs')
 

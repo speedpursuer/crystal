@@ -3,6 +3,7 @@ const exchangeInfoBCH = require('../config/exchangeInfo_bch.js')
 const exchangeInfoETH = require('../config/exchangeInfo_eth.js')
 const exchangeInfoXMR = require('../config/exchangeInfo_xmr.js')
 const exchangeInfoXRP = require('../config/exchangeInfo_xrp.js')
+const exchangeInfoCommon = require('../config/exchangeInfo_common.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
@@ -73,7 +74,7 @@ const backtestConfig = {
         base: "DASH",
         quote: "BTC",
         exchanges: ['hitbtc', 'Binance', 'Poloniex', 'Bittrex', 'Bitfinex'],
-        exchangeInfo: exchangeInfoBCH,
+        exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
             maxAmountOnce: 1,
@@ -93,7 +94,7 @@ const backtestConfig = {
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.000003,
+            minMargin: 0.000001,
             maxLoss: -0.001,
             debug: false
         },
@@ -103,7 +104,7 @@ const backtestConfig = {
         base: "IOTA",
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'OKEx'],
-        exchangeInfo: exchangeInfoXRP,
+        exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
             maxAmountOnce: 1,
