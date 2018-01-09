@@ -1,10 +1,14 @@
 const ccxt = require ('ccxt')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
-const Available = require('./available.js')
+const Available = require('../../util/available.js')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
+
+const failureInterval = 1000 * 60
+const maxFailureTimes = 3
+const retryInterval = 3000 * 60
 
 
 class ExchangeDelegate {
@@ -189,7 +193,7 @@ class ExchangeDelegate {
 
     _configAvailable() {
         var that = this
-        this.available = new Available()
+        this.available = new Available(failureInterval, maxFailureTimes, retryInterval)
         this.available.on('check', function(){
             that._checkAvailable()
         })

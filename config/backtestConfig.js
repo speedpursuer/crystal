@@ -94,7 +94,7 @@ const backtestConfig = {
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.0001,
+            minMargin: 0.0002,
             maxLoss: -0.001,
             debug: false
         },
@@ -104,10 +104,10 @@ const backtestConfig = {
         base: "XRP",
         quote: "BTC",
         exchanges: ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp'],
-        exchangeInfo: exchangeInfoXRP,
+        exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 1,
+            maxAmountOnce: 15,
             orderRate: 0.1,
             minMargin: 0.000001,
             maxLoss: -0.001,
@@ -122,7 +122,7 @@ const backtestConfig = {
         exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 15,
+            maxAmountOnce: 20,
             orderRate: 0.1,
             minMargin: 0.000001,
             maxLoss: -0.001,
@@ -137,7 +137,7 @@ const backtestConfig = {
         exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 1,
+            maxAmountOnce: 15,
             orderRate: 0.1,
             minMargin: 0.000002,
             maxLoss: -0.001,

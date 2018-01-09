@@ -1,16 +1,13 @@
-const util = require('../../util/util.js')
+const Counter = require('./counter')
 const EventEmitter = require('events')
 
-const failureInterval = 1000 * 60
-const maxFailureTimes = 3
-const retryInterval = 3000 * 60
 
 class Available extends EventEmitter {
-	constructor() {
+	constructor(failureInterval, maxFailureTimes, retryInterval) {
 	    super()
 		this.isAvailable = true
-		this.failureTimes = 0
-		this.lastFailureTime = util.timestamp
+        this.counter = new Counter(failureInterval, maxFailureTimes)
+        this.retryInterval = retryInterval
 	}
 
     reportIssue(isFatal=false) {
@@ -24,32 +21,27 @@ class Available extends EventEmitter {
     reportCheck(fixed) {
         if(fixed) {
             this.isAvailable = true
-            this.failureTimes = 0
+            this.counter.reset()
         }else {
             this.isAvailable = false
-            this.failureTimes++
+            this.counter.directCount()
             this._checkLater()
         }
     }
 
 	_reportIssue() {
 	    if(!this.isAvailable) return
-        if(util.timestamp - this.lastFailureTime < failureInterval) {
-            this.failureTimes++
-            if(this.failureTimes > maxFailureTimes) {
-                this.isAvailable = false
-                this._checkLater()
-            }
-        }else {
-            this.failureTimes = 1
-            this.lastFailureTime = util.timestamp
+        this.counter.count()
+        if(this.counter.isOverCount){
+            this.isAvailable = false
+            this._checkLater()
         }
 	}
 
 	_reportFatal() {
         if(!this.isAvailable) return
         this.isAvailable = false
-	    this.failureTimes = Math.max(this.failureTimes, maxFailureTimes) + 1
+        this.counter.countToThreshold()
         this._checkLater()
     }
 
@@ -57,7 +49,7 @@ class Available extends EventEmitter {
         var that = this
         setTimeout(function(){
             that.emit("check")
-        }, retryInterval * (this.failureTimes - maxFailureTimes))
+        }, this.retryInterval * this.counter.overCount)
     }
 }
 module.exports = Available

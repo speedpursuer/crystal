@@ -1,5 +1,5 @@
 const should = require('should');
-const Available = require('../service/API/available.js')
+const Available = require('../util/available.js')
 const util = require('../util/util.js')
 
 
@@ -16,7 +16,7 @@ describe('单元测试available', async function() {
     beforeEach(async function () {
         class Test {
             constructor() {
-                this.available = new Available()
+                this.available = new Available(3000, 2, 5000)
                 this.checkFlag = true
                 var that = this
                 this.available.on('check', function() {

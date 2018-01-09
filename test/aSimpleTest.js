@@ -16,6 +16,8 @@ var ProgressBar = require('progress')
 
 const EventEmitter = require('events');
 
+const Counter = require("../util/counter")
+
 class Test {
 	async run() {
 		return util.sleep(100)
@@ -867,8 +869,24 @@ function test42() {
 	util.log(a)
 }
 
+async function test43() {
+    let counter = new Counter(2000, 3)
+	counter.count()
+    await util.sleep(2000)
+    counter.count()
+    counter.count()
+    counter.count()
+	util.log(counter.isOverCount)
+    await util.sleep(2000)
+	counter.directCount()
+    counter.directCount()
+    counter.directCount()
+    counter.directCount()
+    util.log(counter.isOverCount)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test42()
+    test43()
 }
