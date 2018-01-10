@@ -238,7 +238,7 @@ async function test13() {
 	}
 
 	async function do2() {
-		throw "err"
+		throw new Error("err")
 	}
 
 	function do3() {
@@ -885,8 +885,62 @@ async function test43() {
     util.log(counter.isOverCount)
 }
 
+function test44() {
+    const singleton = Symbol()
+    // const singletonEnforcer = Symbol()
+    class Database {
+        constructor(enforcer) {
+            if (enforcer !== singleton) {
+                throw new Error('Cannot construct singleton');
+            }
+
+            this.name = 'DatabaseName';
+        }
+
+        static getInstance() {
+            if (!this[singleton]) {
+                this[singleton] = new Database(singleton);
+            }
+
+            return this[singleton];
+        }
+
+        singletonMethod() {
+            return 'singletonMethod';
+        }
+
+        static staticMethod() {
+            return 'staticMethod';
+        }
+
+        get type() {
+            return this.name;
+        }
+
+        set type(value) {
+            this.name = value;
+        }
+    }
+    try{
+        util.log(Database.staticMethod())
+        let a = Database.getInstance()
+		util.log(a.type)
+
+	}catch(e) {
+    	util.log(e)
+	}
+}
+
+function test45() {
+    try{
+    	throw new Error("test error")
+	}catch (e) {
+		util.log.red(e.message)
+	}
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test43()
+    test44()
 }

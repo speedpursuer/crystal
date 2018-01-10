@@ -1,27 +1,27 @@
-const ccxt = require ('ccxt')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const Available = require('../../util/available.js')
+const RedisDB = require('../redisDB')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
-const failureInterval = 1000 * 60
-const maxFailureTimes = 3
-const retryInterval = 3000 * 60
-
 
 class ExchangeDelegate {
-	constructor(api, debug=true) {
+	constructor(api, config, debug=true) {
         this.api = api
         this.id = api.id
         this.interval = api.interval
         this.debug = debug
-        this._configAvailable()
+        this._configAvailable(config)
     }
 
     get isAvailable() {
         return this.available.isAvailable
+    }
+
+    get isClosed() {
+	    return this.available.closed
     }
 
     async fetchTicker(symbol) {
@@ -124,7 +124,7 @@ class ExchangeDelegate {
             }         
         }
         if(completed) {
-            this._log("订单轮询处理完成", "green")
+            this._log(`订单轮询处理完成, 成交量: ${dealAmount}, 余额变化: ${balanceChanged}`, "green")
         }else {
             this._reportIssue({message: "订单轮询处理失败"}, true)
         }        
@@ -191,11 +191,15 @@ class ExchangeDelegate {
         this.available.reportIssue(isFatal)
     }
 
-    _configAvailable() {
+    _configAvailable(config) {
         var that = this
-        this.available = new Available(failureInterval, maxFailureTimes, retryInterval)
-        this.available.on('check', function(){
-            that._checkAvailable()
+        this.available = new Available(config.failureInterval, config.failureThreshold, config.retryDelay, config.retryInterval, config.retryThreshold)
+        this.available.on('check', async function(){
+            await that._checkAvailable()
+        })
+        this.available.on('closed', async function() {
+            let database = await RedisDB.getInstanceWithAccount()
+            await database.recordClosedAPI(that.id)
         })
     }
 
@@ -210,6 +214,14 @@ class ExchangeDelegate {
         }
         this._log(`AIP恢复失败`, "red")
         this.available.reportCheck(false)
+    }
+
+    async testErr(isFatal=false) {
+	    if(isFatal) {
+            this._reportIssue({message: "test fatal err"}, true)
+        }else {
+            this._reportIssue({message: "test err"})
+        }
     }
 }
 

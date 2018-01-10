@@ -16,7 +16,7 @@ class Trade{
 		var list = await util.promiseFor(this.exchanges, 'fetchAccount')
 		
 		if(_.filter(list, function(o) { return (o.balance == 0 && o.stocks == 0) }).length > 0 ) {
-			throw "初始账户信息有误"
+			throw new Error("初始账户信息有误")
 		}
 
 		var total = _.reduce(list, function(result, value, key) {	  	

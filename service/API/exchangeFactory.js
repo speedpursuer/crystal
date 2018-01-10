@@ -3,6 +3,14 @@ const ExhangeSim = require ('./exchangeSim')
 const ExchangeDelegate = require ('./exchangeDelegate')
 const Bitfinex = require('./bitfinex')
 
+const config = {
+    failureInterval: 1000 * 60,
+    failureThreshold: 3,
+    retryDelay: 3 * 1000 * 60,
+    retryInterval: 30 * 1000 * 60,
+    retryThreshold: 3
+}
+
 const apis = { 
     bitfinex: Bitfinex
 }
@@ -10,6 +18,7 @@ const apis = {
 class ExchangeFactory {
     constructor() {
         this.exchangePoor = {}
+        this.exchangeDelegateConfig = config
     }
 
     createExchange(info, debug=false) {
@@ -18,7 +27,7 @@ class ExchangeFactory {
             api.interval = 200
             api.timeout = 20000
             api.nonce = function(){ return this.milliseconds () }
-            this.exchangePoor[info.id] = new ExchangeDelegate(api, debug)
+            this.exchangePoor[info.id] = this.createExchangeDelegate(api, debug)
         }
         return this.exchangePoor[info.id]
     }
@@ -26,7 +35,11 @@ class ExchangeFactory {
     createExchangeSim(info, crypto, fiat, initBalance, initStocks, realSim=false, debug=false) {
         let api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, realSim, 0.7, 0.7)
         api.interval = 0
-        return new ExchangeDelegate(api, debug)
+        return this.createExchangeDelegate(api, debug)
+    }
+
+    createExchangeDelegate(api, debug) {
+        return new ExchangeDelegate(api, this.exchangeDelegateConfig, debug)
     }
 }
 var exchangeFactory = new ExchangeFactory()

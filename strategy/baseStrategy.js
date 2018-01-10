@@ -1,9 +1,9 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const database = require('../service/redisDB')
+const RedisDB = require('../service/redisDB')
 const cryptoInfo = require('../config/cryptoInfo.js')
 
-class Strategy {
+class BaseStrategy {
 
 	constructor(crypto, fiat, config){
         this.crypto = crypto
@@ -31,7 +31,7 @@ class Strategy {
 		if(!this.initBalance && !this.initStock) {
 			this.initBalance = this.currBalance
 			this.initStock = this.currStock
-			this.database = await database.initAccount(this.constructor.name, this.initBalance, this.initStock, _.keys(this._exchanges))
+			this.database = await RedisDB.getInstanceWithAccount(this.initBalance, this.initStock, _.keys(this._exchanges))
 		}
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock
@@ -118,4 +118,4 @@ class Strategy {
 		process.exit()
 	}
 }
-module.exports = Strategy
+module.exports = BaseStrategy

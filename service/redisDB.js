@@ -1,3 +1,5 @@
+const singleton = Symbol()
+
 const bluebird = require("bluebird")
 const redis = require("redis")
 const util = require ('../util/util.js')
@@ -6,8 +8,43 @@ bluebird.promisifyAll(redis.Multi.prototype)
 const redisConfig = require('../config/redisConfig')
 
 class RedisDB {
-    constructor() {
+    constructor(enforcer) {
+        if (enforcer !== singleton) {
+            throw new Error('Cannot construct RedisDB singleton')
+        }
+        this.key = util.now
         this.initRedis()
+    }
+
+    static async getInstance() {
+        if (!this[singleton]) {
+            this[singleton] = new RedisDB(singleton)
+        }
+        return this[singleton]
+    }
+
+    static async getInstanceWithAccount(totalBalance=0, totalStock=0, exchanges=[]) {
+        if (!this[singleton]) {
+            this[singleton] = new RedisDB(singleton)
+            await this[singleton].initAccount(totalBalance, totalStock, exchanges)
+        }
+        return this[singleton]
+    }
+
+    async initAccount(totalBalance, totalStock, exchanges) {
+        await this.saveData({
+            exchanges: exchanges,
+            initTotalBalance: totalBalance,
+            initTotalStock: totalStock,
+            details: [],
+            tradeTimes: 0,
+            profit: 0,
+            balanceGap: 0,
+            stocksGap: 0,
+            startTime: util.now,
+            lastUpdate: util.now,
+            closedAPIs: [],
+        })
     }
 
     initRedis() {
@@ -17,26 +54,6 @@ class RedisDB {
             password: redisConfig.password
         })
         this.client.auth(redisConfig.password)
-    }
-
-    async initAccount(strategyName, totalBalance, totalStock, exchanges) {
-        var time = util.now
-        this.key = `${time}`
-        // this.key = `${strategyName}, ${time}`
-        var data = {
-            exchanges: exchanges,
-            initTotalBalance: totalBalance,
-            initTotalStock: totalStock,
-            details: [],
-            tradeTimes: 0,
-            profit: 0,
-            balanceGap: 0,
-            stocksGap: 0,
-            startTime: time,
-            lastUpdate: time,
-        }
-        await this.saveData(data)
-        return this
     }
 
     async recordTrade(sellName, buyName, sellResult, buyResult, amount, margin) {
@@ -64,6 +81,12 @@ class RedisDB {
         await this.saveData(data)
     }
 
+    async recordClosedAPI(id) {
+        let data = await this.getData()
+        data.closedAPIs.push(id)
+        await this.saveData(data)
+    }
+
     async getData() {
         return JSON.parse(await this.client.getAsync(this.key))
     }
@@ -88,5 +111,5 @@ class RedisDB {
         await this.client.setAsync(key, JSON.stringify(data))
     }
 }
-var redisDB = new RedisDB()
-module.exports = redisDB
+
+module.exports = RedisDB

@@ -127,8 +127,6 @@ class Util{
         }
     }
 
-
-
     objectOrderBy(object, byValue, order='asc') {
 		try {
             let array = _.orderBy(object, byValue, order)

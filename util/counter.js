@@ -16,6 +16,11 @@ class Counter {
         }
     }
 
+    get isOverCountAfterCount() {
+        this.count()
+        return this.isOverCount
+    }
+
     get overCount() {
         return Math.max(this.curCount - this.threshold, 0)
     }

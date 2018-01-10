@@ -174,11 +174,11 @@ class Exchange {
 
     async placeLimitOrder(type, amount) {                
         if(![ORDER_TYPE_BUY, ORDER_TYPE_SELL].includes(type) || isNaN(amount)) {
-            throw "Wrong order input"
+            throw new Error("Wrong order input")
         }
 
         if(!this.buy1Price || !this.sell1Price) {
-            throw "orderBooks not available"
+            throw new Error("orderBooks not available")
         }
 
         var orderPrice, orderAmount, result

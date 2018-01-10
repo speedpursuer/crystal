@@ -17,6 +17,15 @@ describe('单元测试ExchangeDelegate', async function() {
 	before(async function() {
         let traderBuilder = new TradeBuilder(symbol)
         let info = traderBuilder.exchangeInfo(exchange)
+
+        factory.exchangeDelegateConfig = {
+            failureInterval: 4000,
+            failureThreshold: 2,
+            retryDelay: 1000,
+            retryInterval: 60 * 1000,
+            retryThreshold: 2
+        }
+
         exchangeDelegate = factory.createExchange(info, base, quote, true)
 	})
 
@@ -60,17 +69,17 @@ describe('单元测试ExchangeDelegate', async function() {
         })
     })
 
-    describe('异常处理', async function() {
-        it('模拟_fetchOpenOrders抛出异常，报错后重试成功', async function() {
-            await exchangeDelegate._fetchOpenOrders(symbol)
+    describe.only('异常处理', async function() {
+        it('抛出异常，报错后重试成功', async function() {
+            await exchangeDelegate.testErr()
             exchangeDelegate.isAvailable.should.equal(true)
-            await exchangeDelegate._fetchOpenOrders(symbol)
+            await exchangeDelegate.testErr()
             await util.sleep(3500)
-            await exchangeDelegate._fetchOpenOrders(symbol)
+            await exchangeDelegate.testErr()
             exchangeDelegate.isAvailable.should.equal(true)
-            await exchangeDelegate._fetchOpenOrders(symbol)
-            await exchangeDelegate._fetchOpenOrders(symbol)
-            await exchangeDelegate._fetchOpenOrders(symbol)
+            await exchangeDelegate.testErr()
+            await exchangeDelegate.testErr()
+            await exchangeDelegate.testErr()
             exchangeDelegate.isAvailable.should.equal(false)
 
             for(var i=0; i<10; i++) {
@@ -81,8 +90,8 @@ describe('单元测试ExchangeDelegate', async function() {
             }
         })
 
-        it('模拟下单不成功，取消时抛出异常，测试严重错误，重试成功', async function() {
-            await exchangeDelegate.createLimitOrder(symbol, "buy", 0.1, 0.000001, balance)
+        it('测试严重错误，重试成功', async function() {
+            await exchangeDelegate.testErr(true)
             exchangeDelegate.isAvailable.should.equal(false)
 
             for(var i=0; i<10; i++) {
@@ -90,6 +99,26 @@ describe('单元测试ExchangeDelegate', async function() {
                 if(i>6) {
                     exchangeDelegate.isAvailable.should.equal(true)
                 }
+            }
+        })
+
+        it('重复错误后关闭API', async function() {
+            try{
+                await exchangeDelegate.testErr(true)
+                exchangeDelegate.isAvailable.should.equal(false)
+
+                await util.sleep(8000)
+
+                await exchangeDelegate.testErr(true)
+
+                await util.sleep(8000)
+
+                await exchangeDelegate.testErr(true)
+
+                exchangeDelegate.isClosed.should.equal(true)
+
+            }catch (e) {
+                util.log(e)
             }
         })
     })

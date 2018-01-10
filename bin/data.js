@@ -1,19 +1,21 @@
 const _ = require('lodash')
 const Log = require ('ololog').configure ({ locate: false })
-const redisDB = require('../service/redisDB')
+const RedisDB = require('../service/redisDB')
 
 async function display() {
+
+	let database = await RedisDB.getInstance()
 
 	var key
 
 	if (process.argv.length < 3) {
-		var keys = (await redisDB.getKeys('*')).sort()
+		var keys = (await database.getKeys('*')).sort()
 		key = keys[keys.length-1]
 	}else if (process.argv.length == 3){
 		key = process.argv.slice(2)
 	}
 
-	var data = await redisDB.getDataWithKey(key)
+	var data = await database.getDataWithKey(key)
 
     Log.bright.red("************************************************")	
     Log.bright.green("参与交易所：")

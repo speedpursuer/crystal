@@ -16,12 +16,16 @@ describe('单元测试available', async function() {
     beforeEach(async function () {
         class Test {
             constructor() {
-                this.available = new Available(3000, 2, 5000)
+                this.available = new Available(3000, 2, 2000, 10000, 2)
                 this.checkFlag = true
                 var that = this
                 this.available.on('check', function() {
                     util.log("check")
                     that.available.reportCheck(that.checkFlag)
+                })
+
+                this.available.on('closed', function() {
+                    util.log("closed")
                 })
             }
 
@@ -41,7 +45,7 @@ describe('单元测试available', async function() {
 	    // util.log("afterEach")
 	})
 
-  	describe('模拟从正常到异常', async function() {  		
+  	describe('正常情况', async function() {
     	it('2次以下正常', async function() {
             test.use().should.equal(true)
             test.available.reportIssue()
@@ -52,7 +56,10 @@ describe('单元测试available', async function() {
             await util.sleep(100)
             test.use().should.equal(true)
     	})
+  	})
 
+
+    describe('异常情况', async function() {
         it('3次不正常', async function() {
             test.available.reportIssue()
             await util.sleep(100)
@@ -74,7 +81,10 @@ describe('单元测试available', async function() {
             test.available.reportIssue()
             test.use().should.equal(true)
         })
+    })
 
+
+    describe('失败重试', async function() {
         it('失败后，自动恢复正常', async function() {
             test.available.reportIssue()
             test.available.reportIssue()
@@ -83,24 +93,6 @@ describe('单元测试available', async function() {
             test.use().should.equal(false)
 
             await util.sleep(6000)
-            test.use().should.equal(true)
-        })
-
-        it('严重问题', async function() {
-            test.checkFlag = true
-            test.available.reportIssue(true)
-            test.use().should.equal(false)
-
-            for(var i=1; i<10; i++) {
-                if(i == 4) {
-                    test.use().should.equal(false)
-                    test.checkFlag = true
-                }
-
-                util.log(i)
-                await util.sleep(1000)
-            }
-
             test.use().should.equal(true)
         })
 
@@ -120,10 +112,80 @@ describe('单元测试available', async function() {
                 }
 
                 util.log(i)
-                await util.sleep(1000)
+                await util.sleep(500)
             }
 
             test.use().should.equal(true)
         })
-  	})
+    })
+
+    describe('严重错误', async function() {
+        it('严重问题', async function() {
+            test.checkFlag = true
+            test.available.reportIssue(true)
+            test.use().should.equal(false)
+
+            for(var i=1; i<10; i++) {
+                if(i == 4) {
+                    test.use().should.equal(false)
+                    test.checkFlag = true
+                }
+
+                util.log(i)
+                await util.sleep(500)
+            }
+
+            test.use().should.equal(true)
+        })
+    })
+
+    describe('康复情况', async function() {
+        it('有限次的重试（康复）', async function() {
+            test.checkFlag = true
+            test.available.reportIssue(true)
+            test.use().should.equal(false)
+
+            await util.sleep(3000)
+
+            test.available.reportIssue(true)
+
+            await util.sleep(3000)
+
+            test.available.reportIssue(true)
+
+            test.available.closed.should.equal(true)
+        })
+
+        it('有限次的重试（康复）- 超时', async function() {
+            test.checkFlag = true
+            test.available.reportIssue(true)
+            test.use().should.equal(false)
+
+            await util.sleep(3000)
+
+            test.available.reportIssue(true)
+
+            await util.sleep(8000)
+
+            test.available.reportIssue(true)
+
+            test.available.closed.should.equal(false)
+        })
+
+        it('无限次的重试（康复失败）', async function() {
+            test.checkFlag = false
+            test.available.reportIssue(true)
+            test.use().should.equal(false)
+
+            await util.sleep(1000)
+            test.available.reportIssue(true)
+
+            await util.sleep(1000)
+            test.available.reportIssue(true)
+
+            await util.sleep(1000)
+            test.available.reportIssue(true)
+            test.available.closed.should.equal(false)
+        })
+    })
 })

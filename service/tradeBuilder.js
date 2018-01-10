@@ -31,7 +31,7 @@ class TradeBuilder{
     }
 
     _buildExchanges(exchangesIDs, initBalance=null, initStocks=null) {
-        if(!util.isArray(exchangesIDs)) throw "exchangesIDs should be an array"
+        if(!util.isArray(exchangesIDs)) throw new Error("exchangesIDs should be an array")
         let exchanges = {}
         for(var id of exchangesIDs) {
             let info = this.exchangeInfo(id)

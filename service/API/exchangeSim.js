@@ -41,7 +41,7 @@ class ExchangeSim {
 		if(this.realOrderBook){
 			return await this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)	        
 		}else {
-			throw "No order for sim"
+			throw new Error("No order for sim")
 		}	
 	}
 
