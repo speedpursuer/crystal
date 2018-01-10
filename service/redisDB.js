@@ -5,7 +5,7 @@ const redis = require("redis")
 const util = require ('../util/util.js')
 bluebird.promisifyAll(redis.RedisClient.prototype)
 bluebird.promisifyAll(redis.Multi.prototype)
-const redisConfig = require('../config/redisConfig')
+const redisConfig = require('../config/service/redisConfig')
 
 class RedisDB {
     constructor(enforcer) {
