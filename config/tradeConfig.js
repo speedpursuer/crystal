@@ -1,7 +1,7 @@
-const exchangeInfo = require('../config/exchangeInfo.js')
-const exchangeInfoBCH = require('../config/exchangeInfo_bch.js')
-const exchangeInfoETH = require('../config/exchangeInfo_eth.js')
-const exchangeInfoXMR = require('../config/exchangeInfo_xmr.js')
+const exchangeInfo = require('./exchangeInfo/exchangeInfo_usdt.js')
+const exchangeInfoBCH = require('./exchangeInfo/exchangeInfo_bch.js')
+const exchangeInfoETH = require('./exchangeInfo/exchangeInfo_eth.js')
+const exchangeInfoXMR = require('./exchangeInfo/exchangeInfo_xmr.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')

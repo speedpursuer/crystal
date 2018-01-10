@@ -48,7 +48,7 @@ class StaHedge extends Hedge {
     }
 
     willHedge(sellExchange, buyExchange) {
-        var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
+        var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount, buyExchange.sell1Amount, maxAmountOnce)
         if(sellExchange.canSellSuch(tradeAmount) && buyExchange.canBuySuch(tradeAmount) && this.canTrade(sellExchange, buyExchange)) {
             this.actions.push(this.performHedge(sellExchange, buyExchange, tradeAmount))
             this.setTrade(sellExchange, buyExchange)

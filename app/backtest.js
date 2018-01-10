@@ -192,7 +192,8 @@ class Backtest {
 async function test(){
     try {
         let name = util.getParameter()
-        var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
+        var backtest = new Backtest("2018-01-09 11:34:13", null, false)
+        // var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
 		await backtest[name]()
         process.exit()
     }catch (e) {

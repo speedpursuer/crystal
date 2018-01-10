@@ -9,7 +9,7 @@ describe('测试Database class', async function() {
 	let curreData, mongo, redis
 
 	before(async function() {
-        mongo = new MongoDB('localhost', 'test')
+        mongo = new MongoDB('localhost', 'test', null, null, null)
         redis = await RedisDB.getInstanceWithAccount(1000, 1, ['k', 'p'])
 	})
 

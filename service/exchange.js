@@ -8,6 +8,7 @@ const defaultSlippage = 0.0005
 const defaultMinTrade = 0.0005
 const defaultPrecision = 5
 const defaultMinOrderSize = 0.0001
+const defaultOrderRate = 0.2
 
 
 class Exchange {
@@ -22,6 +23,7 @@ class Exchange {
         this.precision = this.getValue(info.precision, defaultPrecision)
         this.minOrderSize = this.getValue(info.minOrderSize, defaultMinOrderSize)
         this.slippage = this.getValue(info.slippage, defaultSlippage)
+        this.orderRate = this.getValue(info.orderRate, defaultOrderRate)
 
         this.crypto = crypto
         this.debug = debug
@@ -80,7 +82,6 @@ class Exchange {
     }
 
     get buy1Amount() {
-        // return this.getOrderBooksData('bids.0.1')
         if(this.getOrderBooksData('bids.0.1') == 0) return 0
         let minBuyPrice = this.getOrderBooksData('bids.0.0') * 0.99999
         return _.reduce(this.getOrderBooksData('bids'), function(total, value) {
@@ -88,11 +89,10 @@ class Exchange {
                 total += value[1]
             }
             return total
-        }, 0)
+        }, 0) * this.orderRate
     }
 
     get sell1Amount() {
-        // return this.getOrderBooksData('asks.0.1')
         if(this.getOrderBooksData('asks.0.1') == 0) return 0
         let maxSellPrice = this.getOrderBooksData('asks.0.0') * 1.00001
         return _.reduce(this.getOrderBooksData('asks'), function(total, value) {
@@ -100,7 +100,7 @@ class Exchange {
                 total += value[1]
             }
             return total
-        }, 0)
+        }, 0) * this.orderRate
     }
 
     get buyPrice() {

@@ -40,7 +40,7 @@ class Hedge extends Strategy {
     findPair(sellExchange, buyExchange) {
         if(sellExchange.buy1Price > buyExchange.sell1Price){
 
-            var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount * orderRate, buyExchange.sell1Amount * orderRate, maxAmountOnce)
+            var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount, buyExchange.sell1Amount, maxAmountOnce)
             tradeAmount = this.adjustedTradeAmount(sellExchange, buyExchange, tradeAmount)
             var margin = sellExchange.earnForSellOne - buyExchange.payForBuyOne
             var profit = margin * tradeAmount
@@ -65,7 +65,7 @@ class Hedge extends Strategy {
         if(this.stockDiff > 0) {
             var descList = _.orderBy(this.exchanges, 'earnForSellOne', 'desc')
             for(var exchange of descList) {
-                var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount * orderRate, maxAmountOnce)
+                var orderAmount = Math.min(this.stockDiff, exchange.amountCanSell, exchange.buy1Amount, maxAmountOnce)
                 if(exchange.canSellSuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 卖出 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitSell(orderAmount)
@@ -75,7 +75,7 @@ class Hedge extends Strategy {
         }else {
             var ascList = _.orderBy(this.exchanges, 'payForBuyOne', 'asc')
             for(var exchange of ascList) {
-                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount * orderRate, maxAmountOnce)                
+                var orderAmount = Math.min(Math.abs(this.stockDiff), exchange.amountCanBuy, exchange.sell1Amount, maxAmountOnce)
                 if(exchange.canBuySuch(orderAmount)) {
                     this.action(`平衡: 存在币差 ${this.stockDiff}, ${exchange.id} 买入 ${orderAmount} ${exchange.crypto}`)
                     await exchange.limitBuy(orderAmount)

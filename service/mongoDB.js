@@ -5,12 +5,13 @@ const config = require('../config/mongoConfig')
 
 
 class Mongo {
-    constructor(host=config.host, db=config.db) {
-        this.initMongodb(host, db)
+    constructor(host=config.host, db=config.db, port=config.port, user=config.user, pwd=config.pwd) {
+        this.initMongodb(host, db, port, user, pwd)
     }
 
-    initMongodb(host, db) {
-        mongoose.connect( `mongodb://${host}/${db}`, {
+    initMongodb(host, db, port, user, pwd) {
+        let connectString = (port && user && pwd)? `mongodb://${user}:${pwd}@${host}:${port}/${db}`: `mongodb://${host}/${db}`
+        mongoose.connect(connectString, {
             useMongoClient: true
         })
 
