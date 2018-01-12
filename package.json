@@ -21,7 +21,8 @@
     "progress": "^2.0.0",
     "redis": "^2.8.0",
     "request": "^2.83.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.2",
+    "ws": "^4.0.0"
   },
   "devDependencies": {
     "should": "^13.1.2"

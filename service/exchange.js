@@ -36,7 +36,7 @@ class Exchange {
 	}
 
 	getValue(value, defaultValue) {
-	    return value? value: defaultValue
+	    return value!==undefined? value: defaultValue
     }
 
     get isAvailable() {
@@ -132,11 +132,11 @@ class Exchange {
     }
 
     canBuySuch(amount) {
-        return this.payForBuyOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && amount >= this.minTrade
+        return this.payForBuyOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
     }
 
     canSellSuch(amount) {
-        return this.earnForSellOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && amount >= this.minTrade
+        return this.earnForSellOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
     }
 
     limitBuy(amount) {  
