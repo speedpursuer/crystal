@@ -33,7 +33,7 @@ class ExchangeFactory {
     }
 
     createExchangeSim(info, crypto, fiat, initBalance, initStocks, realSim=false, debug=false) {
-        let api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, realSim, 0.7, 0.7)
+        let api = new ExhangeSim(info, crypto, fiat, initBalance, initStocks, realSim, 1, 1)
         api.interval = 0
         return this.createExchangeDelegate(api, debug)
     }

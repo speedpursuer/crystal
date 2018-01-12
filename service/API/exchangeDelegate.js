@@ -13,6 +13,7 @@ class ExchangeDelegate {
         this.id = api.id
         this.interval = api.interval
         this.debug = debug
+        this.timeout = 1000
         this._configAvailable(config)
     }
 
@@ -28,7 +29,7 @@ class ExchangeDelegate {
         try{
             return await util.promiseWithTimeout(
                 () => this.api.fetchTicker(symbol),
-                1000
+                this.timeout
             )
         }catch(e){
             this._log(`未获取到Ticker: ${e}`)
@@ -48,7 +49,7 @@ class ExchangeDelegate {
             }
             return await util.promiseWithTimeout(
                 () => this.api.fetchOrderBook(symbol, pram),
-                1000
+                this.timeout
             )
         }catch(e){
             // this._log(`未获取到orderbook: ${e.message}`)

@@ -48,7 +48,7 @@ const backtestConfig = {
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.00005,
+            minMargin: 0.00004,
             maxLoss: -0.001,
             debug: false
         }
@@ -93,7 +93,7 @@ const backtestConfig = {
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
-            minMargin: 0.0002,
+            minMargin: 0.0001,
             maxLoss: -0.001,
             debug: false
         },
@@ -121,7 +121,7 @@ const backtestConfig = {
         exchangeInfo: exchangeInfoCommon,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 20,
+            maxAmountOnce: 15,
             orderRate: 0.1,
             minMargin: 0.000001,
             maxLoss: -0.001,
@@ -139,6 +139,22 @@ const backtestConfig = {
             maxAmountOnce: 15,
             orderRate: 0.1,
             minMargin: 0.000002,
+            maxLoss: -0.001,
+            debug: false
+        },
+    },
+
+
+    'Backtest_QTUM/BTC': {
+        base: "QTUM",
+        quote: "BTC",
+        exchanges: ['Bittrex', 'Bitfinex', 'Binance', 'OKEx', 'huobipro'],
+        exchangeInfo: exchangeInfoCommon,
+        strategy: HedgeTest,
+        strategyConfig: {
+            maxAmountOnce: 10,
+            orderRate: 0.1,
+            minMargin: 0.000005,
             maxLoss: -0.001,
             debug: false
         },

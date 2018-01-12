@@ -4,17 +4,17 @@ const TradeSim = require('../service/tradeSim')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
-const btc_price = 15040
+const btc_price = 13912
 const total_budget = btc_price * 2
-const ltc_price = 249
-const eth_price = 873
-const bch_price = 2662
-const xmr_price = 391
-const xrp_price = 2.7
-const eos_price = 9.23
-const dash_price = 1181
-const iot_price = 4.01
-const qtum_price = 59
+const ltc_price = 237
+const eth_price = 1249
+const bch_price = 2557
+const xmr_price = 381
+const xrp_price = 1.8
+const eos_price = 10.76
+const dash_price = 1046
+const iot_price = 3.59
+const qtum_price = 49
 
 class Backtest {
 	constructor(start, end, debug) {

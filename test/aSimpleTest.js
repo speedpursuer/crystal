@@ -939,8 +939,16 @@ function test45() {
 	}
 }
 
+function test46() {
+    let a = ['okex', 'huobi']
+	util.log(a.join())
+
+    let b = []
+    util.log(b.join())
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test44()
+    test46()
 }
