@@ -55,12 +55,11 @@ const tradeConfig = {
     'EOS/BTC': {
         base: "EOS",
         quote: "BTC",
-        exchanges: ['Binance', 'huobipro', 'OKEx'],
-        // exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
+        exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
         exchangeInfo: exchangeInfoEOS,
         strategy: HedgeTest,
         strategyConfig: {
-            maxAmountOnce: 15,
+            maxAmountOnce: 20,
             orderRate: 0.1,
             minMargin: 0.000004,
             maxLoss: -0.001,
