@@ -33,6 +33,8 @@ class Exchange {
         this.frozenBalance = 0
         this.frozenStocks = 0
         this.orderBooks = null
+
+        this.log(`${this.id} - base: ${this.crypto}, quote: ${this.fiat}, fee: ${this.fee}, specialBuy: ${this.specialBuy}, minTrade: ${this.minTrade}, precision: ${this.precision}, minOrderSize: ${this.minOrderSize}, slippage: ${this.slippage}, orderRate: ${this.orderRate}`, 'green')
 	}
 
 	getValue(value, defaultValue) {
