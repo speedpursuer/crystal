@@ -134,11 +134,13 @@ class Exchange {
     }
 
     canBuySuch(amount) {
-        return this.payForBuyOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
+        return this.adjustedOrderPrice(this.buyPrice) * this.adjustedBuyAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
+        // return this.payForBuyOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
     }
 
     canSellSuch(amount) {
-        return this.earnForSellOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
+        return this.adjustedOrderPrice(this.sellPrice) * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
+        // return this.earnForSellOne * this.adjustedOrderAmount(amount) >= this.minOrderSize && this.adjustedOrderAmount(amount) >= this.minTrade
     }
 
     limitBuy(amount) {  
