@@ -64,7 +64,7 @@ const tradeConfig = {
             orderRate: 0.1,
             minMargin: 0.000004,
             maxLoss: -0.001,
-            debug: false
+            debug: true
         },
     },
 
