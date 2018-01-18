@@ -114,8 +114,7 @@ class BaseStrategy {
     }
 	
 	doTrade() {
-		util.log.red("doTrade() must be implemented, exiting app")
-		process.exit()
+		throw new Error("doTrade() must be implemented")
 	}
 }
 module.exports = BaseStrategy

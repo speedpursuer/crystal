@@ -34,8 +34,17 @@ class Exchange {
         this.frozenStocks = 0
         this.orderBooks = null
 
-        this.log(`${this.id} - base: ${this.crypto}, quote: ${this.fiat}, fee: ${this.fee}, specialBuy: ${this.specialBuy}, minTrade: ${this.minTrade}, precision: ${this.precision}, minOrderSize: ${this.minOrderSize}, slippage: ${this.slippage}, orderRate: ${this.orderRate}`, 'green')
+        this.dataUpdate()
+
+        this.log(`Config - base: ${this.crypto}, quote: ${this.fiat}, fee: ${this.fee}, specialBuy: ${this.specialBuy}, minTrade: ${this.minTrade}, precision: ${this.precision}, minOrderSize: ${this.minOrderSize}, slippage: ${this.slippage}, orderRate: ${this.orderRate}`, 'green')
 	}
+
+	dataUpdate() {
+	    let that = this
+        this.exchangeDelegate.on('account', function(data){
+            that.account = this.parseAccount(data, that.symbol)
+        })
+    }
 
 	getValue(value, defaultValue) {
 	    return value!==undefined? value: defaultValue
@@ -198,7 +207,7 @@ class Exchange {
         }
 
         result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
-        this.account = result.newAccount
+        // this.account = result.newAccount
         return result.info
     }
 
@@ -215,10 +224,10 @@ class Exchange {
         amount = _.floor(amount, this.precision)
         var result = {}
         try{
-            await this.fetchOrderBook()
-            this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
-            this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
-            await this.fetchAccount()
+            // await this.fetchOrderBook()
+            // this.log(`buy1Price: ${this.buy1Price}`, 'yellow')
+            // this.log(`sell1Price: ${this.sell1Price}`, 'yellow')
+            // await this.fetchAccount()
             if(this.balance > 0) {
                 this.log(`开始下买单, 数量: ${amount}, 金额: ${buyPrice}`, 'green')
                 result = await this.exchangeDelegate.createLimitOrder(this.symbol, 'buy', amount, buyPrice, this.account)

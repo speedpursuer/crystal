@@ -4,24 +4,26 @@ const ccxt = require ('ccxt')
 const _ = require('lodash');
 const Delay = 0
 
+// const allSymbols = {
+// 	BTC: 'BTC',
+// 	ETH: 'ETH',
+// 	BCH: 'BCH',
+// 	BCC: 'BCH',
+// 	EOS: 'EOS',
+// 	IOTA: 'IOTA'
+// }
+
 class ExchangeSim {
-	constructor(info, crypto, fiat, initBalance, initStocks, realOrderBook=false, buySuccess=0.72, sellSuccess=0.72, debug=false){
+	constructor(info, balance, buySuccess=0.72, sellSuccess=0.72, realOrderBook=false, debug=false){
 		this.orderList = {}
 		this.currID = 0
 		this.tryTime = 0
 
-        this.balance = initBalance
-        this.stocks = initStocks
-        this.frozenBalance = 0
-        this.frozenStocks = 0
+        this.balanceMgr = new BalanceMgr(balance)
 
         this.id = info.id
-        this.crypto = crypto
-        this.fee = info.fee        
-        this.fiat = fiat == 'USD'? info.fiat: fiat
+        this.fee = info.fee
         this.specialBuy = info.specialBuy
-        this.minTrade = info.minTrade
-        this.amountPrecision = info.precision
 
         this.realOrderBook = realOrderBook
 
@@ -37,26 +39,26 @@ class ExchangeSim {
         return true
     }
 
-	async fetchOrderBook() {
+    addBalance(balance) {
+		this.balanceMgr.addBalance(balance)
+	}
+
+    getBalance(symbol) {
+		return this.balanceMgr.getExchangePair(symbol)
+	}
+
+	async fetchOrderBook(symbol) {
 		if(this.realOrderBook){
-			return await this.ccxtExchange.fetchOrderBook(`${this.crypto}/${this.fiat}`)	        
+			return await this.ccxtExchange.fetchOrderBook(symbol)
 		}else {
 			throw new Error("No order for sim")
 		}	
 	}
 
 	async fetchBalance() {
-		await util.sleep(Delay)
-		var balance = {}
-		balance[this.crypto] = {
-			free: this.stocks,
-			used: this.frozenStocks
-		}
-		balance[this.fiat] = {
-			free: this.balance,
-			used: this.frozenBalance			
-		}
-		this.log(`${this.id} balance: ${this.balance}, frozenBalance: ${this.frozenBalance}, stocks: ${this.stocks}, frozenStocks: ${this.frozenStocks}`, "green")
+        await util.sleep(Delay)
+		let balance = this.balanceMgr.fetchAllBalance()
+		this.log(balance, 'yellow')
 		return balance
 	}
 
@@ -70,6 +72,8 @@ class ExchangeSim {
 		var status
 		var stockDiff
 		var balanceDiff
+
+		let account = this.getBalance(symbol)
 
 		if(sucess) {
 			status = 'closed'
@@ -90,11 +94,11 @@ class ExchangeSim {
 			type: "buy",
 		}	
 
-		this.orderList[this.currID] = order	
+		this.orderList[this.currID] = order
 
-		this.balance -= this.specialBuy? amount * price / (1-this.fee): amount * price
-		this.stocks += stockDiff
-		this.frozenBalance += balanceDiff
+        account.balance -= this.specialBuy? amount * price / (1-this.fee): amount * price
+        account.stocks += stockDiff
+        account.frozenBalance += balanceDiff
 
 		await util.sleep(Delay)
 		return {id: order.id}		
@@ -110,6 +114,8 @@ class ExchangeSim {
 		var status
 		var stockDiff
 		var balanceDiff
+
+        let account = this.getBalance(symbol)
 
 		if(sucess) {
 			status = 'closed'
@@ -132,9 +138,9 @@ class ExchangeSim {
 
 		this.orderList[this.currID] = order
 
-		this.stocks -= amount
-		this.balance += balanceDiff
-		this.frozenStocks += stockDiff
+        account.stocks -= amount
+        account.balance += balanceDiff
+        account.frozenStocks += stockDiff
 
 		await util.sleep(Delay)
 		return {id: order.id}
@@ -150,19 +156,21 @@ class ExchangeSim {
 		return _.filter(this.orderList, function(o) { return o.status == 'open' })
 	}
 
-	async cancelOrder(orderID) {		
+	async cancelOrder(orderID, symbol) {
 		this.tryTime++
 		await util.sleep(Delay)
 
 		if(this.tryTime >= 1) {				
 			var order = this.orderList[orderID]
+			if(order.status == 'closed') return true
+            let account = this.getBalance(symbol)
 			if(order.type == 'buy') {			
 				var balanceRollback = this.specialBuy? order.amount * order.price / (1-this.fee): order.amount * order.price
-				this.frozenBalance -= balanceRollback
-				this.balance += balanceRollback
+                account.frozenBalance -= balanceRollback
+                account.balance += balanceRollback
 			}else {
-				this.frozenStocks -= order.amount
-				this.stocks += order.amount
+                account.frozenStocks -= order.amount
+                account.stocks += order.amount
 			}
 			order.status = 'closed'
 			this.tryTime = 0
@@ -192,4 +200,66 @@ class ExchangeSim {
         }
     }
 }
+
+class BalanceMgr {
+	constructor(initBalance) {
+        this.balanceList = {}
+        this.addBalance(initBalance)
+	}
+
+	getExchangePair(symbol) {
+        let pair = _.split(symbol, '/')
+		if(pair.length !== 2) throw new Error(`symbol - ${symbol} is not valid`)
+		return new ExchangePair(this.balanceList[pair[0]], this.balanceList[pair[1]])
+	}
+
+	fetchAllBalance() {
+		return this.balanceList
+	}
+
+	addBalance(initBalance) {
+        for(let symbol in initBalance) {
+            this.balanceList[symbol] = new Balance(initBalance[symbol], 0)
+        }
+	}
+}
+
+class ExchangePair {
+	constructor(base, quote) {
+		this.base = base
+		this.quote = quote
+	}
+	set balance(amount) {
+		this.quote.free = amount
+	}
+    get balance() {
+        return this.quote.free
+    }
+	set frozenBalance(amount) {
+		this.quote.used = amount
+	}
+    get frozenBalance() {
+        return this.quote.used
+    }
+	set stocks(amount) {
+		this.base.free = amount
+	}
+    get stocks() {
+        return this.base.free
+    }
+	set frozenStocks(amount){
+		this.base.used = amount
+	}
+    get frozenStocks(){
+        return this.base.used
+    }
+}
+
+class Balance {
+	constructor(free, used) {
+		this.free = free
+		this.used = used
+	}
+}
+
 module.exports = ExchangeSim

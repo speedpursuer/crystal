@@ -27,7 +27,6 @@ describe('单元测试ExchangeDelegate', async function() {
         }
 
         exchangeDelegate = factory.createExchange(info, true)
-        exchangeDelegate.timeout = 10000
 	})
 
 	beforeEach(async function(){

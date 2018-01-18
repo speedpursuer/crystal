@@ -14,7 +14,7 @@ const math = require('mathjs')
 
 var ProgressBar = require('progress')
 
-const EventEmitter = require('events');
+const EventEmitter = require('events')
 
 const Counter = require("../util/counter")
 
@@ -706,28 +706,31 @@ function test33() {
 function test34() {
 	class ExchangeDelegate extends EventEmitter {
 		nofify(flag) {
-			this.emit(flag? 'open': 'close')
+			this.emit(flag? 'open': 'close', {
+				data: 'test',
+				number: 1
+			})
 		}
 
 		test() {
 			var that = this
 			setTimeout(function() {
 		      	that.nofify(false)
-		    }, 1000);
+		    }, 3000);
 		    setTimeout(function() {
 		      	that.nofify(true)
-		    }, 3000);
+		    }, 1000);
 		}
 	}
 
 	var delegate = new ExchangeDelegate()
 
-	delegate.on('open', function(){
-		util.log("delegate opend")
+	delegate.on('open', function(flag){
+		util.log("delegate opend", flag)
 	})
 
-	delegate.on('close', function(){
-		util.log("delegate closed")
+	delegate.on('close', function(flag){
+		util.log("delegate closed", flag)
 	})
 
 	delegate.test()
@@ -951,8 +954,59 @@ function test47() {
     util.log(_.floor(15.02, 0))
 }
 
+function teest48() {
+	class A {
+		constructor(text) {
+			this.text = text
+		}
+	}
+
+	let a = new A('abc')
+	const b = a
+	util.log('a', a.text)
+    util.log('b', b.text)
+
+	a.text = 'xyz'
+
+    util.log('a', a.text)
+    util.log('b', b.text)
+}
+
+function test49() {
+    util.log(_.slice([1, 2, 3, 4], 0, 1))
+
+    function getSymbolFromChannel(channel) {
+        return channel.split('_')[3] + "_" + channel.split('_')[4]
+    }
+
+    util.log(getSymbolFromChannel("ok_sub_spot_eos_btc_depth_10"))
+}
+
+function test50() {
+	let a = {
+		test: 1
+	}
+	util.log(a.te == null)
+}
+
+function test51() {
+	class A {
+		hello(text) {
+			util.log("hello", text)
+		}
+
+		test() {
+			_.forEach([1, 2], function (value, key) {
+				this.hello(value)
+            })
+		}
+	}
+	let a = new A()
+	a.test()
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test47()
+    test51()
 }

@@ -7,7 +7,7 @@ const Interval = 2000
 class Trade{
 	constructor(tradeName, debug=true){
         this.debug = debug
-        this.tradeBuilder = new TradeBuilder(tradeName, debug)
+        this.tradeBuilder = new TradeBuilder(tradeName, false)
 		this.strategy = this.tradeBuilder.strategy
 	}
 

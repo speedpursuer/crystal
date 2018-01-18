@@ -26,19 +26,19 @@ class TradeBuilder{
         return this._buildExchanges(exchangesIDs)
     }
 
-    buildExchangesSim(exchangesIDs, initBalance, initStocks) {
-        return this._buildExchanges(exchangesIDs, initBalance, initStocks)
+    buildExchangesSim(exchangeAccount) {
+        return this._buildExchanges(exchangeAccount, true)
     }
 
-    _buildExchanges(exchangesIDs, initBalance=null, initStocks=null) {
-        if(!util.isArray(exchangesIDs)) throw new Error("exchangesIDs should be an array")
+    _buildExchanges(exchangesIDs, isSim=false) {
         let exchanges = {}
-        for(var id of exchangesIDs) {
-            let info = this.exchangeInfo(id)
-            let exchangeDelegate
-            if(initBalance && initStocks) {
-                exchangeDelegate = factory.createExchangeSim(info, this.strategy.crypto, this.strategy.fiat, initBalance, initStocks, false, this.debug)
+        for(var id in exchangesIDs) {
+            let exchangeDelegate, info
+            if(isSim) {
+                info = this.exchangeInfo(id)
+                exchangeDelegate = factory.createExchangeSim(info, exchangesIDs[id], false, this.debug)
             }else {
+                info = this.exchangeInfo(exchangesIDs[id])
                 exchangeDelegate = factory.createExchange(info, this.debug)
             }
             exchanges[id] = new Exchange(exchangeDelegate, info, this.strategy.crypto, this.strategy.fiat, this.debug)
@@ -58,7 +58,7 @@ class TradeBuilder{
         var id = id.toLowerCase()
         var info = this.config.exchangeInfo[id]
         if(!info) {
-            throw `exchange ${id} not found in trade ${this.key}`
+            throw new Error(`exchange ${id} not found in trade ${this.key}`)
         }
         info.id = id
         return info

@@ -1,3 +1,4 @@
+const EventEmitter = require('events')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const Available = require('../../util/available.js')
@@ -7,13 +8,14 @@ const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
 
 
-class ExchangeDelegate {
+class ExchangeDelegate extends EventEmitter {
 	constructor(api, config, debug=true) {
+	    super()
         this.api = api
         this.id = api.id
         this.interval = api.interval
         this.debug = debug
-        this.timeout = 1000
+        this.timeout = this.debug? 10000: 1000
         this._configAvailable(config)
     }
 
@@ -52,14 +54,18 @@ class ExchangeDelegate {
                 this.timeout
             )
         }catch(e){
-            // this._log(`未获取到orderbook: ${e.message}`)
+            this._debugLog(`未获取到orderbook: ${e.message}`, 'red')
             return null
         }
     }
 
     async fetchAccount(symbol) {
         try {
-            return this._parseAccount(await this.api.fetchBalance(), symbol)
+            let balance = await this.api.fetchBalance()
+            let account = this.parseAccount(balance, symbol)
+            this.emit('account', balance)
+            this._logAccount(symbol, account)
+            return account
         }catch(e) {
             this._reportIssue(e)
             return null
@@ -67,7 +73,7 @@ class ExchangeDelegate {
     }
 
     async createLimitOrder(symbol, type, amount, price, accountInfo) {
-        this._logAccount(accountInfo)
+        this._logAccount(symbol, accountInfo)
         try{
             if(type == ORDER_TYPE_BUY) {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
@@ -135,7 +141,7 @@ class ExchangeDelegate {
         }        
     }
 
-    _parseAccount(data, symbol) {
+    parseAccount(data, symbol) {
         var pair = this._parseSymbol(symbol)
         var fiat = pair.fiat, crypto = pair.crypto
         if(!data || (!data[fiat] && !data[crypto])) return null
@@ -145,7 +151,7 @@ class ExchangeDelegate {
             stocks: data[crypto]? this._adjust(data[crypto].free): 0,
             frozenStocks: data[crypto]? this._adjust(data[crypto].used): 0
         }
-        this._logAccount(account)
+        // this._logAccount(symbol, account)
         return account
     }
 
@@ -175,12 +181,16 @@ class ExchangeDelegate {
         }
     }
 
-    _logAccount(account) {
-        this._log(`balance: ${account.balance}, frozenBalance: ${account.frozenBalance}, stocks: ${account.stocks}, frozenStocks: ${account.frozenStocks}`, 'yellow')
+    _logAccount(symbol, account) {
+        this._log(`${symbol} - balance: ${account.balance}, frozenBalance: ${account.frozenBalance}, stocks: ${account.stocks}, frozenStocks: ${account.frozenStocks}`, 'yellow')
     }
 
     _log(message, color='white') {
-        if(this.debug) util.log[color](this.id, message)
+        util.log[color](this.id, message)
+    }
+
+    _debugLog(message, color='white') {
+        if(this.debug) this._log(message, color)
     }
 
     _adjust(number) {
