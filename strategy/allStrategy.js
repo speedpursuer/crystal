@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const RedisDB = require('../service/redisDB')
+const RedisDB = require('../service/db/redisDB')
 const cryptoInfo = require('../config/cryptoInfo.js')
 
 class AllStrategy {
@@ -9,13 +9,13 @@ class AllStrategy {
         // this.crypto = crypto
         // this.fiat = fiat
         // this.config = config
-        this.debug = this.getConfig("debug")
-		this.maxLoss = this.getConfig("maxLoss")
+        this.debug = true
+		this.maxLoss = -0.001
     }
 
 	async init(exchangeSet){
 		this.exchangeSet = exchangeSet
-		await this.updateBalance()
+		// await this.updateBalance()
 	}
 
 	async updateBalance() {
@@ -35,8 +35,8 @@ class AllStrategy {
 		}
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock
-		
-		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)		
+
+		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)
 
 		if(this.needReport && this.debug) {
 			this.logProfit()
@@ -70,27 +70,27 @@ class AllStrategy {
 		return this.exchangeSet
 	}
 
-	get exchanges() {
-		var that = this
-		return _.filter(this._exchanges, function(e) { 
-			if(!e.orderBooks || !e.isAvailable) {
-				return false
-			}else if(!cryptoInfo[that.market]){
-				return true				
-			}else {
-				if(_.inRange(e.sellPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max) &&
-				   _.inRange(e.buyPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max)) {
-					return true
-				}else {
-					return false
-				}
-			}
-		})
-	}
-
-	get market() {
-		return `${this.crypto}/${this.fiat}`
-	}
+	// get exchanges() {
+	// 	var that = this
+	// 	return _.filter(this._exchanges, function(e) {
+	// 		if(!e.orderBooks || !e.isAvailable) {
+	// 			return false
+	// 		}else if(!cryptoInfo[that.market]){
+	// 			return true
+	// 		}else {
+	// 			if(_.inRange(e.sellPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max) &&
+	// 			   _.inRange(e.buyPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max)) {
+	// 				return true
+	// 			}else {
+	// 				return false
+	// 			}
+	// 		}
+	// 	})
+	// }
+    //
+	// get market() {
+	// 	return `${this.crypto}/${this.fiat}`
+	// }
 
 	action(text) {
 		this.log("---------------------------------------------")
@@ -105,16 +105,17 @@ class AllStrategy {
     before() {
 	}
 
-    getConfig(name) {
-        var value = util.deepGet(this.config, name)
-        if(value === undefined) {
-        	throw `${name} not found in config`
-		}
-		return value
-    }
+    // getConfig(name) {
+    //     var value = util.deepGet(this.config, name)
+    //     if(value === undefined) {
+    //     	throw `${name} not found in config`
+		// }
+		// return value
+    // }
 	
 	doTrade() {
-		throw new Error("doTrade() must be implemented")
+		// throw new Error("doTrade() must be implemented")
 	}
 }
+
 module.exports = AllStrategy

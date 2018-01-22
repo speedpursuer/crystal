@@ -1,17 +1,20 @@
+const EventEmitter = require('events')
 const WS = require('ws')
 const util = require('../../util/util')
 const Counter = require('../../util/counter')
 const config = require('./config/exchangeInfo')
 const _ = require('lodash')
-const RedisDB = require('../redisDB')
+const RedisDB = require('../db/redisDB')
 
 const orderBookSize = 10
 
-class OrderbookStream {
+class OrderbookStream extends EventEmitter {
     constructor(symbols) {
+        super()
         this.config()
         this.init(symbols)
-        this.connect()
+        this.isWorking = false
+        // this.connect()
     }
 
     config() {
@@ -24,7 +27,13 @@ class OrderbookStream {
     }
 
     realSymbol(symbol) {
-        return this.symbolPairs[symbol]
+        let realSymbol = this.symbolPairs[symbol]
+        if(!realSymbol) throw new Error('symbol not valid')
+        return realSymbol
+    }
+
+    getAllOrderbooks() {
+        return this.orderbooks
     }
 
     getOrderBookBySymbol(symbol) {
@@ -43,7 +52,7 @@ class OrderbookStream {
                 asks: []
             }
         }
-        this.emptyOrderbooks = this.orderbooks
+        // this.emptyOrderbooks = this.orderbooks
     }
 
     send(data) {
@@ -70,6 +79,7 @@ class OrderbookStream {
                     that.checkConnection()
                 }, 5000)
             }
+            that.checkDataAvailable()
         })
 
         this.ws.on('message', function(msg) {
@@ -95,6 +105,8 @@ class OrderbookStream {
     }
 
     reconnect(e) {
+        // this.orderbooks = this.emptyOrderbooks
+        this.isWorking = false
         this.ws.removeAllListeners()
         if(this.counter.isOverCountAfterCount) {
             this.reportErr(new Error('Retried failed, giving up')).then()
@@ -117,10 +129,11 @@ class OrderbookStream {
     }
 
     async reportErr(e) {
+        this.isWorking = false
         util.log.red(e)
-        this.orderbooks = this.emptyOrderbooks
-        let database = await RedisDB.getInstanceWithAccount()
-        await database.recordClosedAPI(this.name)
+        // this.orderbooks = this.emptyOrderbooks
+        // let database = await RedisDB.getInstanceWithAccount()
+        // await database.recordClosedAPI(this.name)
     }
 
     parseMessage(msg) {
@@ -139,6 +152,28 @@ class OrderbookStream {
         this.lastHeartBeat = util.time
     }
 
+    adjustedOrderbook(orderbook) {
+        return {
+            bids: this.adjustedList(orderbook, 'bids'),
+            asks: this.adjustedList(orderbook, 'asks')
+        }
+    }
+
+    adjustedList(orderbook, side) {
+        if(!this.isWorking) {
+            return []
+        }
+        return this.formatNumber(_.slice(this.sortOrderList(orderbook[side], side), 0, orderBookSize))
+    }
+
+    formatNumber(list) {
+        let newList = []
+        for(let item of list) {
+            newList.push([Number(item[0]), Number(item[1])])
+        }
+        return newList
+    }
+
     sortOrderList(list, side) {
         return list.sort(function(a, b) {
             if (side === 'bids') {
@@ -149,15 +184,41 @@ class OrderbookStream {
         })
     }
 
-    adjustedOrderbook(orderbook) {
-        return {
-            bids: _.slice(this.sortOrderList(orderbook.bids, 'bids'), 0, orderBookSize),
-            asks: _.slice(this.sortOrderList(orderbook.asks, 'asks'), 0, orderBookSize)
-        }
-    }
-
     log(message) {
         util.log(this.name, message)
+    }
+
+    checkDataAvailable() {
+        let that = this, i = 0, maxTry = 10
+        util.repeat(function () {
+            i++
+            if(i == maxTry) {
+                that.notifyOrderbookReceived(false)
+            }
+        }, 500, maxTry, function () {
+            if(!that.isOrderbookEmpty()) {
+                that.notifyOrderbookReceived(true)
+                return true
+            }
+            return false
+        })
+    }
+
+    isOrderbookEmpty() {
+        let orderbooks = this.getAllOrderbooks()
+        if(_.size(orderbooks) != _.size(this.symbols)) return true
+        for(let key in orderbooks) {
+            let orderbook = orderbooks[key]
+            if(orderbook.bids.length == 0 || orderbook.asks.length == 0) {
+                return true
+            }
+        }
+        return false
+    }
+
+    notifyOrderbookReceived(flag) {
+        this.isWorking = flag
+        this.emit('started', flag)
     }
 }
 

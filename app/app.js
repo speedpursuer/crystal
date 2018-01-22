@@ -1,5 +1,5 @@
 const util = require('../util/util.js')
-const Trade = require('../service/trade.js')
+const Trade = require('../service/trade/trade.js')
 
 async function main() {
     try {

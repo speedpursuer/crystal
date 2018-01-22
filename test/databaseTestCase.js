@@ -1,6 +1,6 @@
 const should = require('should');
-const MongoDB = require('../service/mongoDB.js')
-const RedisDB = require('../service/redisDB.js')
+const MongoDB = require('../service/db/mongoDB.js')
+const RedisDB = require('../service/db/redisDB.js')
 const util = require('../util/util.js')
 const _ = require('lodash')
 

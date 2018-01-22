@@ -143,6 +143,18 @@ class Util{
     objectMaxBy(object, byValue) {
         return this.objectOrderBy(object, byValue, 'desc')
     }
+
+    repeat(fun, interval, maxTimes=-1, funStop=null) {
+        if (typeof fun !== "function" || isNaN(interval) || isNaN(maxTimes) || (funStop != null && typeof funStop !== "function")) {
+            throw new Error('input valid')
+        }
+		let i = 0
+        let anInterval = setInterval(function () {
+            fun()
+            i++
+            if(i >= maxTimes || (funStop != null && funStop())) clearInterval(anInterval)
+        }, interval)
+	}
 }
 var util = new Util()
 module.exports = util

@@ -3,7 +3,7 @@ var exchangeInfo = {
 		url: 'wss://api.huobi.pro/ws',
         symbolPairs: {
 			'EOS/BTC': 'eosbtc',
-			'ETH/BTC': 'ethbtc'
+			'ETH/BTC': 'ethbtc',
 		},
         needPing: true
 	},
@@ -12,6 +12,7 @@ var exchangeInfo = {
         url: 'wss://real.okex.com:10441/websocket',
         symbolPairs: {
             'EOS/BTC': 'eos_btc',
+            'IOTA/BTC': 'IOTA_btc',
             'ETH/BTC': 'eth_btc'
         },
         needPing: true
@@ -21,6 +22,7 @@ var exchangeInfo = {
         url: 'wss://api.bitfinex.com/ws/2',
         symbolPairs: {
             'EOS/BTC': 'tEOSBTC',
+            'IOTA/BTC': 'tIOTBTC',
             'ETH/BTC': 'tETHBTC'
         },
         needPing: true
@@ -30,6 +32,7 @@ var exchangeInfo = {
         url: 'wss://stream.binance.com:9443/stream?streams=',
         symbolPairs: {
             'EOS/BTC': 'eosbtc',
+            'IOTA/BTC': 'iotabtc',
             'ETH/BTC': 'ethbtc',
             'BTC/USD': 'btcusdt',
             'ETH/USD': 'ethusdt',

@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const should = require('should');
 const util = require('../util/util.js')
-const TradeBuilder = require('../service/tradeBuilder')
+const TradeBuilder = require('../service/trade/tradeBuilder')
 
 
 describe.only('测试 exchange', async function() {

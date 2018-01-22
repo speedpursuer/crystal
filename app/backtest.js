@@ -1,6 +1,6 @@
 const util = require('../util/util.js')
-const MongoDB = require('../service/mongoDB.js')
-const TradeSim = require('../service/tradeSim')
+const MongoDB = require('../service/db/mongoDB.js')
+const TradeSim = require('../service/trade/tradeSim')
 const ProgressBar = require('progress')
 const _ = require('lodash')
 
@@ -135,7 +135,7 @@ class Backtest {
 	async test(key, exchangeIDs, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
-        // var trade = new Trade(exchangeIDs, new HedgeTest(base, quote, this.debug), initBalance, initStocks, this.debug)
+        // var trade = new Trade(exchangeIDs, new HedgeNew(base, quote, this.debug), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 
         var trade = new TradeSim(key, initBalance, initStocks, exchangeIDs, this.debug)

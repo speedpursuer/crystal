@@ -1,6 +1,6 @@
 const should = require('should');
-const HedgeTest = require('../strategy/hedgeTest.js')
-const TradeSim = require('../service/tradeSim')
+const HedgeTest = require('../strategy/hedgeNew.js')
+const TradeSim = require('../service/trade/tradeSim')
 const util = require('../util/util.js')
 const _ = require('lodash')
 
@@ -38,6 +38,12 @@ describe('测试trade和stratege', async function() {
         trade = new TradeSim('BCH/BTC', 1000, 10, exchangeIDs)
 		await trade.init()
 	}
+
+    async function initBTC_IOTA() {
+        exchangeIDs = ['okex', 'hitbtc']
+        trade = new TradeSim('All_IOTA/BTC', 1000, 10, exchangeIDs)
+        await trade.init()
+    }
 
   	describe('单次对冲交易', async function() {
     	it('查看对冲细节', async function() {

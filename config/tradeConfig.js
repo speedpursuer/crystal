@@ -6,7 +6,7 @@ const exchangeInfoEOS = require('./exchangeInfo/exchangeInfo_eos.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/hedgeTest.js')
+const HedgeTest = require('../strategy/hedgeNew.js')
 
 const tradeConfig = {
     'BTC/USD': {

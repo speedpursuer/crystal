@@ -3,7 +3,7 @@ const Strategy = require('./baseStrategy.js')
 const _ = require('lodash')
 
 
-class HedgeTest extends Strategy {
+class HedgeNew extends Strategy {
 
     before() {
         this.maxAmountOnce = this.getConfig('maxAmountOnce')
@@ -21,22 +21,29 @@ class HedgeTest extends Strategy {
 	}
 
     async hedge() {
-        this.bestPair = {points: 0}
+        this.findBestPair()
+        return await this.doHedge()
+    }
 
+    findBestPair() {
+        this.bestPair = {points: 0}
         for(var i in this.exchanges) {
             for(var j in this.exchanges) {
                 if(i == j) continue
                 this.findPair(this.exchanges[i], this.exchanges[j])
             }
         }
+        // return this.bestPair
+    }
 
+    async doHedge() {
         if(this.bestPair.points > 0) {
             this.action(`对冲: 存在套利机会, ${this.bestPair.sellExchange.id} 卖, ${this.bestPair.buyExchange.id} 买, 收益: ${this.bestPair.profit}, 差价: ${this.bestPair.margin}`)
             var [buyResult, sellResult] = await Promise.all([
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount),
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount)
             ])
-            await this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)
+            // await this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)
             return true
         }
         return false
@@ -96,5 +103,13 @@ class HedgeTest extends Strategy {
     adjustedTradeAmount(e1, e2, amount) {
         return _.floor(amount, Math.min(e1.precision, e2.precision))
     }
+
+    get bestPoint() {
+        return this.bestPair.points
+    }
+
+    printHedgeInfo() {
+        this.log(`${this.bestPair.sellExchange.id} -> ${this.bestPair.buyExchange.id} - tradeAmount: ${this.bestPair.tradeAmount}, profit: ${this.bestPair.profit}`)
+    }
 }
-module.exports = HedgeTest
+module.exports = HedgeNew

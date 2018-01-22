@@ -67,6 +67,10 @@ class OrderBookStreamBitfinex extends OrderbookStream {
         }
     }
 
+    getAllOrderbooks() {
+        return this.orderbookMgr.orderbooks
+    }
+
     getOrderBookBySymbol(symbol) {
         return this.adjustedOrderbook(this.orderbookMgr.getOrderbookBySymbol(this.realSymbol(symbol)))
     }

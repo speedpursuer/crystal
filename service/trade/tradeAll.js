@@ -1,6 +1,7 @@
 const _ = require('lodash')
-const util = require ('../util/util.js')
+const util = require ('../../util/util.js')
 const TradeAllBuilder = require('./tradeAllBuilder')
+const StreamService = require('../stream/streamService')
 
 const Interval = 2000
 
@@ -8,18 +9,31 @@ class TradeAll{
     constructor(debug=true){
         this.debug = debug
         this.tradeBuilder = new TradeAllBuilder(false)
-        // this.strategy = this.tradeBuilder.strategy
+        this.strategy = this.tradeBuilder.strategy
     }
 
     async init(){
         this.createExchanges()
         await this.getAllInitBalances()
-        // await this.strategy.init(this.exchangeSet)
-        // this.strategy.before()
+        await this.strategy.init(this.exchangeSet)
+        this.strategy.before()
+        this.setUpStream()
     }
 
-    createExchanges() {
-        // this.exchangesIDs = _.sortBy(_.map(this.tradeBuilder.exchanges, function(i) {return i.toLowerCase()}) )
+    setUpStream() {
+        let that = this
+        this.streamService = new StreamService(this.exchangesById)
+        this.streamService.on('started', function (isSuccess) {
+            if(isSuccess) {
+                that.updateOrderBook().then()
+            }else {
+                throw new Error('stream not started successfully')
+            }
+        })
+        this.streamService.start()
+    }
+
+    async createExchanges() {
         this.exchangeSet = this.tradeBuilder.buildAllExchanges()
         this.exchangesById = this.tradeBuilder.buildExchangesById(this.exchangeSet)
     }
@@ -48,7 +62,13 @@ class TradeAll{
     }
 
     async updateOrderBook(){
-        // await util.promiseFor(this.exchanges, 'fetchOrderBook')
+        for(let id in this.exchangesById) {
+            let exchanges = this.exchangesById[id]
+            for(let symbol in exchanges) {
+                let exchange = exchanges[symbol]
+                exchange.ob = this.streamService.getOrderbook(id, symbol)
+            }
+        }
     }
 
     async loop(){

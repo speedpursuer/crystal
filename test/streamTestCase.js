@@ -22,6 +22,7 @@ describe('测试Orderbook stream', async function() {
 	describe.only('huobi', async function() {
     	it('查询订单簿数据', async function() {
             let orderBook = new OrderBookHuobi(['EOS/BTC', 'ETH/BTC'])
+            orderBook.connect()
 			for(let i=0; i<20; i++) {
                 util.log(orderBook.getOrderBookBySymbol('EOS/BTC'))
                 util.log(orderBook.getOrderBookBySymbol('ETH/BTC'))
@@ -32,10 +33,12 @@ describe('测试Orderbook stream', async function() {
 
     describe.only('okex', async function() {
         it('查询订单簿数据', async function() {
-            let orderBook = new OrderBookOkex(['EOS/BTC', 'ETH/BTC'])
+            let orderBook = new OrderBookOkex(['EOS/BTC', 'ETH/BTC', 'IOTA/BTC'])
+            orderBook.connect()
             for(let i=0; i<20; i++) {
                 util.log(orderBook.getOrderBookBySymbol('EOS/BTC'))
                 util.log(orderBook.getOrderBookBySymbol('ETH/BTC'))
+                util.log(orderBook.getOrderBookBySymbol('IOTA/BTC'))
                 await util.sleep(1000)
             }
         })
@@ -43,8 +46,13 @@ describe('测试Orderbook stream', async function() {
 
     describe.only('Bitfinex', async function() {
         it('查询订单簿数据', async function() {
-            let orderBook = new OrderBookBitfinex(['EOS/BTC', 'ETH/BTC'])
+            let orderBook = new OrderBookBitfinex(['EOS/BTC', 'ETH/BTC', 'IOTA/BTC'])
+            orderBook.connect()
+            orderBook.on('received', function (flag) {
+                util.log(`orderbook all received: ${flag}`)
+            })
             for(let i=0; i<20; i++) {
+                util.log('IOTA/BTC', orderBook.getOrderBookBySymbol('IOTA/BTC'))
                 util.log('EOS/BTC', orderBook.getOrderBookBySymbol('EOS/BTC'))
                 util.log('ETH/BTC', orderBook.getOrderBookBySymbol('ETH/BTC'))
                 await util.sleep(1000)
@@ -55,11 +63,13 @@ describe('测试Orderbook stream', async function() {
     describe.only('Binance', async function() {
         it('查询订单簿数据', async function() {
 
-            let orderBook = new OrderBookBinance(['BTC/USD', 'ETH/USD'])
+            let orderBook = new OrderBookBinance(['BTC/USD', 'ETH/USD', 'IOTA/BTC'])
+            orderBook.connect()
             // let orderBook = new OrderBookBinance(['EOS/BTC', 'ETH/BTC'])
             for(let i=0; i<20; i++) {
-                util.log('EOS/BTC', orderBook.getOrderBookBySymbol('BTC/USD'))
-                util.log('ETH/BTC', orderBook.getOrderBookBySymbol('ETH/USD'))
+                util.log('IOTA/BTC', orderBook.getOrderBookBySymbol('IOTA/BTC'))
+                // util.log('EOS/BTC', orderBook.getOrderBookBySymbol('BTC/USD'))
+                // util.log('ETH/BTC', orderBook.getOrderBookBySymbol('ETH/USD'))
                 await util.sleep(1000)
             }
 

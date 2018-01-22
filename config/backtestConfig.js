@@ -6,7 +6,7 @@ const exchangeInfoCommon = require('./exchangeInfo/exchangeInfo_common.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/hedgeTest.js')
+const HedgeTest = require('../strategy/hedgeNew.js')
 
 const backtestConfig = {
     'Backtest_BTC/USD': {

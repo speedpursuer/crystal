@@ -1005,8 +1005,43 @@ function test51() {
 	a.test()
 }
 
+function test52() {
+    let i = 0, maxTry = 5
+    util.repeat(function () {
+        util.log('do')
+        i++
+        if(i == maxTry) {
+        	util.log('failed')
+        }
+    }, 1000, maxTry, function () {
+        return false
+    })
+}
+
+function test53() {
+    var arr=[ "3", "5", "31", "71", "12" ]
+    var result=arr.map(Number)
+	util.log(result[3], typeof(result[3]))
+}
+
+function test54() {
+	class Strategy{
+		constructor(point) {
+			this.point = point
+		}
+	}
+	class Trade {
+		constructor(point) {
+			this.strategy = new Strategy(point)
+		}
+	}
+	let data = [new Trade(2), new Trade(1), new Trade(4), new Trade(3)]
+    let result = _.maxBy(data, 'strategy.point')
+	util.log(result)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test51()
+    test54()
 }

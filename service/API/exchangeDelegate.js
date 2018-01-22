@@ -2,7 +2,7 @@ const EventEmitter = require('events')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const Available = require('../../util/available.js')
-const RedisDB = require('../redisDB')
+const RedisDB = require('../db/redisDB')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'

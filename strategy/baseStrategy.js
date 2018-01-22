@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const RedisDB = require('../service/redisDB')
+const RedisDB = require('../service/db/redisDB')
 const cryptoInfo = require('../config/cryptoInfo.js')
 
 class BaseStrategy {
@@ -35,8 +35,11 @@ class BaseStrategy {
 		}
 		this.balanceDiff = this.currBalance - this.initBalance
 		this.stockDiff = this.currStock - this.initStock
+
+		util.log(`this.currBalance: ${this.currBalance}, this.initBalance: ${this.initBalance}`)
+        util.log(`this.currStock: ${this.currStock}, this.initStock: ${this.initStock}`)
 		
-		await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)		
+		// await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)
 
 		if(this.needReport && this.debug) {
 			this.logProfit()
@@ -93,13 +96,13 @@ class BaseStrategy {
 	}
 
 	action(text) {
-		this.log("---------------------------------------------")
+		util.log("---------------------------------------------")
     	this.log(text)
         this.needReport = true
 	}
 
 	log(message) {
-		if(this.debug) util.log(message)	
+		if(this.debug) util.log(this.market, message)
 	}
 
     before() {

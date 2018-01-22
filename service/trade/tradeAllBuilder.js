@@ -1,9 +1,9 @@
-const util = require ('../util/util.js')
+const util = require ('../../util/util.js')
 const _ = require('lodash')
-const allConfig = require('../config/tradeAllConfig')
-const allStrategy = require('../strategy/allStrategy')
-const Exchange = require('./exchange.js')
-const factory = require ('./API/exchangeFactory.js')
+const allConfig = require('../../config/tradeAllConfig')
+const allStrategy = require('../../strategy/allStrategy')
+const Exchange = require('../exchange.js')
+const factory = require ('../API/exchangeFactory.js')
 
 
 class TradeAllBuilder{
@@ -38,11 +38,13 @@ class TradeAllBuilder{
         return account
     }
 
-    buildAllExchanges() {
+    async buildAllExchanges() {
         let exchangeSet = {}
         for(let key in this.config) {
             let exchanges = this.buildExchanges(key, this.config[key])
             exchangeSet[key] = exchanges
+            await this.config[key].strategy.init(exchanges)
+            this.config[key].strategy.before()
         }
         return exchangeSet
     }
@@ -53,12 +55,9 @@ class TradeAllBuilder{
             let exchanges = exchangeSet[symbol]
             for(let id in exchanges) {
                 if(!exchangeById[id]) {
-                    exchangeById[id] = {
-                        symbols: []
-                    }
+                    exchangeById[id] = {}
                 }
                 exchangeById[id][symbol] = exchanges[id]
-                exchangeById[id]['symbols'].push(symbol)
             }
         }
         return exchangeById
@@ -66,7 +65,8 @@ class TradeAllBuilder{
 
     buildExchanges(key, config) {
         let exchanges = {}, initAccount = config.initAccount
-        for(var id of config.exchanges) {
+        let exchangesIDs = this.getOrderedLowercase(config.exchanges)
+        for(var id of exchangesIDs) {
             let info = this.exchangeInfo(key, id)
             let exchangeDelegate = factory.createExchangeSim(info, initAccount, false, this.debug)
             exchanges[id] = new Exchange(exchangeDelegate, info, config.strategy.crypto, config.strategy.fiat, this.debug)
@@ -86,6 +86,10 @@ class TradeAllBuilder{
 
     get strategy() {
         return new allStrategy()
+    }
+
+    getOrderedLowercase(list) {
+        return _.sortBy(_.map(list, function(i) {return i.toLowerCase()}) )
     }
 
     // buildExchanges(exchangesIDs) {

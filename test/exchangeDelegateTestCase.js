@@ -1,7 +1,7 @@
 const should = require('should');
 const util = require('../util/util.js')
 const factory = require ('../service/API/exchangeFactory.js')
-const TradeBuilder = require('../service/tradeBuilder')
+const TradeBuilder = require('../service/trade/tradeBuilder')
 
 
 describe('单元测试ExchangeDelegate', async function() {

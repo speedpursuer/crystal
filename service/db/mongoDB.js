@@ -1,7 +1,7 @@
-const util = require ('../util/util.js')
+const util = require ('../../util/util.js')
 const mongoose = require('mongoose')
 mongoose.Promise = require('bluebird')
-const config = require('../config/service/mongoConfig')
+const config = require('../../config/service/mongoConfig')
 
 
 class Mongo {

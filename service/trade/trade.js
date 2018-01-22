@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const util = require ('../util/util.js')
+const util = require ('../../util/util.js')
 const TradeBuilder = require('./tradeBuilder')
 
 const Interval = 2000
@@ -48,10 +48,10 @@ class Trade{
             try {            	
                 await this.updateOrderBook()                
                 await this.strategy.doTrade()
-                await this.strategy.updateBalance()                                          
+                await this.strategy.updateBalance()
                 await util.sleep(Interval)                                  
             }catch (e) {
-            	await this.handleError(e)            	              
+            	await this.handleError(e)
             }                    
         }
 	}

@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const Log = require ('ololog').configure ({ locate: false })
-const RedisDB = require('../service/redisDB')
+const RedisDB = require('../service/db/redisDB')
 
 async function display() {
 
