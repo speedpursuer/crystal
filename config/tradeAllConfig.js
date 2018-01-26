@@ -7,7 +7,7 @@ const exchangeInfoCommon = require('./exchangeInfo/exchangeInfo_common.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/hedgeNew.js')
+const HedgeNew = require('../strategy/hedgeNew')
 
 const tradeAllConfig = {
 
@@ -16,7 +16,7 @@ const tradeAllConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
         exchangeInfo: exchangeInfoEOS,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 20,
             orderRate: 0.1,
@@ -25,8 +25,8 @@ const tradeAllConfig = {
             debug: true
         },
         initAccount: {
-            EOS: 1050,
-            BTC: 1.25
+            base: 840,
+            quote: 1
         }
     },
 
@@ -35,7 +35,7 @@ const tradeAllConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'OKEx'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 20,
             orderRate: 0.1,
@@ -44,8 +44,8 @@ const tradeAllConfig = {
             debug: true
         },
         initAccount: {
-            IOTA: 7246,
-            BTC: 1.67
+            base: 4444,
+            quote: 1
         }
     },
 
@@ -55,7 +55,7 @@ const tradeAllConfig = {
         exchanges: ['okex', 'huobipro', 'Bitfinex', 'binance'],
         // exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
         exchangeInfo: exchangeInfoETH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -64,8 +64,8 @@ const tradeAllConfig = {
             debug: true
         },
         initAccount: {
-            ETH: 13,
-            BTC: 1.25
+            base: 11,
+            quote: 1
         }
     },
 

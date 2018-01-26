@@ -8,7 +8,7 @@ const _ = require('lodash')
 describe('测试trade和stratege', async function() {
 
 	var exchangeIDs
-	var trade 	
+	// var trade
 
 	this.timeout(50000)
 
@@ -21,33 +21,43 @@ describe('测试trade和stratege', async function() {
     after(async function(){
     })
 
-	async function initBTC_USD() {
-		exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']
-		trade = new TradeSim('BTC/USD', 20000, 1, exchangeIDs)
-		await trade.init()
-	}
+	// async function initBTC_USD() {
+	// 	exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']
+	// 	trade = new TradeSim('BTC/USD', 20000, 1, exchangeIDs)
+	// 	await trade.init()
+	// }
 
 	async function initETH_BTC() {
-		exchangeIDs = ['bittrex', 'hitbtc']
-        trade = new TradeSim('ETH/BTC', 1, 30, exchangeIDs)
+		let exchangeAccount = {
+			'bittrex': {
+				base: 30,
+				quote: 1
+			},
+			'hitbtc': {
+                base: 30,
+                quote: 1
+            },
+        },
+        trade = new TradeSim('ETH/BTC', exchangeAccount)
 		await trade.init()
+		return trade
 	}
 
-	async function initBTC_BCH() {
-		exchangeIDs = ['okex', 'hitbtc']
-        trade = new TradeSim('BCH/BTC', 1000, 10, exchangeIDs)
-		await trade.init()
-	}
-
-    async function initBTC_IOTA() {
-        exchangeIDs = ['okex', 'hitbtc']
-        trade = new TradeSim('All_IOTA/BTC', 1000, 10, exchangeIDs)
-        await trade.init()
-    }
+    // async function initBTC_BCH() {
+		// exchangeIDs = ['okex', 'hitbtc']
+    //     trade = new TradeSim('BCH/BTC', 1000, 10, exchangeIDs)
+		// await trade.init()
+    // }
+    //
+    // async function initBTC_IOTA() {
+    //     exchangeIDs = ['okex', 'hitbtc']
+    //     trade = new TradeSim('All_IOTA/BTC', 1000, 10, exchangeIDs)
+    //     await trade.init()
+    // }
 
   	describe('单次对冲交易', async function() {
     	it('查看对冲细节', async function() {
-            await initETH_BTC()
+            let trade = await initETH_BTC()
 
             trade.exchanges['hitbtc'].orderBooks = {
             	"bids":[[0.02873272,2.23]],

@@ -1,6 +1,6 @@
 const _ = require('lodash')
 const util = require ('../util/util.js')
-const RedisDB = require('../service/db/redisDB')
+const TradeLog = require('../service/db/tradeLog')
 const cryptoInfo = require('../config/cryptoInfo.js')
 
 class BaseStrategy {
@@ -15,37 +15,47 @@ class BaseStrategy {
 
 	async init(exchanges){
 		this._exchanges = exchanges
-		await this.updateBalance()
+        this.balanceDiff = 0
+        this.stockDiff = 0
+		await this.initTradeLog()
 	}
 
-	async updateBalance() {
-		this.currBalance = 0
-		this.currStock = 0
-
-		var that = this
-		_.forEach(this._exchanges, function(exchange) {
-		  	that.currBalance +=  exchange.balance + exchange.frozenBalance
-			that.currStock += exchange.stocks + exchange.frozenStocks
+	async initTradeLog() {
+		let totalBalance = 0, totalStock = 0
+        _.forEach(this._exchanges, function(exchange) {
+            totalBalance +=  exchange.balance + exchange.frozenBalance
+            totalStock += exchange.stocks + exchange.frozenStocks
 		})
-
-		if(!this.initBalance && !this.initStock) {
-			this.initBalance = this.currBalance
-			this.initStock = this.currStock
-			this.database = await RedisDB.getInstanceWithAccount(this.initBalance, this.initStock, _.keys(this._exchanges))
-		}
-		this.balanceDiff = this.currBalance - this.initBalance
-		this.stockDiff = this.currStock - this.initStock
-
-		util.log(`this.currBalance: ${this.currBalance}, this.initBalance: ${this.initBalance}`)
-        util.log(`this.currStock: ${this.currStock}, this.initStock: ${this.initStock}`)
-		
-		// await this.database.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)
-
-		if(this.needReport && this.debug) {
-			this.logProfit()
-			this.needReport = false
-		}
+		this.tradeLog = new TradeLog()
+		await this.tradeLog.init(totalBalance, totalStock, _.keys(this._exchanges))
 	}
+
+    beforeTrade() {
+        this.beforeAccount = this.getCurrBalance()
+    }
+
+    afterTrade() {
+        this.afterAccount = this.getCurrBalance()
+        this.balanceDiff += this.afterAccount.currBalance - this.beforeAccount.currBalance
+        this.stockDiff += this.afterAccount.currStock - this.beforeAccount.currStock
+    }
+
+    async updateBalance() {
+        if (this.needReport) {
+            this.logProfit()
+            await this.tradeLog.recordBalance(this.currProfit, this.balanceDiff, this.stockDiff)
+            this.needReport = false
+        }
+    }
+
+    getCurrBalance() {
+        let currBalance = 0, currStock = 0
+        _.forEach(this._exchanges, function(exchange) {
+            currBalance +=  exchange.balance + exchange.frozenBalance
+            currStock += exchange.stocks + exchange.frozenStocks
+        })
+        return {currBalance, currStock}
+    }
 
 	logProfit() {
 		util.log.red(`盈利：${this.currProfit}, 钱差: ${this.balanceDiff}, 币差: ${this.stockDiff}`)
@@ -96,7 +106,7 @@ class BaseStrategy {
 	}
 
 	action(text) {
-		util.log("---------------------------------------------")
+        this.log("---------------------------------------------")
     	this.log(text)
         this.needReport = true
 	}

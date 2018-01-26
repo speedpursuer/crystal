@@ -1,6 +1,5 @@
 const util = require('../util/util.js')
-const Trade = require('../service/trade/tradeAll.js')
-const TradeAll = require('../service/all/tradeAll')
+const TradeAll = require('../service/trade/tradeAll')
 
 function main() {
     try {

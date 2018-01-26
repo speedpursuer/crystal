@@ -1,6 +1,6 @@
 const util = require ('../util/util.js')
 const _ = require('lodash')
-const Exchange = require('../service/exchange.js')
+const Exchange = require('../service/exchange/exchange.js')
 
 class Exit {
     constructor(exchangeIDs, cryptos) {

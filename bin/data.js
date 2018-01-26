@@ -4,7 +4,7 @@ const RedisDB = require('../service/db/redisDB')
 
 async function display() {
 
-	let database = await RedisDB.getInstance()
+	let database = await RedisDB.instance
 
 	var key
 

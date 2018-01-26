@@ -1,6 +1,6 @@
 const Exchange = require ('./exchange')
-const StreamService = require('./streamService')
-const util = require ('../util/util.js')
+const StreamService = require('../stream/streamService')
+const util = require ('../../util/util.js')
 
 class ExchangeStream extends Exchange {
     constructor(exchangeDelegate, info, crypto, fiat, debug) {

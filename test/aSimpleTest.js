@@ -1040,8 +1040,40 @@ function test54() {
 	util.log(result)
 }
 
+function test55() {
+	let base = 'btc'
+	let data = {
+		base: 1
+	}
+	let a = {
+		[base]: data.base
+	}
+	util.log(a)
+}
+
+function test56() {
+	let list = {
+        Okex: {
+            base: 1,
+            quote: 100
+        },
+		Binance: {
+			base: 1,
+			quote: 100
+		}
+	}
+	let result = {}
+	for(let key in list) {
+		result[key.toLowerCase()] = list[key]
+	}
+
+    let a = _.sortBy(result, )
+
+	util.log(result)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test54()
+    test56()
 }

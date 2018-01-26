@@ -132,13 +132,24 @@ class Backtest {
         return await this.test(key, pairExchangeIDs? pairExchangeIDs: exchangeIDs, total_budget/quotePrice/exchangeIDs.length, total_budget/basePrice/exchangeIDs.length)
 	}
 
+	getExchangeAccount(exchangeIDs, initBalance, initStocks) {
+        let exchangesAccount = {}
+        for(let exchange of exchangeIDs) {
+            exchangesAccount[exchange] = {
+            	base: initStocks,
+				quote: initBalance
+			}
+        }
+        return exchangesAccount
+	}
+
 	async test(key, exchangeIDs, initBalance, initStocks, from=this.start, to=this.end||util.timestamp) {
 
         // var trade = new Trade(exchangeIDs, new Sta(base, quote), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new HedgeNew(base, quote, this.debug), initBalance, initStocks, this.debug)
         // var trade = new Trade(exchangeIDs, new StaHedge(base, quote, this.debug), initBalance, initStocks, this.debug)
 
-        var trade = new TradeSim(key, initBalance, initStocks, exchangeIDs, this.debug)
+        var trade = new TradeSim(key, this.getExchangeAccount(exchangeIDs, initBalance, initStocks), false, this.debug)
 		await trade.init()
 
 		var market = trade.strategy.fiat == 'USD'? trade.strategy.crypto: trade.strategy.market
@@ -167,7 +178,6 @@ class Backtest {
 			}
 
 			await trade.strategy.doTrade(util.timeFromTimestamp(time))
-            await trade.strategy.updateBalance()
 
             if(!this.debug) bar.tick()
 		}
@@ -176,7 +186,7 @@ class Backtest {
 			await trade.strategy.after()
 		}
 
-		await trade.strategy.logProfit()
+		await trade.strategy.updateBalance()
 		util.log.green("回测完成")
 
 		return {
@@ -192,7 +202,7 @@ class Backtest {
 async function test(){
     try {
         let name = util.getParameter()
-        var backtest = new Backtest("2018-01-09 11:34:13", null, false)
+        var backtest = new Backtest("2018-01-21 15:22:44", '2018-01-22 19:22:44', false)
         // var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
 		await backtest[name]()
         process.exit()

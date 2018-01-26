@@ -122,15 +122,15 @@ describe.only('测试 exchange', async function() {
 
             let account1 = {
                 binance: {
-                    EOS: 100,
-                    BTC: 1
+                    base: 100,
+                    quote: 1
                 }
             }
 
             let account2 = {
                 binance: {
-                    ETH: 10,
-                    BTC: 1
+                    base: 10,
+                    quote: 1
                 }
             }
 

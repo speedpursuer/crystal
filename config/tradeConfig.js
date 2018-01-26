@@ -6,13 +6,13 @@ const exchangeInfoEOS = require('./exchangeInfo/exchangeInfo_eos.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/hedgeNew.js')
+const HedgeNew = require('../strategy/hedgeNew')
 
 const tradeConfig = {
     'BTC/USD': {
         exchanges: ['okex', 'huobipro', 'quoine', 'zb'],
         exchangeInfo: exchangeInfo,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 0.5,
             orderRate: 0.1,
@@ -25,9 +25,10 @@ const tradeConfig = {
     'BCH/BTC': {
         base: "BCH",
         quote: "BTC",
-        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance', 'hitbtc'],
+        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
+        // exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance', 'hitbtc'],
         exchangeInfo: exchangeInfoBCH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -40,9 +41,9 @@ const tradeConfig = {
     'ETH/BTC': {
         base: "ETH",
         quote: "BTC",
-        exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
+        exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'binance'],
         exchangeInfo: exchangeInfoETH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -57,7 +58,7 @@ const tradeConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
         exchangeInfo: exchangeInfoEOS,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 20,
             orderRate: 0.1,
@@ -72,7 +73,7 @@ const tradeConfig = {
         quote: "BTC",
         exchanges: ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance'],
         exchangeInfo: exchangeInfoXMR,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,

@@ -1,3 +1,4 @@
+const singleton = Symbol()
 const EventEmitter = require('events')
 const OrderBookHuobi = require('./orderbookHuobi')
 const OrderBookOkex = require('./orderbookOkex')
@@ -13,17 +14,46 @@ const list = {
 }
 
 class StreamService extends EventEmitter{
-    constructor(exchanges) {
+
+    constructor(enforcer) {
+        if (enforcer !== singleton) {
+            throw new Error('Cannot construct StreamService singleton')
+        }
         super()
-        this.init(exchanges)
+        this.registerdStream = {}
     }
 
-    init(exchanges) {
+    static get instance() {
+        if (!this[singleton]) {
+            this[singleton] = new StreamService(singleton)
+        }
+        return this[singleton]
+    }
+
+    register(exchangeId, symbol) {
+        if(!this.registerdStream[exchangeId]) {
+            this.registerdStream[exchangeId] = []
+        }
+        this.registerdStream[exchangeId].push(symbol)
+    }
+
+    start() {
+        this.creatStreams()
+        this.connect()
+    }
+
+    creatStreams() {
         this.streams = {}
-        for(let name in exchanges) {
-            let symbols = _.keys(exchanges[name])
-            this.streams[name] = new list[name](symbols)
-            this.setupNotify(this.streams[name])
+        for(let exchangeId in this.registerdStream) {
+            let symbols = this.registerdStream[exchangeId]
+            this.streams[exchangeId] = new list[exchangeId](symbols)
+            this.setupNotify(this.streams[exchangeId])
+        }
+    }
+
+    connect() {
+        for(let exchangeId in this.streams) {
+            this.streams[exchangeId].connect()
         }
     }
 
@@ -38,14 +68,11 @@ class StreamService extends EventEmitter{
         })
     }
 
-    start() {
-        for(let name in this.streams) {
-            this.streams[name].connect()
-        }
-    }
-
-    getOrderbook(eName, symbol) {
-        return this.streams[eName].getOrderBookBySymbol(symbol)
+    getOrderbook(exchangeId, symbol) {
+        // let result = this.streams[exchangeId].getOrderBookBySymbol(symbol)
+        // console.log(exchangeId, symbol, result)
+        // return result
+        return this.streams[exchangeId].getOrderBookBySymbol(symbol)
     }
 }
 
@@ -72,5 +99,7 @@ class Counter {
         return null
     }
 }
+
+
 
 module.exports = StreamService

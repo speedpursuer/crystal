@@ -2,7 +2,7 @@ const EventEmitter = require('events')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const Available = require('../../util/available.js')
-const RedisDB = require('../db/redisDB')
+const AppLog = require('../db/appLog')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
@@ -54,7 +54,7 @@ class ExchangeDelegate extends EventEmitter {
                 this.timeout
             )
         }catch(e){
-            this._debugLog(`未获取到orderbook: ${e.message}`, 'red')
+            // this._log(`未获取到orderbook: ${e.message}`, 'red')
             return null
         }
     }
@@ -186,11 +186,7 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     _log(message, color='white') {
-        util.log[color](this.id, message)
-    }
-
-    _debugLog(message, color='white') {
-        if(this.debug) this._log(message, color)
+        if(this.debug) util.log[color](this.id, message)
     }
 
     _adjust(number) {
@@ -209,8 +205,7 @@ class ExchangeDelegate extends EventEmitter {
             await that._checkAvailable()
         })
         this.available.on('closed', async function() {
-            let database = await RedisDB.getInstanceWithAccount()
-            await database.recordClosedAPI(that.id)
+            await AppLog.instance.recordClosedAPI(that.id)
         })
     }
 

@@ -6,7 +6,7 @@ const exchangeInfoCommon = require('./exchangeInfo/exchangeInfo_common.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
-const HedgeTest = require('../strategy/hedgeNew.js')
+const HedgeNew = require('../strategy/hedgeNew.js')
 
 const backtestConfig = {
     'Backtest_BTC/USD': {
@@ -14,7 +14,7 @@ const backtestConfig = {
         quote: "USD",
         exchanges: ['okex', 'huobipro', 'quoine', 'zb'],
         exchangeInfo: exchangeInfoBCH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 0.5,
             orderRate: 0.1,
@@ -29,7 +29,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance', 'hitbtc'],
         exchangeInfo: exchangeInfoBCH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -44,7 +44,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
         exchangeInfo: exchangeInfoETH,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -59,7 +59,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'okex'],
         exchangeInfo: exchangeInfoXRP,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -74,7 +74,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance'],
         exchangeInfo: exchangeInfoXMR,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -89,7 +89,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['hitbtc', 'Binance', 'Poloniex', 'Bittrex', 'Bitfinex'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 1,
             orderRate: 0.1,
@@ -104,7 +104,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Poloniex', 'Bittrex', 'hitbtc', 'bitstamp'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 15,
             orderRate: 0.1,
@@ -119,7 +119,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'OKEx'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 15,
             orderRate: 0.1,
@@ -134,7 +134,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx', 'hitbtc', 'zb'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 15,
             orderRate: 0.1,
@@ -150,7 +150,7 @@ const backtestConfig = {
         quote: "BTC",
         exchanges: ['Bittrex', 'Bitfinex', 'Binance', 'OKEx', 'huobipro'],
         exchangeInfo: exchangeInfoCommon,
-        strategy: HedgeTest,
+        strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 10,
             orderRate: 0.1,

@@ -1,13 +1,14 @@
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const TradeBuilder = require('./tradeBuilder')
+const AppLog = require('../db/appLog')
 
 const Interval = 2000
 
 class Trade{
 	constructor(tradeName, debug=true){
         this.debug = debug
-        this.tradeBuilder = new TradeBuilder(tradeName, false)
+        this.tradeBuilder = new TradeBuilder(tradeName, debug)
 		this.strategy = this.tradeBuilder.strategy
 	}
 
@@ -31,6 +32,7 @@ class Trade{
 		this.log(`*********************************************************`)		
 
 		await this.strategy.init(this.exchanges)
+        await AppLog.instance.recordTrade(this.strategy.tradeLog.key)
         this.strategy.before()
 	}
 
@@ -46,7 +48,7 @@ class Trade{
 	async loop(){
 		while(this.strategy.condition) {
             try {            	
-                await this.updateOrderBook()                
+                await this.updateOrderBook()
                 await this.strategy.doTrade()
                 await this.strategy.updateBalance()
                 await util.sleep(Interval)                                  

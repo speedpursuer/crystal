@@ -9,8 +9,8 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'bitfinex'
-    var base = "EOS", quote = "BTC"
+    var exchange = 'hitbtc'
+    var base = "BCH", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
 
@@ -35,12 +35,15 @@ describe('单元测试ExchangeDelegate', async function() {
 
     describe.only('fetchOrderBook', async function() {
         it('可正常工作', async function() {
-            util.log(JSON.stringify(await exchangeDelegate.fetchOrderBook(symbol)))
+            while(true) {
+                util.log(JSON.stringify(await exchangeDelegate.fetchOrderBook(symbol)))
+                await util.sleep(1000)
+            }
         })
     })
 
     describe.only('fetchAccount', async function() {
-        it('可正常工作', async function() {              
+        it('可正常工作', async function() {
             util.log(await exchangeDelegate.fetchAccount(symbol))
         })
     })

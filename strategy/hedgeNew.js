@@ -15,8 +15,12 @@ class HedgeNew extends Strategy {
 	async doTrade() {
         if(this.exchanges.length == 0) {
             this.log("无对冲数据，请检查配置")
-        }else if(!await this.hedge()) {
-            await this.balance()
+        }else {
+            this.beforeTrade()
+            if(!await this.hedge()) {
+                await this.balance()
+            }
+            this.afterTrade()
         }
 	}
 
@@ -33,7 +37,6 @@ class HedgeNew extends Strategy {
                 this.findPair(this.exchanges[i], this.exchanges[j])
             }
         }
-        // return this.bestPair
     }
 
     async doHedge() {
@@ -43,7 +46,7 @@ class HedgeNew extends Strategy {
                 this.bestPair.buyExchange.limitBuy(this.bestPair.tradeAmount),
                 this.bestPair.sellExchange.limitSell(this.bestPair.tradeAmount)
             ])
-            // await this.database.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)
+            await this.tradeLog.recordTrade(this.bestPair.sellExchange.id, this.bestPair.buyExchange.id, sellResult, buyResult, this.bestPair.tradeAmount, this.bestPair.margin)
             return true
         }
         return false
@@ -106,10 +109,6 @@ class HedgeNew extends Strategy {
 
     get bestPoint() {
         return this.bestPair.points
-    }
-
-    printHedgeInfo() {
-        this.log(`${this.bestPair.sellExchange.id} -> ${this.bestPair.buyExchange.id} - tradeAmount: ${this.bestPair.tradeAmount}, profit: ${this.bestPair.profit}`)
     }
 }
 module.exports = HedgeNew
