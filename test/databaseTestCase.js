@@ -12,7 +12,7 @@ describe('测试Database class', async function() {
 	before(async function() {
         mongo = new MongoDB('localhost', 'test', null, null, null)
         trade = new TradeLog()
-        await trade.init(1000, 1, ['k', 'p'])
+        await trade.init('BCH/BTC', 1000, 1, ['k', 'p'])
 	})
 
     after(async function() {

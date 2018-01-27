@@ -7,8 +7,9 @@ class TradeLog {
         this.key = `trade_${util.time}`
     }
 
-    async init(totalBalance, totalStock, exchanges) {
+    async init(tradeSymbol, totalBalance, totalStock, exchanges) {
         this.data = {
+            tradeSymbol: tradeSymbol,
             exchanges: exchanges,
             initTotalBalance: totalBalance,
             initTotalStock: totalStock,

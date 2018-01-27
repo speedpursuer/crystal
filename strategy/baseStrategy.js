@@ -28,7 +28,7 @@ class BaseStrategy {
             totalStock += exchange.stocks + exchange.frozenStocks
 		})
 		this.tradeLog = new TradeLog()
-		await this.tradeLog.init(totalBalance, totalStock, _.keys(this._exchanges))
+		await this.tradeLog.init(this.market, totalBalance, totalStock, _.keys(this._exchanges))
 	}
 
     beforeTrade() {
