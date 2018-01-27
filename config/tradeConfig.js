@@ -3,6 +3,7 @@ const exchangeInfoBCH = require('./exchangeInfo/exchangeInfo_bch.js')
 const exchangeInfoETH = require('./exchangeInfo/exchangeInfo_eth.js')
 const exchangeInfoXMR = require('./exchangeInfo/exchangeInfo_xmr.js')
 const exchangeInfoEOS = require('./exchangeInfo/exchangeInfo_eos.js')
+const exchangeInfoIOTA = require('./exchangeInfo/exchangeInfo_iota.js')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
@@ -63,6 +64,21 @@ const tradeConfig = {
             maxAmountOnce: 20,
             orderRate: 0.1,
             minMargin: 0.000004,
+            maxLoss: -0.001,
+            debug: true
+        },
+    },
+
+    'IOTA/BTC': {
+        base: "IOTA",
+        quote: "BTC",
+        exchanges: ['Bitfinex', 'Binance', 'OKEx'],
+        exchangeInfo: exchangeInfoIOTA,
+        strategy: HedgeNew,
+        strategyConfig: {
+            maxAmountOnce: 30,
+            orderRate: 0.1,
+            minMargin: 0.000001,
             maxLoss: -0.001,
             debug: true
         },

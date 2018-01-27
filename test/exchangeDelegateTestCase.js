@@ -9,8 +9,8 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'hitbtc'
-    var base = "BCH", quote = "BTC"
+    var exchange = 'okex'
+    var base = "IOTA", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
 
@@ -53,9 +53,9 @@ describe('单元测试ExchangeDelegate', async function() {
             var account = await exchangeDelegate.fetchAccount(symbol)
             util.log(account)
             if(account.balance > 0.1) {
-                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 2.00001, 0.0001, account))
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.01, 0.0001, account))
             }else {
-                util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 0.1, 1, account))
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 6.00001, 1, account))
             }
         })
     })

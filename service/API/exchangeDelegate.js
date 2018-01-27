@@ -54,7 +54,7 @@ class ExchangeDelegate extends EventEmitter {
                 this.timeout
             )
         }catch(e){
-            // this._log(`未获取到orderbook: ${e.message}`, 'red')
+            this._log(`未获取到orderbook: ${e.message}`, 'red')
             return null
         }
     }
