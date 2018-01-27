@@ -1,6 +1,7 @@
 const _ = require('lodash')
 const util = require ('../../util/util.js')
 const TradeSim = require('./tradeSim')
+const Trade = require('./trade')
 const allConfig = require('../../config/tradeAllConfig')
 const StreamService = require('../stream/streamService')
 
@@ -16,9 +17,12 @@ class TradeAll{
     async configSubTrades() {
         this.tradeList = []
         for(let name in allConfig) {
-            let config = allConfig[name]
-            let exchangesAccount = this.exchangesAccount(config.exchanges, config.initAccount)
-            let subTrade = new TradeSim(name, exchangesAccount, true, true)
+            // let config = allConfig[name]
+            // let exchangesAccount = this.exchangesAccount(config.exchanges, config.initAccount)
+            // let subTrade = new TradeSim(name, exchangesAccount, true, true)
+
+            let subTrade = new Trade(name, true, true)
+
             await subTrade.init()
             this.tradeList.push(subTrade)
         }

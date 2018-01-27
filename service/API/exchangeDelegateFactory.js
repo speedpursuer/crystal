@@ -21,7 +21,7 @@ class ExchangeDelegateFactory {
         this.exchangeDelegateConfig = config
     }
 
-    createExchangeDelegate(info, debug=false) {
+    getExchangeDelegate(info, debug=false) {
         if(!this.exchangePoor[info.id]) {
             let api = apis[info.id]? new apis[info.id](info): new ccxt[info.id](info)
             api.interval = 200
@@ -32,7 +32,7 @@ class ExchangeDelegateFactory {
         return this.exchangePoor[info.id]
     }
 
-    createExchangeDelegateSim(info, balance, realSim=false, debug=false) {
+    getExchangeDelegateSim(info, balance, realSim=false, debug=false) {
         if(!this.exchangePoor[info.id]) {
             let api = new ExhangeSim(info, balance, 0.75, 0.75, realSim)
             api.interval = 0

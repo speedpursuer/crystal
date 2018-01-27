@@ -26,7 +26,7 @@ describe('单元测试ExchangeDelegate', async function() {
             retryThreshold: 2
         }
 
-        exchangeDelegate = factory.createExchangeDelegate(info, true)
+        exchangeDelegate = factory.getExchangeDelegate(info, true)
 	})
 
 	beforeEach(async function(){

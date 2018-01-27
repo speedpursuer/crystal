@@ -31,7 +31,7 @@ class TradeBuilder{
         let exchanges = {}
         for(var id of exchangesIDs) {
             let info = this.exchangeInfo(id)
-            let exchangeDelegate = factory.createExchangeDelegate(info, this.debug)
+            let exchangeDelegate = factory.getExchangeDelegate(info, this.debug)
             exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
         }
         return exchanges
@@ -41,7 +41,7 @@ class TradeBuilder{
         let exchanges = {}
         for(var id in exchangeAccount) {
             let info = this.exchangeInfo(id)
-            let exchangeDelegate = factory.createExchangeDelegateSim(info, this.parseBalance(exchangeAccount[id]), false, this.debug)
+            let exchangeDelegate = factory.getExchangeDelegateSim(info, this.parseBalance(exchangeAccount[id]), false, this.debug)
             exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
         }
         return exchanges
