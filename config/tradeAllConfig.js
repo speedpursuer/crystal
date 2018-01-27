@@ -30,24 +30,24 @@ const tradeAllConfig = {
         }
     },
 
-    // 'All_IOTA/BTC': {
-    //     base: "IOTA",
-    //     quote: "BTC",
-    //     exchanges: ['Bitfinex', 'Binance', 'OKEx'],
-    //     exchangeInfo: exchangeInfoCommon,
-    //     strategy: HedgeNew,
-    //     strategyConfig: {
-    //         maxAmountOnce: 20,
-    //         orderRate: 0.1,
-    //         minMargin: 0.000001,
-    //         maxLoss: -0.001,
-    //         debug: true
-    //     },
-    //     initAccount: {
-    //         base: 4444,
-    //         quote: 1
-    //     }
-    // },
+    'All_IOTA/BTC': {
+        base: "IOTA",
+        quote: "BTC",
+        exchanges: ['Bitfinex', 'Binance', 'OKEx'],
+        exchangeInfo: exchangeInfoCommon,
+        strategy: HedgeNew,
+        strategyConfig: {
+            maxAmountOnce: 20,
+            orderRate: 0.1,
+            minMargin: 0.000001,
+            maxLoss: -0.001,
+            debug: true
+        },
+        initAccount: {
+            base: 4444,
+            quote: 1
+        }
+    },
 
     // 'All_ETH/BTC': {
     //     base: "ETH",
