@@ -15,13 +15,13 @@ const apis = {
     bitfinex: Bitfinex
 }
 
-class ExchangeFactory {
+class ExchangeDelegateFactory {
     constructor() {
         this.exchangePoor = {}
         this.exchangeDelegateConfig = config
     }
 
-    createExchange(info, debug=false) {
+    createExchangeDelegate(info, debug=false) {
         if(!this.exchangePoor[info.id]) {
             let api = apis[info.id]? new apis[info.id](info): new ccxt[info.id](info)
             api.interval = 200
@@ -32,7 +32,7 @@ class ExchangeFactory {
         return this.exchangePoor[info.id]
     }
 
-    createExchangeSim(info, balance, realSim=false, debug=false) {
+    createExchangeDelegateSim(info, balance, realSim=false, debug=false) {
         if(!this.exchangePoor[info.id]) {
             let api = new ExhangeSim(info, balance, 0.75, 0.75, realSim)
             api.interval = 0
@@ -49,5 +49,5 @@ class ExchangeFactory {
         return new ExchangeDelegate(api, this.exchangeDelegateConfig, debug)
     }
 }
-var exchangeFactory = new ExchangeFactory()
+var exchangeFactory = new ExchangeDelegateFactory()
 module.exports = exchangeFactory

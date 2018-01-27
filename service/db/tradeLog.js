@@ -19,7 +19,7 @@ class TradeLog {
             stocksGap: 0,
             startTime: util.now,
             lastUpdate: util.now,
-            closedAPIs: [],
+            stopped: null,
         }
         await this.saveData()
     }
@@ -44,6 +44,11 @@ class TradeLog {
         this.data.balanceGap = balanceGap
         this.data.stocksGap = stocksGap
         this.data.lastUpdate = util.now
+        await this.saveData()
+    }
+
+    async recordStopped(reason) {
+        this.data.stopped = {reason}
         await this.saveData()
     }
 

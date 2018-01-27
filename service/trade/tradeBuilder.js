@@ -4,7 +4,7 @@ const backtestConfig = require('../../config/backtestConfig')
 const tradeAllConfig = require('../../config/tradeAllConfig')
 const Exchange = require('../exchange/exchange.js')
 const ExchangeStream = require('../exchange/exchangeStream')
-const factory = require ('../API/exchangeFactory.js')
+const factory = require ('../API/exchangeDelegateFactory.js')
 
 
 class TradeBuilder{
@@ -27,12 +27,12 @@ class TradeBuilder{
         }
     }
 
-    buildExchanges(exchangesIDs) {
+    buildExchanges(exchangesIDs, useStream=false) {
         let exchanges = {}
         for(var id of exchangesIDs) {
             let info = this.exchangeInfo(id)
-            let exchangeDelegate = factory.createExchange(info, this.debug)
-            exchanges[id] = new Exchange(exchangeDelegate, info, this.strategy.crypto, this.strategy.fiat, this.debug)
+            let exchangeDelegate = factory.createExchangeDelegate(info, this.debug)
+            exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
         }
         return exchanges
     }
@@ -41,11 +41,15 @@ class TradeBuilder{
         let exchanges = {}
         for(var id in exchangeAccount) {
             let info = this.exchangeInfo(id)
-            let exchangeDelegate = factory.createExchangeSim(info, this.parseBalance(exchangeAccount[id]), false, this.debug)
-            let exchangeClass = useStream? ExchangeStream: Exchange
-            exchanges[id] = new exchangeClass(exchangeDelegate, info, this.strategy.crypto, this.strategy.fiat, this.debug)
+            let exchangeDelegate = factory.createExchangeDelegateSim(info, this.parseBalance(exchangeAccount[id]), false, this.debug)
+            exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
         }
         return exchanges
+    }
+
+    createExchange(exchangeDelegate, info, useStream=false) {
+        let exchangeClass = useStream? ExchangeStream: Exchange
+        return new exchangeClass(exchangeDelegate, info, this.strategy.crypto, this.strategy.fiat, this.debug)
     }
 
     get strategy() {

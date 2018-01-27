@@ -4,9 +4,8 @@ const Trade = require('./trade')
 class TradeSim extends Trade{
 
     constructor(tradeName, exchangeAccount, useStream=false, debug=true){
-        super(tradeName, debug)
+        super(tradeName, useStream, debug)
         this.exchangeAccount = exchangeAccount
-        this.useStream = useStream
     }
 
     createExchanges() {

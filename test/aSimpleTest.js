@@ -1072,8 +1072,45 @@ function test56() {
 	util.log(result)
 }
 
+function test57() {
+	let o = [
+		{
+			isTrue: true
+		},
+		{
+            isTrue: true
+		},
+        {
+            isTrue: true
+        },
+	]
+
+    util.log(_.reduce(o, function(result, item) {
+        return result && item.isTrue
+    }, true))
+}
+
+function test58() {
+
+	class A {
+
+	}
+
+    let a = _.once(function () {
+        util.log('only once')
+    })
+
+	function test() {
+		util.log('Any times')
+		a()
+    }
+	test()
+    test()
+    test()
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test56()
+    test58()
 }

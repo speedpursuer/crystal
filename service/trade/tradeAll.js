@@ -7,11 +7,13 @@ const StreamService = require('../stream/streamService')
 const Interval = 1000
 
 class TradeAll{
-    constructor(debug=true){
-        this.debug = debug
-    }
 
     async init() {
+        await this.configSubTrades()
+        this.configStreams()
+    }
+
+    async configSubTrades() {
         this.tradeList = []
         for(let name in allConfig) {
             let config = allConfig[name]
@@ -20,7 +22,6 @@ class TradeAll{
             await subTrade.init()
             this.tradeList.push(subTrade)
         }
-        this.configStreams()
     }
 
     configStreams() {
@@ -44,11 +45,15 @@ class TradeAll{
     }
 
     async doTrade() {
-        for(let trade of this.tradeList) {
+        let workingTrades = this.getWorkingTrades()
+        if(workingTrades.length == 0) {
+            throw new Error('All trades is stopped!')
+        }
+        for(let trade of workingTrades) {
             await trade.updateOrderBook()
             trade.strategy.findBestPair()
         }
-        let strategy = _.maxBy(this.tradeList, 'strategy.bestPoint').strategy
+        let strategy = _.maxBy(workingTrades, 'strategy.bestPoint').strategy
         if(strategy.bestPoint > 0) {
             strategy.beforeTrade()
             await strategy.doHedge()
@@ -71,6 +76,12 @@ class TradeAll{
     reportTotalProfit() {
         let totalProfit = _.sumBy(this.tradeList, function(o) { return o.strategy.currProfit })
         util.log.magenta(`Total Profit: ${totalProfit}`)
+    }
+
+    getWorkingTrades() {
+        return _.filter(this.tradeList, function(trade) {
+            return trade.strategy.condition
+        })
     }
 
     exchangesAccount(exchanges, initAccount) {

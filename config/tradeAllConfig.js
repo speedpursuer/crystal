@@ -49,25 +49,25 @@ const tradeAllConfig = {
         }
     },
 
-    'All_ETH/BTC': {
-        base: "ETH",
-        quote: "BTC",
-        exchanges: ['okex', 'huobipro', 'Bitfinex', 'binance'],
-        // exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
-        exchangeInfo: exchangeInfoETH,
-        strategy: HedgeNew,
-        strategyConfig: {
-            maxAmountOnce: 1,
-            orderRate: 0.1,
-            minMargin: 0.00004,
-            maxLoss: -0.001,
-            debug: true
-        },
-        initAccount: {
-            base: 11,
-            quote: 1
-        }
-    },
+    // 'All_ETH/BTC': {
+    //     base: "ETH",
+    //     quote: "BTC",
+    //     exchanges: ['okex', 'huobipro', 'Bitfinex', 'binance'],
+    //     // exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
+    //     exchangeInfo: exchangeInfoETH,
+    //     strategy: HedgeNew,
+    //     strategyConfig: {
+    //         maxAmountOnce: 1,
+    //         orderRate: 0.1,
+    //         minMargin: 0.00004,
+    //         maxLoss: -0.001,
+    //         debug: true
+    //     },
+    //     initAccount: {
+    //         base: 11,
+    //         quote: 1
+    //     }
+    // },
 
     // 'XMR/BTC': {
     //     base: "XMR",

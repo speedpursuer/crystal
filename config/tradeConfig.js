@@ -68,20 +68,20 @@ const tradeConfig = {
         },
     },
 
-    'XMR/BTC': {
-        base: "XMR",
-        quote: "BTC",
-        exchanges: ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance'],
-        exchangeInfo: exchangeInfoXMR,
-        strategy: HedgeNew,
-        strategyConfig: {
-            maxAmountOnce: 1,
-            orderRate: 0.1,
-            minMargin: 0.00003,
-            maxLoss: -0.001,
-            debug: true
-        }
-    },
+    // 'XMR/BTC': {
+    //     base: "XMR",
+    //     quote: "BTC",
+    //     exchanges: ['hitbtc', 'Poloniex', 'Bitfinex', 'Binance'],
+    //     exchangeInfo: exchangeInfoXMR,
+    //     strategy: HedgeNew,
+    //     strategyConfig: {
+    //         maxAmountOnce: 1,
+    //         orderRate: 0.1,
+    //         minMargin: 0.00003,
+    //         maxLoss: -0.001,
+    //         debug: true
+    //     }
+    // },
 }
 
 module.exports = tradeConfig

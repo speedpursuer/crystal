@@ -36,6 +36,12 @@ describe('测试Database class', async function() {
             curreData.balanceGap.should.equal(50)
         })
 
+        it('recordStopped', async function() {
+            await trade.recordStopped('Loss money')
+            curreData = await trade.getData()
+            curreData.stopped.should.not.equal(null)
+        })
+
         it('保存API故障', async function () {
             let apiLog = ApiLog.instance
             await apiLog.recordClosedAPI('okex')

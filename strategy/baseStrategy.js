@@ -11,6 +11,7 @@ class BaseStrategy {
 		this.config = config
         this.debug = this.getConfig("debug")
 		this.maxLoss = this.getConfig("maxLoss")
+		this.failed = false
     }
 
 	async init(exchanges){
@@ -62,8 +63,12 @@ class BaseStrategy {
 	}
 
 	get condition() {
+		if(this.failed) return false
 		if(this.currProfit < this.maxLoss) {
-			util.log.red("账户异常，退出交易")
+			let err = `${this.market} has too much loss, trading stopped`
+            util.log.red(err)
+			this.tradeLog.recordStopped(err).then
+			this.failed = true
 			return false
 		}
 		return true

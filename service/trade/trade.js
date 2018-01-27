@@ -6,7 +6,8 @@ const AppLog = require('../db/appLog')
 const Interval = 2000
 
 class Trade{
-	constructor(tradeName, debug=true){
+	constructor(tradeName, useStream=false, debug=true){
+        this.useStream = useStream
         this.debug = debug
         this.tradeBuilder = new TradeBuilder(tradeName, debug)
 		this.strategy = this.tradeBuilder.strategy
@@ -38,7 +39,7 @@ class Trade{
 
     createExchanges() {
         this.exchangesIDs = _.sortBy(_.map(this.tradeBuilder.exchanges, function(i) {return i.toLowerCase()}) )
-        this.exchanges = this.tradeBuilder.buildExchanges(this.exchangesIDs)
+        this.exchanges = this.tradeBuilder.buildExchanges(this.exchangesIDs, this.useStream)
     }
 
  	async updateOrderBook(){
