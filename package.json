@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "as-table": "^1.0.25",
+    "bittrex-market": "^2.2.0",
     "bluebird": "^3.5.1",
     "ccxt": "^1.10.263",
     "lodash": "^4.17.4",

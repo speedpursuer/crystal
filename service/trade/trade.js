@@ -2,6 +2,7 @@ const _ = require('lodash')
 const util = require ('../../util/util.js')
 const TradeBuilder = require('./tradeBuilder')
 const AppLog = require('../db/appLog')
+const StreamService = require('../stream/streamService')
 
 const Interval = 2000
 
@@ -60,14 +61,31 @@ class Trade{
 	}
 
 	async run(){
-		try {  
-        	await this.init()
+		try {
+            await this.init()
+			if(this.useStream) {
+				this.configStreams()
+			}else {
+                await this.loop()
+			}
         }catch (e) {   
         	util.log.red("交易初始化失败，程序退出")     	
         	throw e
         }
-		await this.loop()
 	}
+
+    configStreams() {
+        let streamService = StreamService.instance, that = this
+        streamService.on('started', function (isSuccess) {
+            if(isSuccess) {
+                util.log("stream started")
+                that.loop().then
+            }else {
+                throw new Error('stream not started successfully')
+            }
+        })
+        streamService.start()
+    }
 
 	async handleError(err) {
 		util.log.bright.yellow(err)

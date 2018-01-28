@@ -4,6 +4,7 @@ var exchangeInfo = {
         symbolPairs: {
 			'EOS/BTC': 'eosbtc',
 			'ETH/BTC': 'ethbtc',
+            'BCH/BTC': 'bchbtc',
 		},
         needPing: true
 	},
@@ -13,7 +14,8 @@ var exchangeInfo = {
         symbolPairs: {
             'EOS/BTC': 'eos_btc',
             'IOTA/BTC': 'IOTA_btc',
-            'ETH/BTC': 'eth_btc'
+            'ETH/BTC': 'eth_btc',
+            'BCH/BTC': 'bch_btc',
         },
         needPing: true
     },
@@ -23,7 +25,8 @@ var exchangeInfo = {
         symbolPairs: {
             'EOS/BTC': 'tEOSBTC',
             'IOTA/BTC': 'tIOTBTC',
-            'ETH/BTC': 'tETHBTC'
+            'ETH/BTC': 'tETHBTC',
+            'BCH/BTC': 'tBCHBTC',
         },
         needPing: true
     },
@@ -34,10 +37,18 @@ var exchangeInfo = {
             'EOS/BTC': 'eosbtc',
             'IOTA/BTC': 'iotabtc',
             'ETH/BTC': 'ethbtc',
+            'BCH/BTC': 'bccbtc',
             'BTC/USD': 'btcusdt',
             'ETH/USD': 'ethusdt',
         },
         needPing: false
+    },
+
+    OrderBookStreamBittrex: {
+        symbolPairs: {
+            'ETH/BTC': 'BTC-ETH',
+            'BCH/BTC': 'BTC-BCC',
+        },
     },
 }
 

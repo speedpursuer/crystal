@@ -34,7 +34,8 @@ const tradeAllConfig = {
     'All_IOTA/BTC': {
         base: "IOTA",
         quote: "BTC",
-        exchanges: ['Bitfinex', 'Binance', 'OKEx'],
+        exchanges: ['Bitfinex', 'Binance'],
+        // exchanges: ['Bitfinex', 'Binance', 'OKEx'],
         exchangeInfo: exchangeInfoIOTA,
         strategy: HedgeNew,
         strategyConfig: {
@@ -45,30 +46,48 @@ const tradeAllConfig = {
             debug: true
         },
         initAccount: {
-            base: 4444,
+            base: 4995,
             quote: 1
         }
     },
 
-    // 'All_ETH/BTC': {
-    //     base: "ETH",
-    //     quote: "BTC",
-    //     exchanges: ['okex', 'huobipro', 'Bitfinex', 'binance'],
-    //     // exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'hitbtc', 'binance'],
-    //     exchangeInfo: exchangeInfoETH,
-    //     strategy: HedgeNew,
-    //     strategyConfig: {
-    //         maxAmountOnce: 1,
-    //         orderRate: 0.1,
-    //         minMargin: 0.00004,
-    //         maxLoss: -0.001,
-    //         debug: true
-    //     },
-    //     initAccount: {
-    //         base: 11,
-    //         quote: 1
-    //     }
-    // },
+    'All_ETH/BTC': {
+        base: "ETH",
+        quote: "BTC",
+        exchanges: ['okex', 'huobipro', 'Bitfinex', 'binance', 'Bittrex'],
+        exchangeInfo: exchangeInfoETH,
+        strategy: HedgeNew,
+        strategyConfig: {
+            maxAmountOnce: 1,
+            orderRate: 0.1,
+            minMargin: 0.00004,
+            maxLoss: -0.001,
+            debug: true
+        },
+        initAccount: {
+            base: 10,
+            quote: 1
+        }
+    },
+
+    'All_BCH/BTC': {
+        base: "BCH",
+        quote: "BTC",
+        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
+        exchangeInfo: exchangeInfoBCH,
+        strategy: HedgeNew,
+        strategyConfig: {
+            maxAmountOnce: 1,
+            orderRate: 0.1,
+            minMargin: 0.0001,
+            maxLoss: -0.001,
+            debug: true
+        },
+        initAccount: {
+            base: 7,
+            quote: 1
+        }
+    },
 
     // 'XMR/BTC': {
     //     base: "XMR",

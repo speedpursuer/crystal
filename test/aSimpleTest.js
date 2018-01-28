@@ -18,6 +18,8 @@ const EventEmitter = require('events')
 
 const Counter = require("../util/counter")
 
+const MarketManager = require('bittrex-market')
+
 class Test {
 	async run() {
 		return util.sleep(100)
@@ -1109,8 +1111,77 @@ function test58() {
     test()
 }
 
+function test59() {
+    let array = []
+    util.log(_.concat(array, []))
+}
+
+function test60() {
+    const marketManager = new MarketManager(false)
+	
+	function test(symbol) {
+        marketManager.market(symbol, (err, ethereum) => {
+            //print the fulfilled orders to stdout in real time
+            //in case the connection drops and there is a reconnect
+            //all fills from the past get replayed
+            // ethereum.on('fills', console.log)
+
+            //fires each time changes have been applied to the orderbook, and prints the current state of the orderbook
+            ethereum.on('orderbookUpdated', () => {
+                //print the asks side of the current order book state
+                //the format is an array of [ rate, quantity ]
+                //i.e. [[ 0.10994992, 4.37637934 ], [ 0.10996992, 10.47637934 ] ...]
+                console.log(symbol + ' asks', _.slice(ethereum.asks, 0, 10))
+
+                //same thing for the bids side
+                console.log(symbol + ' bids', _.slice(ethereum.bids, 0, 10))
+            })
+        })
+    }
+
+    test('BTC-ETH')
+    test('BTC-BCC')
+
+	
+    // marketManager.market('BTC-ETH', (err, ethereum) => {
+    //     //print the fulfilled orders to stdout in real time
+    //     //in case the connection drops and there is a reconnect
+    //     //all fills from the past get replayed
+    //     // ethereum.on('fills', console.log)
+    //
+    //     //fires each time changes have been applied to the orderbook, and prints the current state of the orderbook
+    //     ethereum.on('orderbookUpdated', () => {
+    //         //print the asks side of the current order book state
+    //         //the format is an array of [ rate, quantity ]
+    //         //i.e. [[ 0.10994992, 4.37637934 ], [ 0.10996992, 10.47637934 ] ...]
+    //         console.log('asks', ethereum.asks)
+    //
+    //         //same thing for the bids side
+    //         console.log('bids', ethereum.bids)
+    //     })
+    // })
+    //
+    // marketManager.market('BTC-BCC', (err, ethereum) => {
+    //     //print the fulfilled orders to stdout in real time
+    //     //in case the connection drops and there is a reconnect
+    //     //all fills from the past get replayed
+    //     // ethereum.on('fills', console.log)
+    //
+    //     //fires each time changes have been applied to the orderbook, and prints the current state of the orderbook
+    //     ethereum.on('orderbookUpdated', () => {
+    //         //print the asks side of the current order book state
+    //         //the format is an array of [ rate, quantity ]
+    //         //i.e. [[ 0.10994992, 4.37637934 ], [ 0.10996992, 10.47637934 ] ...]
+    //         console.log('asks', ethereum.asks)
+    //
+    //         //same thing for the bids side
+    //         console.log('bids', ethereum.bids)
+    //     })
+    // })
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test58()
+    test60()
 }

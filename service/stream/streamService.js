@@ -4,13 +4,15 @@ const OrderBookHuobi = require('./orderbookHuobi')
 const OrderBookOkex = require('./orderbookOkex')
 const OrderBookBitfinex = require('./orderbookBitfinex')
 const OrderBookBinance = require('./orderbookBinance')
+const OrderBookBittrex = require('./orderbookBittrex')
 const _ = require('lodash')
 
 const list = {
     huobipro: OrderBookHuobi,
     okex: OrderBookOkex,
     bitfinex: OrderBookBitfinex,
-    binance: OrderBookBinance
+    binance: OrderBookBinance,
+    bittrex: OrderBookBittrex
 }
 
 class StreamService extends EventEmitter{

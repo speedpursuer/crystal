@@ -2,6 +2,7 @@ const OrderBookHuobi = require('../service/stream/orderbookHuobi')
 const OrderBookOkex = require('../service/stream/orderbookOkex')
 const OrderBookBitfinex = require('../service/stream/orderbookBitfinex')
 const OrderBookBinance = require('../service/stream/orderbookBinance')
+const OrderBookBittrex = require('../service/stream/orderbookBittrex')
 const util = require('../util/util.js')
 const should = require('should')
 const binance = require('node-binance-api')
@@ -19,60 +20,30 @@ describe('测试Orderbook stream', async function() {
 		
 	})
 
-	describe.only('huobi', async function() {
-    	it('查询订单簿数据', async function() {
-            let orderBook = new OrderBookHuobi(['EOS/BTC', 'ETH/BTC'])
-            orderBook.connect()
-			for(let i=0; i<20; i++) {
-                util.log(orderBook.getOrderBookBySymbol('EOS/BTC'))
-                util.log(orderBook.getOrderBookBySymbol('ETH/BTC'))
-                await util.sleep(1000)
-			}
+	describe.only('查询订单簿数据', async function() {
+    	it('huobi', async function() {
+            let symbos = ['EOS/BTC', 'ETH/BTC']
+            let orderBook = new OrderBookHuobi(symbos)
+            connect(orderBook, symbos)
     	})
-  	})
 
-    describe.only('okex', async function() {
-        it('查询订单簿数据', async function() {
-            let orderBook = new OrderBookOkex(['EOS/BTC', 'ETH/BTC', 'IOTA/BTC'])
-            orderBook.connect()
-            for(let i=0; i<20; i++) {
-                util.log(orderBook.getOrderBookBySymbol('EOS/BTC'))
-                util.log(orderBook.getOrderBookBySymbol('ETH/BTC'))
-                util.log(orderBook.getOrderBookBySymbol('IOTA/BTC'))
-                await util.sleep(1000)
-            }
+        it('okex', async function() {
+            let symbos = ['EOS/BTC', 'ETH/BTC', 'IOTA/BTC']
+            let orderBook = new OrderBookOkex(symbos)
+            connect(orderBook, symbos)
         })
-    })
 
-    describe.only('Bitfinex', async function() {
-        it('查询订单簿数据', async function() {
-            let orderBook = new OrderBookBitfinex(['EOS/BTC', 'ETH/BTC', 'IOTA/BTC'])
-            orderBook.connect()
-            orderBook.on('received', function (flag) {
-                util.log(`orderbook all received: ${flag}`)
-            })
-            for(let i=0; i<20; i++) {
-                util.log('IOTA/BTC', orderBook.getOrderBookBySymbol('IOTA/BTC'))
-                util.log('EOS/BTC', orderBook.getOrderBookBySymbol('EOS/BTC'))
-                util.log('ETH/BTC', orderBook.getOrderBookBySymbol('ETH/BTC'))
-                await util.sleep(1000)
-            }
+        it('Bitfinex', async function() {
+            let symbos = ['EOS/BTC', 'ETH/BTC', 'IOTA/BTC']
+            let orderBook = new OrderBookBitfinex(symbos)
+            connect(orderBook, symbos)
         })
-    })
 
-    describe.only('Binance', async function() {
-        it('查询订单簿数据', async function() {
-
-            let orderBook = new OrderBookBinance(['BTC/USD', 'ETH/USD', 'IOTA/BTC'])
-            orderBook.connect()
+        it('Binance', async function() {
+            let symbos = ['BTC/USD', 'ETH/USD', 'IOTA/BTC']
+            let orderBook = new OrderBookBinance(symbos)
+            connect(orderBook, symbos)
             // let orderBook = new OrderBookBinance(['EOS/BTC', 'ETH/BTC'])
-            for(let i=0; i<20; i++) {
-                util.log('IOTA/BTC', orderBook.getOrderBookBySymbol('IOTA/BTC'))
-                // util.log('EOS/BTC', orderBook.getOrderBookBySymbol('BTC/USD'))
-                // util.log('ETH/BTC', orderBook.getOrderBookBySymbol('ETH/USD'))
-                await util.sleep(1000)
-            }
-
             // binance.options({
             //     'test':true
             // })
@@ -87,7 +58,29 @@ describe('测试Orderbook stream', async function() {
             //     console.log("best ask: "+binance.first(asks));
             // });
         })
-    })
 
+        it('Bittrex', async function() {
+            let symbos = ['BCH/BTC', 'ETH/BTC']
+            let orderBook = new OrderBookBittrex(symbos)
+            connect(orderBook, symbos)
+        })
+  	})
+    
+    function connect(orderBook, symbos) {
+        orderBook.connect()
+        orderBook.on('started', async function (flag) {
+            if(flag) {
+                util.log(`orderbook all received: ${flag}`)
+                for(let i=0; i<20; i++) {
+                    for(let symbol of symbos) {
+                        util.log(symbol, orderBook.getOrderBookBySymbol(symbol))
+                    }
+                    await util.sleep(1000)
+                }
+            }else {
+                util.log.red(`orderbook NOT all received: ${flag}`)
+            }
+        })
+    }
 })
 

@@ -14,6 +14,7 @@ class OrderbookStream extends EventEmitter {
         this.config()
         this.init(symbols)
         this.isWorking = false
+        this.orderBookSize = orderBookSize
         // this.connect()
     }
 
@@ -163,7 +164,7 @@ class OrderbookStream extends EventEmitter {
         if(!this.isWorking) {
             return []
         }
-        return this.formatNumber(_.slice(this.sortOrderList(orderbook[side], side), 0, orderBookSize))
+        return this.formatNumber(_.slice(this.sortOrderList(orderbook[side], side), 0, this.orderBookSize))
     }
 
     formatNumber(list) {
@@ -189,13 +190,13 @@ class OrderbookStream extends EventEmitter {
     }
 
     checkDataAvailable() {
-        let that = this, i = 0, maxTry = 10
+        let that = this, i = 0, maxTry = 20
         util.repeat(function () {
             i++
             if(i == maxTry) {
                 that.notifyOrderbookReceived(false)
             }
-        }, 500, maxTry, function () {
+        }, 1000, maxTry, function () {
             if(!that.isOrderbookEmpty()) {
                 that.notifyOrderbookReceived(true)
                 return true
