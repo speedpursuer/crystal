@@ -61,7 +61,7 @@ const tradeConfig = {
         exchangeInfo: exchangeInfoEOS,
         strategy: HedgeNew,
         strategyConfig: {
-            maxAmountOnce: 20,
+            maxAmountOnce: 30,
             orderRate: 0.1,
             minMargin: 0.000004,
             maxLoss: -0.001,
