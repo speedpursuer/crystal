@@ -23,7 +23,7 @@ class OrderbookStream extends EventEmitter {
         this.url = config[this.name].url
         this.needPing = config[this.name].needPing
         this.symbolPairs = config[this.name].symbolPairs
-        this.autoReconnectInterval = 100
+        this.autoReconnectInterval = 500
         this.counter = new Counter(60 * 1000, 5)
     }
 
@@ -76,7 +76,7 @@ class OrderbookStream extends EventEmitter {
             }
             if(that.needPing) {
                 that.lastHeartBeat = util.time
-                setInterval(function() {
+                that.checkInterval = setInterval(function() {
                     that.checkConnection()
                 }, 5000)
             }
@@ -109,20 +109,18 @@ class OrderbookStream extends EventEmitter {
         // this.orderbooks = this.emptyOrderbooks
         this.isWorking = false
         this.ws.removeAllListeners()
-        if(this.counter.isOverCountAfterCount) {
-            this.reportErr(new Error('Retried failed, giving up')).then()
-        }else {
-            this.log(`WebSocketClient: retry in ${this.autoReconnectInterval}ms`, e)
-            let that = this
-            setTimeout(function(){
-                that.log("WebSocketClient: reconnecting...")
-                that.connect()
-            }, this.autoReconnectInterval)
-        }
+        let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
+        let that = this
+        this.log(`WebSocketClient: retry in ${retryInterval}ms`, e)
+        setTimeout(function(){
+            that.log("WebSocketClient: reconnecting...")
+            that.connect()
+        }, retryInterval)
     }
 
     checkConnection() {
         if (util.time - this.lastHeartBeat > 8000) {
+            clearInterval(this.checkInterval)
             this.reconnect(new Error("socket 连接断开，正在尝试重新建立连接"))
         }else {
             this.ping()
