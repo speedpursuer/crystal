@@ -71,9 +71,6 @@ class StreamService extends EventEmitter{
     }
 
     getOrderbook(exchangeId, symbol) {
-        // let result = this.streams[exchangeId].getOrderBookBySymbol(symbol)
-        // console.log(exchangeId, symbol, result)
-        // return result
         return this.streams[exchangeId].getOrderBookBySymbol(symbol)
     }
 }
@@ -101,7 +98,5 @@ class Counter {
         return null
     }
 }
-
-
 
 module.exports = StreamService
