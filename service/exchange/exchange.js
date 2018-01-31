@@ -174,6 +174,7 @@ class Exchange {
 
     async fetchOrderBook() {
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
+        this.checkOrderbook()
         return this.orderBooks
     }
 
@@ -207,13 +208,23 @@ class Exchange {
         }
 
         result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
-        // this.account = result.newAccount
         return result.info
     }
 
     getOrderBooksData(path) {
         var value = util.deepGet(this.orderBooks, path)
         return value === undefined? 0: value
+    }
+
+    checkOrderbook() {
+	    this.checkOrderbookBySide('bids')
+        this.checkOrderbookBySide('asks')
+    }
+
+    checkOrderbookBySide(side) {
+        if(this.getOrderBooksData(side).length === 0) {
+            this.log(`No ${side} found for ${this.symbol}`)
+        }
     }
 
     log(message, color='white') {

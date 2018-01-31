@@ -10,6 +10,7 @@ class ExchangeStream extends Exchange {
 
     async fetchOrderBook() {
         this.orderBooks = StreamService.instance.getOrderbook(this.id, this.symbol)
+        this.checkOrderbook()
     }
 }
 
