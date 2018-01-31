@@ -29,7 +29,7 @@ class OrderbookStream extends EventEmitter {
 
     realSymbol(symbol) {
         let realSymbol = this.symbolPairs[symbol]
-        if(!realSymbol) throw new Error('symbol not valid')
+        if(!realSymbol) throw new Error(`${this.name} - symbol ${symbol} not valid in stream exchangeInfo`)
         return realSymbol
     }
 

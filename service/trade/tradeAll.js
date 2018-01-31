@@ -57,19 +57,22 @@ class TradeAll{
             await trade.updateOrderBook()
             trade.strategy.findBestPair()
         }
-        let strategy = _.maxBy(workingTrades, 'strategy.bestPoint').strategy
+        let bestTrade = _.maxBy(workingTrades, 'strategy.bestPoint')
+        let strategy = bestTrade.strategy
         if(strategy.bestPoint > 0) {
             strategy.beforeTrade()
             await strategy.doHedge()
             strategy.afterTrade()
-            await this.doBalance(strategy)
+            await this.doBalance(bestTrade)
             await strategy.updateBalance()
             this.reportTotalProfit()
         }
     }
 
-    async doBalance(strategy) {
+    async doBalance(trade) {
+        let strategy = trade.strategy
         while(true) {
+            await trade.updateOrderBook()
             strategy.beforeTrade()
             if(!await strategy.balance()) break
             strategy.afterTrade()

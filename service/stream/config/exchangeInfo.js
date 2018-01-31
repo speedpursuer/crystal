@@ -5,6 +5,7 @@ var exchangeInfo = {
 			'EOS/BTC': 'eosbtc',
 			'ETH/BTC': 'ethbtc',
             'BCH/BTC': 'bchbtc',
+            'BTC/USDT': 'btcusdt'
 		},
         needPing: true
 	},
@@ -16,6 +17,7 @@ var exchangeInfo = {
             'IOTA/BTC': 'IOTA_btc',
             'ETH/BTC': 'eth_btc',
             'BCH/BTC': 'bch_btc',
+            'BTC/USDT': 'bch_usdt',
         },
         needPing: true
     },
