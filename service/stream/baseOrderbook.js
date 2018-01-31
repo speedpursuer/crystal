@@ -4,7 +4,7 @@ const util = require('../../util/util')
 const Counter = require('../../util/counter')
 const config = require('./config/exchangeInfo')
 const _ = require('lodash')
-const RedisDB = require('../db/redisDB')
+const AppLog = require('../db/appLog')
 
 const orderBookSize = 10
 
@@ -15,7 +15,6 @@ class OrderbookStream extends EventEmitter {
         this.init(symbols)
         this.isWorking = false
         this.orderBookSize = orderBookSize
-        // this.connect()
     }
 
     config() {
@@ -53,7 +52,6 @@ class OrderbookStream extends EventEmitter {
                 asks: []
             }
         }
-        // this.emptyOrderbooks = this.orderbooks
     }
 
     send(data) {
@@ -66,21 +64,12 @@ class OrderbookStream extends EventEmitter {
     }
 
     connect() {
-        let that = this
         this.ws = new WS(this.url, null, {})
 
+        let that = this
         this.ws.on('open', function() {
             that.log('WS open')
-            if(that.start) {
-                that.start()
-            }
-            if(that.needPing) {
-                that.lastHeartBeat = util.time
-                that.checkInterval = setInterval(function() {
-                    that.checkConnection()
-                }, 5000)
-            }
-            that.checkDataAvailable()
+            that.openStream()
         })
 
         this.ws.on('message', function(msg) {
@@ -93,22 +82,25 @@ class OrderbookStream extends EventEmitter {
 
         this.ws.on('close', function(e) {
             that.reconnect(e)
-            // switch (e){
-            //     case 1000:
-            //         this.log("WebSocket: closed")
-            //         break
-            //     default:
-            //         this.log("WebSocket abnormally closed")
-            //         that.reconnect(e)
-            //         break
-            // }
         })
     }
 
+    openStream() {
+        if(this.start) {
+            this.start()
+        }
+        if(this.needPing) {
+            this.lastHeartBeat = util.time
+            let that = this
+            this.checkInterval = setInterval(function() {
+                that.checkConnection()
+            }, 5000)
+        }
+        this.checkDataAvailable()
+    }
+
     reconnect(e) {
-        // this.orderbooks = this.emptyOrderbooks
-        this.isWorking = false
-        this.ws.removeAllListeners()
+        this.stopStream()
         let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
         let that = this
         this.log(`WebSocketClient: retry in ${retryInterval}ms`, e)
@@ -120,19 +112,25 @@ class OrderbookStream extends EventEmitter {
 
     checkConnection() {
         if (util.time - this.lastHeartBeat > 8000) {
-            clearInterval(this.checkInterval)
             this.reconnect(new Error("socket 连接断开，正在尝试重新建立连接"))
         }else {
             this.ping()
         }
     }
 
+    stopStream() {
+        this.stopCheckConnection()
+        this.isWorking = false
+        this.ws.removeAllListeners()
+    }
+
+    stopCheckConnection() {
+        if(this.checkInterval) clearInterval(this.checkInterval)
+    }
+
     async reportErr(e) {
         this.isWorking = false
-        util.log.red(e)
-        // this.orderbooks = this.emptyOrderbooks
-        // let database = await RedisDB.getInstanceWithAccount()
-        // await database.recordClosedAPI(this.name)
+        await AppLog.instance.recordClosedAPI(`${this.name}, reason: ${e}`)
     }
 
     parseMessage(msg) {
