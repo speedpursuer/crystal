@@ -73,6 +73,14 @@ class StreamService extends EventEmitter{
     getOrderbook(exchangeId, symbol) {
         return this.streams[exchangeId].getOrderBookBySymbol(symbol)
     }
+
+    reconnectStream(exchangeId) {
+        this.streams[exchangeId].reconnect(new Error(`reconnect stream of ${exchangeId}`))
+    }
+
+    stopStream(exchangeId) {
+        this.streams[exchangeId].stopStream()
+    }
 }
 
 class Counter {

@@ -174,7 +174,7 @@ class Exchange {
 
     async fetchOrderBook() {
         this.orderBooks = await this.exchangeDelegate.fetchOrderBook(this.symbol)
-        this.checkOrderbook()
+        // this.checkOrderbook()
         return this.orderBooks
     }
 

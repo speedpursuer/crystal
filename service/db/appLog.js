@@ -1,6 +1,7 @@
 const singleton = Symbol()
 const RedisDB = require('./redisDB')
 const util = require ('../../util/util.js')
+const ip = require('ip')
 
 class AppLog {
 
@@ -28,7 +29,7 @@ class AppLog {
     }
 
     async recordClosedAPI(id) {
-        this.data.closedAPIs.push(id)
+        this.data.closedAPIs.push({id, ip: ip.address()})
         await this.saveData()
     }
 

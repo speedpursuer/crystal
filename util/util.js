@@ -119,12 +119,14 @@ class Util{
 		return false
 	}
 
-    getParameter() {
+    getParameter(required=true) {
         if (process.argv.length == 3){
-            return process.argv.slice(2)
-        }else {
+            return process.argv.slice(2)[0]
+        }else if (required){
             throw 'No parameter provided'
-        }
+        }else {
+        	return ''
+		}
     }
 
     objectOrderBy(object, byValue, order='asc') {

@@ -3,7 +3,7 @@ const TradeAll = require('../service/trade/tradeAll')
 
 function main() {
     try {
-        var trade = new TradeAll()
+        var trade = new TradeAll(util.getParameter(false))
         trade.init().then()
     }catch (e) {
         util.log.bright.yellow(e)

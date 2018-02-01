@@ -6,11 +6,25 @@ class ExchangeStream extends Exchange {
     constructor(exchangeDelegate, info, crypto, fiat, debug) {
         super(exchangeDelegate, info, crypto, fiat, debug)
         StreamService.instance.register(this.id, this.symbol)
+        this.registerDelegateEvents()
     }
 
     async fetchOrderBook() {
         this.orderBooks = StreamService.instance.getOrderbook(this.id, this.symbol)
-        this.checkOrderbook()
+        // this.checkOrderbook()
+    }
+
+    registerDelegateEvents() {
+        let that = this
+        this.exchangeDelegate.on('reopen', function(){
+            StreamService.instance.reconnectStream(that.id)
+        })
+        this.exchangeDelegate.on('closed', function(){
+            StreamService.instance.stopStream(that.id)
+        })
+        this.exchangeDelegate.on('stopped', function(){
+            StreamService.instance.stopStream(that.id)
+        })
     }
 }
 

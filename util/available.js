@@ -53,6 +53,7 @@ class Available extends EventEmitter {
             this.closed = true
             this.emit("closed")
         }else {
+            this.emit("stopped")
             var that = this
             setTimeout(function(){
                 that.emit("check")

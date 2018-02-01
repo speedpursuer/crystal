@@ -70,7 +70,6 @@ describe('测试Orderbook stream', async function() {
         orderBook.connect()
         orderBook.on('started', async function (flag) {
             if(flag) {
-                util.log(`orderbook all received: ${flag}`)
                 for(let i=0; i<20; i++) {
                     for(let symbol of symbos) {
                         util.log(symbol, orderBook.getOrderBookBySymbol(symbol))

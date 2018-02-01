@@ -119,9 +119,10 @@ class OrderbookStream extends EventEmitter {
     }
 
     stopStream() {
-        this.stopCheckConnection()
         this.isWorking = false
+        this.stopCheckConnection()
         this.ws.removeAllListeners()
+        this.log('停止stream')
     }
 
     stopCheckConnection() {
@@ -215,6 +216,7 @@ class OrderbookStream extends EventEmitter {
 
     notifyOrderbookReceived(flag) {
         this.isWorking = flag
+        this.log(`All orderbooks received: ${flag}`)
         this.emit('started', flag)
     }
 }

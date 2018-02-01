@@ -127,6 +127,7 @@ class ExchangeDelegate extends EventEmitter {
                 dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
                 balanceChanged = newAccount.balance - beforeAccount.balance
                 completed = true
+                this.checkOrderCompletion(dealAmount)
                 break
             }         
         }
@@ -141,6 +142,12 @@ class ExchangeDelegate extends EventEmitter {
         }        
     }
 
+    checkOrderCompletion(dealAmount) {
+	    if(dealAmount === 0) {
+            this._reportIssue({message: "下单量为0，下单失败"})
+        }
+    }
+
     parseAccount(data, symbol) {
         var pair = this._parseSymbol(symbol)
         var fiat = pair.fiat, crypto = pair.crypto
@@ -151,7 +158,6 @@ class ExchangeDelegate extends EventEmitter {
             stocks: data[crypto]? this._adjust(data[crypto].free): 0,
             frozenStocks: data[crypto]? this._adjust(data[crypto].used): 0
         }
-        // this._logAccount(symbol, account)
         return account
     }
 
@@ -205,7 +211,13 @@ class ExchangeDelegate extends EventEmitter {
             await that._checkAvailable()
         })
         this.available.on('closed', async function() {
+            that._log(`API调用失败次数过多，永久关闭`, "red")
+            that.emit('closed')
             await AppLog.instance.recordClosedAPI(that.id)
+        })
+        this.available.on('stopped', async function(){
+            that._log(`API调用多次失败，暂停使用，稍后自动重试`, "red")
+            that.emit('stopped')
         })
     }
 
@@ -214,11 +226,14 @@ class ExchangeDelegate extends EventEmitter {
         try{
             if(await this.api.fetchBalance()) {
                 this._log(`API恢复正常`, "green")
+                this.emit('reopen')
                 return this.available.reportCheck(true)
             }
         }catch(e) {
+            this._log(e)
         }
         this._log(`AIP恢复失败`, "red")
+        this.emit('stopped')
         this.available.reportCheck(false)
     }
 

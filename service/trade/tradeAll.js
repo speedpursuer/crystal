@@ -9,6 +9,10 @@ const Interval = 1000
 
 class TradeAll{
 
+    constructor(useSim=false) {
+        this.useSim = useSim === 'sim'
+    }
+
     async init() {
         await this.configSubTrades()
         this.configStreams()
@@ -17,11 +21,15 @@ class TradeAll{
     async configSubTrades() {
         this.tradeList = []
         for(let name in allConfig) {
-            // let config = allConfig[name]
-            // let exchangesAccount = this.exchangesAccount(config.exchanges, config.initAccount)
-            // let subTrade = new TradeSim(name, exchangesAccount, true, true)
+            let subTrade
 
-            let subTrade = new Trade(name, true, true)
+            if(this.useSim) {
+                let config = allConfig[name]
+                let exchangesAccount = this.exchangesAccount(config.exchanges, config.initAccount)
+                subTrade = new TradeSim(name, exchangesAccount, true, true)
+            }else {
+                subTrade = new Trade(name, true, true)
+            }
 
             await subTrade.init()
             this.tradeList.push(subTrade)
