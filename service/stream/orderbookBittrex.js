@@ -4,20 +4,20 @@ const MarketManager = require('bittrex-market')
 
 class OrderBookStreamBittrex extends OrderbookStream {
 
-    constructor(symbols) {
-        super(symbols)
-        this.marketManager = new MarketManager(false)
-    }
-
     connect() {
-        for (let symbol of this.symbols) {
+        for(let symbol of this.symbols) {
             this.doConnect(symbol)
         }
         this.checkDataAvailable()
         this.log('WS open')
     }
 
+    stopConnection() {
+        this.marketManager.reset()
+    }
+
     doConnect(symbol) {
+        this.marketManager = new MarketManager(false)
         let that = this
         this.marketManager.market(symbol, (err, crypto) => {
             crypto.on('orderbookUpdated', () => {

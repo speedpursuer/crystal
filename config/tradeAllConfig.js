@@ -53,14 +53,14 @@ const tradeAllConfig = {
     // 'All_BTC/USD': {
     //     base: "BTC",
     //     quote: "USDT",
-    //     exchanges: ['huobipro', 'OKEx'],
+    //     exchanges: ['Bittrex', 'OKEx'],
     //     exchangeInfo: exchangeInfo,
     //     strategy: HedgeNew,
     //     strategyConfig: {
     //         maxAmountOnce: 1,
     //         orderRate: 0.1,
     //         minMargin: 10,
-    //         maxLoss: -10,
+    //         maxLoss: -10000,
     //         debug: true
     //     },
     //     initAccount: {

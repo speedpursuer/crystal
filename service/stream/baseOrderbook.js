@@ -120,9 +120,13 @@ class OrderbookStream extends EventEmitter {
 
     stopStream() {
         this.isWorking = false
+        this.log('停止stream')
+        this.stopConnection()
+    }
+
+    stopConnection() {
         this.stopCheckConnection()
         this.ws.removeAllListeners()
-        this.log('停止stream')
     }
 
     stopCheckConnection() {

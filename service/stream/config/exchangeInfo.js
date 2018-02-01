@@ -50,6 +50,7 @@ var exchangeInfo = {
         symbolPairs: {
             'ETH/BTC': 'BTC-ETH',
             'BCH/BTC': 'BTC-BCC',
+            'BTC/USDT': 'USDT-BTC',
         },
     },
 }
