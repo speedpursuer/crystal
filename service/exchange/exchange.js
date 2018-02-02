@@ -41,7 +41,7 @@ class Exchange {
 
 	dataUpdate() {
 	    let that = this
-        this.exchangeDelegate.on('account', function(data){
+        this.exchangeDelegate.on('balanceUpdate', function(data){
             that.account = this.parseAccount(data, that.symbol)
         })
     }

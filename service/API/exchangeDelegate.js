@@ -60,16 +60,10 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     async fetchAccount(symbol) {
-        try {
-            let balance = await this.api.fetchBalance()
-            let account = this.parseAccount(balance, symbol)
-            this.emit('account', balance)
-            this._logAccount(symbol, account)
-            return account
-        }catch(e) {
-            this._reportIssue(e)
-            return null
-        }
+        let balance = await this._fetchBalance()
+        let account = this.parseAccount(balance, symbol)
+        this._logAccount(symbol, account)
+        return account
     }
 
     async createLimitOrder(symbol, type, amount, price, accountInfo) {
@@ -161,6 +155,17 @@ class ExchangeDelegate extends EventEmitter {
         return account
     }
 
+    async _fetchBalance() {
+        try {
+            let balance = await this.api.fetchBalance()
+            this.emit('balanceUpdate', balance)
+            return balance
+        }catch(e) {
+            this._reportIssue(e)
+            return null
+        }
+    }
+
     async _fetchOpenOrders(symbol) {
         try {
             return await this.api.fetchOpenOrders(symbol)
@@ -188,7 +193,9 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     _logAccount(symbol, account) {
-        this._log(`${symbol} - balance: ${account.balance}, frozenBalance: ${account.frozenBalance}, stocks: ${account.stocks}, frozenStocks: ${account.frozenStocks}`, 'yellow')
+	    if(account) {
+            this._log(`${symbol} - balance: ${account.balance}, frozenBalance: ${account.frozenBalance}, stocks: ${account.stocks}, frozenStocks: ${account.frozenStocks}`, 'yellow')
+        }
     }
 
     _log(message, color='white') {
@@ -224,7 +231,7 @@ class ExchangeDelegate extends EventEmitter {
     async _checkAvailable() {
         this._log(`自动检测 ${this.id} API可用性`)
         try{
-            if(await this.api.fetchBalance()) {
+            if(await this._fetchBalance()) {
                 this._log(`API恢复正常`, "green")
                 this.emit('reopen')
                 return this.available.reportCheck(true)
