@@ -194,7 +194,7 @@ class ExchangeDelegate extends EventEmitter {
 
     _logAccount(symbol, account) {
 	    if(account) {
-            this._log(`${symbol} - balance: ${account.balance}, frozenBalance: ${account.frozenBalance}, stocks: ${account.stocks}, frozenStocks: ${account.frozenStocks}`, 'yellow')
+            this._log(`${symbol} - 余钱: ${account.balance}, 冻结钱: ${account.frozenBalance}, 余币: ${account.stocks}, 冻结币: ${account.frozenStocks}`, 'yellow')
         }
     }
 

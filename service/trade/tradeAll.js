@@ -90,7 +90,7 @@ class TradeAll{
 
     reportTotalProfit() {
         let totalProfit = _.sumBy(this.tradeList, function(o) { return o.strategy.currProfit })
-        util.log.magenta(`Total Profit: ${totalProfit}`)
+        util.log.lightGray(`总盈利: ${totalProfit}`)
     }
 
     getWorkingTrades() {

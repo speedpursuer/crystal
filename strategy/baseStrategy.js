@@ -59,7 +59,7 @@ class BaseStrategy {
     }
 
 	logProfit() {
-		util.log.red(`盈利：${this.currProfit}, 钱差: ${this.balanceDiff}, 币差: ${this.stockDiff}`)
+		util.log.cyan(`盈利：${this.currProfit}, 钱差: ${this.balanceDiff}, 币差: ${this.stockDiff}`)
 	}
 
 	get condition() {

@@ -36,7 +36,7 @@ class Exchange {
 
         this.dataUpdate()
 
-        this.log(`Config - base: ${this.crypto}, quote: ${this.fiat}, fee: ${this.fee}, specialBuy: ${this.specialBuy}, minTrade: ${this.minTrade}, precision: ${this.precision}, minOrderSize: ${this.minOrderSize}, slippage: ${this.slippage}, orderRate: ${this.orderRate}`, 'green')
+        this.log(`交易配置 - base: ${this.crypto}, quote: ${this.fiat}, fee: ${this.fee}, specialBuy: ${this.specialBuy}, minTrade: ${this.minTrade}, precision: ${this.precision}, minOrderSize: ${this.minOrderSize}, slippage: ${this.slippage}, orderRate: ${this.orderRate}`, 'green')
 	}
 
 	dataUpdate() {
