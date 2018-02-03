@@ -22,9 +22,9 @@ class ExchangeStream extends Exchange {
         this.exchangeDelegate.on('closed', function(){
             StreamService.instance.stopStream(that.id)
         })
-        this.exchangeDelegate.on('stopped', function(){
-            StreamService.instance.stopStream(that.id)
-        })
+        // this.exchangeDelegate.on('stopped', function(){
+        //     StreamService.instance.stopStream(that.id)
+        // })
     }
 }
 

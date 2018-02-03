@@ -231,7 +231,7 @@ class ExchangeDelegate extends EventEmitter {
     async _checkAvailable() {
         this._log(`自动检测 ${this.id} API可用性`)
         try{
-            if(await this._fetchBalance()) {
+            if(await this.api.fetchBalance()) {
                 this._log(`API恢复正常`, "green")
                 this.emit('reopen')
                 return this.available.reportCheck(true)
