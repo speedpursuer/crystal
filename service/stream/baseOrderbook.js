@@ -99,7 +99,16 @@ class OrderbookStream extends EventEmitter {
         this.checkDataAvailable()
     }
 
+    checkConnection() {
+        if (util.time - this.lastHeartBeat > 8000) {
+            this.reconnect(new Error("socket 连接断开，正在尝试重新建立连接"))
+        }else {
+            this.ping()
+        }
+    }
+
     reconnect(e) {
+        if(!this.isWorking) return
         this.stopStream()
         let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
         let that = this
@@ -110,15 +119,8 @@ class OrderbookStream extends EventEmitter {
         }, retryInterval)
     }
 
-    checkConnection() {
-        if (util.time - this.lastHeartBeat > 8000) {
-            this.reconnect(new Error("socket 连接断开，正在尝试重新建立连接"))
-        }else {
-            this.ping()
-        }
-    }
-
     stopStream() {
+        if(!this.isWorking) return
         this.isWorking = false
         this.log('停止stream')
         this.stopConnection()
