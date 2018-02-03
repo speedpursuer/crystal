@@ -34,7 +34,7 @@ class Bitfinex {
 	}
 
 	async fetchOpenOrders(symbol, params = {}) {
-		return await this.v1.fetchOpenOrders(symbol, params)
+		return await this.v2.fetchOpenOrders(symbol, params)
 	}
 
 	async cancelOrder(id, symbol, params = {}) {

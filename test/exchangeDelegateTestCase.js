@@ -9,7 +9,7 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'okex'
+    var exchange = 'bitfinex'
     var base = "IOTA", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
@@ -33,41 +33,33 @@ describe('单元测试ExchangeDelegate', async function() {
 
 	})
 
-    describe.only('fetchOrderBook', async function() {
-        it('可正常工作', async function() {
+    describe.only('正常操作', async function() {
+        it('fetchOrderBook', async function() {
             while(true) {
                 util.log(JSON.stringify(await exchangeDelegate.fetchOrderBook(symbol)))
                 await util.sleep(1000)
             }
         })
-    })
 
-    describe.only('fetchAccount', async function() {
-        it('可正常工作', async function() {
+        it('fetchAccount', async function() {
             util.log(await exchangeDelegate.fetchAccount(symbol))
         })
-    })
 
-    describe.only('createLimitOrder', async function() {
-        it('可正常工作', async function() {
+        it('createLimitOrder', async function() {
             var account = await exchangeDelegate.fetchAccount(symbol)
             util.log(account)
             if(account.balance > 0.1) {
-                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.01, 0.0001, account))
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 10, 0.0001, account))
             }else {
                 util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 6.00001, 1, account))
             }
         })
-    })
 
-    describe.only('查找订单', async function() {
-        it('返回挂单', async function() {
+        it('fetchOpenOrders', async function() {
             util.log(await exchangeDelegate._fetchOpenOrders(symbol))
         })
-    })
 
-    describe('fetchTicker', async function() {
-        it('可正常工作', async function() {
+        it('fetchTicker', async function() {
             util.log(await exchangeDelegate.fetchTicker(symbol))
         })
     })
