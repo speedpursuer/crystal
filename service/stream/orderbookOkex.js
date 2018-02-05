@@ -6,7 +6,7 @@ class OrderBookStreamOkex extends OrderbookStream {
 
     start() {
         let data = []
-        for (let symbol of this.symbols) {
+        for (let symbol of this.realSymbols) {
             data.push({
                 event: 'addChannel',
                 channel: `ok_sub_spot_${symbol}_depth_10`

@@ -8,7 +8,7 @@ const config = {
     failureThreshold: 3,
     retryDelay: 3 * 1000 * 60,
     retryInterval: 30 * 1000 * 60,
-    retryThreshold: 3
+    retryThreshold: 1
 }
 
 const apis = { 

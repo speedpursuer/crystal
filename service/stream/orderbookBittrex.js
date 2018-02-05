@@ -4,20 +4,21 @@ const MarketManager = require('bittrex-market')
 
 class OrderBookStreamBittrex extends OrderbookStream {
 
+    constructor(symbols) {
+        super(symbols)
+        this.marketManager = new MarketManager(false)
+        this.registerUpdate()
+    }
+
     connect() {
-        for(let symbol of this.symbols) {
+        for(let symbol of this.realSymbols) {
             this.doConnect(symbol)
         }
         this.checkDataAvailable()
         this.log('WS open')
     }
 
-    stopConnection() {
-        this.marketManager.reset()
-    }
-
     doConnect(symbol) {
-        this.marketManager = new MarketManager(false)
         let that = this
         this.marketManager.market(symbol, (err, crypto) => {
             crypto.on('orderbookUpdated', () => {
@@ -27,6 +28,45 @@ class OrderBookStreamBittrex extends OrderbookStream {
                 }
             })
         })
+    }
+
+    // 在以下两种情况下被通知重新start client
+    // 1. 意外断开连接时
+    // 2. 主动调用this.marketManager.reset()时
+    registerUpdate() {
+        let that = this
+        this.marketManager.on('disconnected', (client) => {
+            that.doReconnect(client)
+        })
+        this.marketManager.on('onerror', (client) => {
+            that.doReconnect(client)
+        })
+    }
+
+    doReconnect(client) {
+        this.stopStream()
+        this.log('WebSocketClient: reconnecting...')
+        client.start()
+    }
+
+    // API自动重试时自动调用，防止重复执行。
+    // reset()使ws connection断开，disconnected事件中重新start
+    reconnect(e) {
+        if(!this.isWorking) return
+        this.stopStream()
+        this.marketManager.reset()
+    }
+
+    // 设置停止工作标示，重置orderbooks，设置自动检查
+    // 在两种情况下，提前执行，等待stream就绪：
+    // 1. 意外断开连接
+    // 2. 主动重新连接
+    stopStream() {
+        if(!this.isWorking) return
+        this.isWorking = false
+        this.log('停止stream')
+        this.initOrderbooks()
+        this.checkDataAvailable()
     }
 }
 

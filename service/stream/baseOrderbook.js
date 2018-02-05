@@ -11,8 +11,9 @@ const orderBookSize = 10
 class OrderbookStream extends EventEmitter {
     constructor(symbols) {
         super()
+        this.symbols = symbols
         this.config()
-        this.init(symbols)
+        this.initOrderbooks()
         this.isWorking = false
         this.orderBookSize = orderBookSize
     }
@@ -41,12 +42,12 @@ class OrderbookStream extends EventEmitter {
         return this.adjustedOrderbook(orderbook)
     }
 
-    init(symbols) {
+    initOrderbooks() {
         this.orderbooks = {}
-        this.symbols = []
-        for(let symbol of symbols) {
+        this.realSymbols = []
+        for(let symbol of this.symbols) {
             let realSymbol = this.realSymbol(symbol)
-            this.symbols.push(realSymbol)
+            this.realSymbols.push(realSymbol)
             this.orderbooks[realSymbol] = {
                 bids: [],
                 asks: []
@@ -210,7 +211,7 @@ class OrderbookStream extends EventEmitter {
 
     isOrderbookEmpty() {
         let orderbooks = this.getAllOrderbooks()
-        if(_.size(orderbooks) != _.size(this.symbols)) return true
+        if(_.size(orderbooks) != _.size(this.realSymbols)) return true
         for(let key in orderbooks) {
             let orderbook = orderbooks[key]
             if(orderbook.bids.length == 0 || orderbook.asks.length == 0) {

@@ -5,7 +5,7 @@ const util = require('../../util/util')
 class OrderBookStreamHuobi extends OrderbookStream {
 
     start() {
-        for (let symbol of this.symbols) {
+        for (let symbol of this.realSymbols) {
             this.send({
                 "sub": `market.${symbol}.depth.step0`,
                 "id": `${symbol}`

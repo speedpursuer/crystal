@@ -72,7 +72,8 @@ describe('测试Orderbook stream', async function() {
             if(flag) {
                 for(let i=0; i<20; i++) {
                     for(let symbol of symbos) {
-                        util.log(symbol, orderBook.getOrderBookBySymbol(symbol))
+                        let orderbook = orderBook.getOrderBookBySymbol(symbol)
+                        util.log(symbol, 'buy1: ', orderbook.bids[0], 'sell1', orderbook.asks[0])
                     }
                     await util.sleep(1000)
                 }

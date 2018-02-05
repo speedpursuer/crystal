@@ -10,7 +10,7 @@ class OrderBookStreamBitfinex extends OrderbookStream {
     }
 
     start() {
-        for (let symbol of this.symbols) {
+        for (let symbol of this.realSymbols) {
             this.send({
                 event: 'subscribe',
                 channel: "book",
