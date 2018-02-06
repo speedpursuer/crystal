@@ -15,8 +15,7 @@ const tradeAllConfig = {
     'All_EOS/BTC': {
         base: "EOS",
         quote: "BTC",
-        exchanges: ['Bitfinex', 'Binance', 'OKEx'],
-        // exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
+        exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
         exchangeInfo: exchangeInfoEOS,
         strategy: HedgeNew,
         strategyConfig: {
