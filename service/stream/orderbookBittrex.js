@@ -30,7 +30,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
         })
     }
 
-    // 在以下两种情况下被通知重新start client
+    // 在以下两种情况下被通知重新start client，执行doReconnect方法
     // 1. 意外断开连接时
     // 2. 主动调用this.marketManager.reset()时
     registerUpdate() {
@@ -42,11 +42,16 @@ class OrderBookStreamBittrex extends OrderbookStream {
             that.doReconnect(client)
         })
     }
-
+    // 描述同上
     doReconnect(client) {
         this.stopStream()
-        this.log('WebSocketClient: reconnecting...')
-        client.start()
+        let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
+        let that = this
+        this.log(`WebSocketClient: retry in ${retryInterval}ms`)
+        setTimeout(function(){
+            that.log("WebSocketClient: reconnecting...")
+            client.start()
+        }, retryInterval)
     }
 
     // API自动重试时自动调用，防止重复执行。

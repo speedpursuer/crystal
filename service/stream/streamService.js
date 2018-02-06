@@ -62,7 +62,7 @@ class StreamService extends EventEmitter{
     setupNotify(stream) {
         this.counter = new Counter(_.size(this.streams))
         let that = this
-        stream.on('started', function (isSuccess) {
+        stream.once('started', function (isSuccess) {
             let result = that.counter.count(isSuccess)
             if(result !== null) {
                 that.emit('started', result)
