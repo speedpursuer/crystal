@@ -44,6 +44,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
     }
     // 描述同上
     doReconnect(client) {
+        if(!this.isWorking) return
         this.stopStream()
         let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
         let that = this
