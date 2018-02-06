@@ -23,7 +23,7 @@ class OrderbookStream extends EventEmitter {
         this.url = config[this.name].url
         this.needPing = config[this.name].needPing
         this.symbolPairs = config[this.name].symbolPairs
-        this.autoReconnectInterval = 500
+        this.autoReconnectInterval = 60 * 1000
         this.counter = new Counter(30 * 60 * 1000, 5)
     }
 
@@ -111,7 +111,7 @@ class OrderbookStream extends EventEmitter {
     reconnect(e) {
         if(!this.isWorking) return
         this.stopStream()
-        let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
+        let retryInterval = this.counter.isOverCountAfterCount? 5 * 60 * 1000: this.autoReconnectInterval
         let that = this
         this.log(`WebSocketClient: retry in ${retryInterval}ms`, e)
         setTimeout(function(){

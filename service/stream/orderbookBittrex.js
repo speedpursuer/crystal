@@ -46,7 +46,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
     doReconnect(client) {
         if(!this.isWorking) return
         this.stopStream()
-        let retryInterval = this.counter.isOverCountAfterCount? 60 * 1000: this.autoReconnectInterval
+        let retryInterval = this.counter.isOverCountAfterCount? 5 * 60 * 1000: this.autoReconnectInterval
         let that = this
         this.log(`WebSocketClient: retry in ${retryInterval}ms`)
         setTimeout(function(){
