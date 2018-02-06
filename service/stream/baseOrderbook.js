@@ -194,7 +194,7 @@ class OrderbookStream extends EventEmitter {
     }
 
     checkDataAvailable() {
-        let that = this, i = 0, maxTry = 20
+        let that = this, i = 0, maxTry = 30
         util.repeat(function () {
             i++
             if(i == maxTry) {
