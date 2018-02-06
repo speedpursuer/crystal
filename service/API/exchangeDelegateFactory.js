@@ -5,10 +5,10 @@ const Bitfinex = require('./bitfinex')
 
 const config = {
     failureInterval: 1000 * 60,
-    failureThreshold: 3,
-    retryDelay: 3 * 1000 * 60,
-    retryInterval: 30 * 1000 * 60,
-    retryThreshold: 1
+    failureThreshold: 2,
+    retryDelay: 5 * 1000 * 60,
+    retryInterval: 60 * 1000 * 60,
+    retryThreshold: 2
 }
 
 const apis = { 
