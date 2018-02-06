@@ -166,7 +166,7 @@ class OrderbookStream extends EventEmitter {
 
     adjustedList(orderbook, side) {
         if(!this.isWorking) {
-            return []
+            return null
         }
         return this.formatNumber(_.slice(this.sortOrderList(orderbook[side], side), 0, this.orderBookSize))
     }
@@ -226,7 +226,11 @@ class OrderbookStream extends EventEmitter {
         this.log(`All orderbooks received: ${flag}`)
         this.emit('started', flag)
         if(!flag) {
-            this.reconnect('orderbooks not fully received, try again later')
+            let msg = 'orderbooks not fully received, try again later'
+            this.log(msg)
+            //TODO: 临时解决方案
+            this.isWorking = true
+            this.reconnect(msg)
         }
     }
 }
