@@ -14,7 +14,7 @@ var exchangeInfo = {
         url: 'wss://real.okex.com:10441/websocket',
         symbolPairs: {
             'EOS/BTC': 'eos_btc',
-            'IOTA/BTC': 'IOTA_btc',
+            'IOTA/BTC': 'iota_btc',
             'ETH/BTC': 'eth_btc',
             'BCH/BTC': 'bch_btc',
             'BTC/USDT': 'bch_usdt',

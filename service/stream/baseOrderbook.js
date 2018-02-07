@@ -111,13 +111,12 @@ class OrderbookStream extends EventEmitter {
     reconnect(e) {
         if(!this.isWorking) return
         this.stopStream()
-        let retryInterval = this.counter.isOverCountAfterCount? 5 * 60 * 1000: this.autoReconnectInterval
         let that = this
-        this.log(`WebSocketClient: retry in ${retryInterval}ms`, e)
+        this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`, e)
         setTimeout(function(){
             that.log("WebSocketClient: reconnecting...")
             that.connect()
-        }, retryInterval)
+        }, this.autoReconnectInterval)
     }
 
     stopStream() {
@@ -226,11 +225,16 @@ class OrderbookStream extends EventEmitter {
         this.log(`All orderbooks received: ${flag}`)
         this.emit('started', flag)
         if(!flag) {
-            let msg = 'orderbooks not fully received, try again later'
+            let msg = 'orderbooks not fully received'
+            if(this.counter.isOverCountAfterCount) {
+                msg = `${msg}, too many time retry, give up`
+                AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then
+            }else {
+                msg = `${msg}, reconnect`
+                this.isWorking = true
+                this.reconnect(msg)
+            }
             this.log(msg)
-            AppLog.instance.recordClosedAPI(`${this.name}, reason: ${msg}`).then
-            // this.isWorking = true
-            // this.reconnect(msg)
         }
     }
 }

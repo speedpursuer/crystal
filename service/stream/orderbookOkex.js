@@ -38,7 +38,8 @@ class OrderBookStreamOkex extends OrderbookStream {
     }
 
     getSymbolFromChannel(channel) {
-        return channel.split('_')[3] + "_" + channel.split('_')[4]
+        let symbol = channel.split('_')[3] + "_" + channel.split('_')[4]
+        return symbol.toLowerCase()
     }
 
     ping() {
