@@ -228,9 +228,9 @@ class OrderbookStream extends EventEmitter {
         if(!flag) {
             let msg = 'orderbooks not fully received, try again later'
             this.log(msg)
-            //TODO: 临时解决方案
-            this.isWorking = true
-            this.reconnect(msg)
+            AppLog.instance.recordClosedAPI(`${this.name}, reason: ${msg}`).then
+            // this.isWorking = true
+            // this.reconnect(msg)
         }
     }
 }
