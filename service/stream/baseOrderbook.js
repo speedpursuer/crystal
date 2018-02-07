@@ -23,8 +23,8 @@ class OrderbookStream extends EventEmitter {
         this.url = config[this.name].url
         this.needPing = config[this.name].needPing
         this.symbolPairs = config[this.name].symbolPairs
-        this.autoReconnectInterval = 60 * 1000
-        this.counter = new Counter(30 * 60 * 1000, 5)
+        this.autoReconnectInterval = 5 * 60 * 1000
+        this.counter = new Counter(60 * 60 * 1000, 10)
     }
 
     realSymbol(symbol) {
