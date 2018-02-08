@@ -44,15 +44,14 @@ class OrderBookStreamBittrex extends OrderbookStream {
     }
     // 描述同上
     doReconnect(client) {
-        if(!this.isWorking) return
         this.stopStream()
-        let retryInterval = this.counter.isOverCountAfterCount? 5 * 60 * 1000: this.autoReconnectInterval
         let that = this
-        this.log(`WebSocketClient: retry in ${retryInterval}ms`)
+        this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`)
         setTimeout(function(){
             that.log("WebSocketClient: reconnecting...")
             client.start()
-        }, retryInterval)
+            that.checkDataAvailable()
+        }, this.autoReconnectInterval)
     }
 
     // API自动重试时自动调用，防止重复执行。
@@ -70,9 +69,8 @@ class OrderBookStreamBittrex extends OrderbookStream {
     stopStream() {
         if(!this.isWorking) return
         this.isWorking = false
-        this.log('停止stream')
         this.initOrderbooks()
-        this.checkDataAvailable()
+        this.log('停止stream')
     }
 }
 

@@ -64,6 +64,24 @@ describe('测试Orderbook stream', async function() {
             let orderBook = new OrderBookBittrex(symbos)
             connect(orderBook, symbos)
         })
+
+        it('Bittrex异常处理', async function() {
+            let symbos = ['BCH/BTC']
+            let orderBook = new OrderBookBittrex(symbos)
+            orderBook.connect()
+
+            for(let i=0; i<200; i++) {
+                for(let symbol of symbos) {
+                    let orderbook = orderBook.getOrderBookBySymbol(symbol)
+                    util.log(symbol, orderbook)
+                }
+
+                if(i ==12) {
+                    orderBook.marketManager.reset()
+                }
+                await util.sleep(1000)
+            }
+        })
   	})
     
     function connect(orderBook, symbos) {
