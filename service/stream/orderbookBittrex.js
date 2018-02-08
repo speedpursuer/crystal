@@ -39,7 +39,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
             that.doReconnect(client)
         })
         this.marketManager.on('onerror', (client) => {
-            that.doReconnect(client)
+            // that.doReconnect(client)
         })
     }
     // 描述同上
