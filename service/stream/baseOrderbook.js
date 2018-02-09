@@ -12,10 +12,11 @@ class OrderbookStream extends EventEmitter {
     constructor(symbols) {
         super()
         this.symbols = symbols
+        this.orderBookSize = orderBookSize
+        this.isWorking = false
+        this.isConnecting = false
         this.config()
         this.initOrderbooks()
-        this.isWorking = false
-        this.orderBookSize = orderBookSize
     }
 
     config() {
@@ -109,7 +110,7 @@ class OrderbookStream extends EventEmitter {
     }
 
     reconnect(e) {
-        if(!this.isWorking) return
+        if(this.isConnecting) return
         this.stopStream()
         let that = this
         this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`, e)
@@ -120,7 +121,8 @@ class OrderbookStream extends EventEmitter {
     }
 
     stopStream() {
-        if(!this.isWorking) return
+        if(this.isConnecting) return
+        this.isConnecting = true
         this.isWorking = false
         this.log('停止stream')
         this.stopConnection()
@@ -222,6 +224,7 @@ class OrderbookStream extends EventEmitter {
 
     notifyOrderbookReceived(flag) {
         this.isWorking = flag
+        this.isConnecting = false
         this.log(`All orderbooks received: ${flag}`)
         this.emit('started', flag)
         if(!flag) {
@@ -231,7 +234,6 @@ class OrderbookStream extends EventEmitter {
                 AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then
             }else {
                 msg = `${msg}, reconnect`
-                this.isWorking = true
                 this.reconnect(msg)
             }
             this.log(msg)

@@ -39,11 +39,12 @@ class OrderBookStreamBittrex extends OrderbookStream {
             that.doReconnect(client)
         })
         this.marketManager.on('onerror', (client) => {
-            // that.doReconnect(client)
+            that.doReconnect(client)
         })
     }
     // 描述同上
     doReconnect(client) {
+        if(this.isConnecting) return
         this.stopStream()
         let that = this
         this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`)
@@ -57,7 +58,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
     // API自动重试时自动调用，防止重复执行。
     // reset()使ws connection断开，disconnected事件中重新start
     reconnect(e) {
-        if(!this.isWorking) return
+        if(this.isConnecting) return
         this.stopStream()
         this.marketManager.reset()
     }
@@ -67,7 +68,8 @@ class OrderBookStreamBittrex extends OrderbookStream {
     // 1. 意外断开连接
     // 2. 主动重新连接
     stopStream() {
-        if(!this.isWorking) return
+        if(this.isConnecting) return
+        this.isConnecting = true
         this.isWorking = false
         this.initOrderbooks()
         this.log('停止stream')
