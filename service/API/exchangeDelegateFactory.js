@@ -3,12 +3,15 @@ const ExhangeSim = require ('./exchangeSim')
 const ExchangeDelegate = require ('./exchangeDelegate')
 const Bitfinex = require('./bitfinex')
 
+const ONE_MIN = 1000 * 60
+const ONE_HOUR = 60 * ONE_MIN
+
 const config = {
-    failureInterval: 1000 * 60,
+    failureInterval: 5 * ONE_MIN,
     failureThreshold: 2,
-    retryDelay: 5 * 1000 * 60,
-    retryInterval: 60 * 1000 * 60,
-    retryThreshold: 2
+    retryInterval: 2 * ONE_HOUR,
+    retryThreshold: 2,
+    retryDelay: 5 * ONE_MIN
 }
 
 const apis = { 
