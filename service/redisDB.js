@@ -12,7 +12,7 @@ class RedisDB {
         if (enforcer !== singleton) {
             throw new Error('Cannot construct RedisDB singleton')
         }
-        this.key = util.now
+        this.key = `trade_${util.time}`
         this.initRedis()
     }
 
