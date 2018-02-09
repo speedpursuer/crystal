@@ -3,7 +3,8 @@ const ExhangeSim = require ('./exchangeSim')
 const ExchangeDelegate = require ('./exchangeDelegate')
 const Bitfinex = require('./bitfinex')
 
-const ONE_MIN = 1000 * 60
+const ONE_SEC = 1000
+const ONE_MIN = 60 * ONE_SEC
 const ONE_HOUR = 60 * ONE_MIN
 
 const config = {
