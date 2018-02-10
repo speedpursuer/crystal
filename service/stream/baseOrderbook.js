@@ -25,7 +25,7 @@ class OrderbookStream extends EventEmitter {
         this.url = config[this.name].url
         this.needPing = config[this.name].needPing
         this.symbolPairs = config[this.name].symbolPairs
-        this.autoReconnectInterval = 5 * 60 * 1000
+        this.autoReconnectInterval = 500
         this.counter = new Counter(60 * 60 * 1000, 10)
     }
 
@@ -110,17 +110,17 @@ class OrderbookStream extends EventEmitter {
         }
     }
 
-    reconnect(e) {
+    reconnect(e, delay=this.autoReconnectInterval) {
         if(this.isConnecting) return
         this.isConnecting = true
         this.stopStream()
         this.resetOrderbooks()
         let that = this
-        this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`, e)
+        this.log(`WebSocketClient: retry in ${delay} ms`, e)
         setTimeout(function(){
             that.log("WebSocketClient: reconnecting...")
             that.connect()
-        }, this.autoReconnectInterval)
+        }, delay)
     }
 
     disconnect() {
@@ -246,7 +246,7 @@ class OrderbookStream extends EventEmitter {
                 AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then
             }else {
                 msg = `${msg}, reconnect`
-                this.reconnect(msg)
+                this.reconnect(msg, 5 * 60 * 1000)
             }
             this.log(msg)
         }
