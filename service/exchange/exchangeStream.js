@@ -20,10 +20,10 @@ class ExchangeStream extends Exchange {
             StreamService.instance.reconnectStream(that.id)
         })
         this.exchangeDelegate.on('closed', function(){
-            StreamService.instance.stopStream(that.id)
+            StreamService.instance.disconnectStream(that.id)
         })
         // this.exchangeDelegate.on('stopped', function(){
-        //     StreamService.instance.stopStream(that.id)
+        //     StreamService.instance.disconnectStream(that.id)
         // })
     }
 }

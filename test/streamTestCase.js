@@ -76,9 +76,25 @@ describe('测试Orderbook stream', async function() {
                     util.log(symbol, orderbook)
                 }
 
-                if(i ==12) {
+                if(i == 12) {
                     orderBook.marketManager.reset()
                 }
+
+                if(i == 22) {
+                    orderBook.reconnect('test')
+                }
+
+                // if(i == 12) {
+                //     orderBook.isOrderbookEmpty = function () {
+                //         return true
+                //     }
+                //     orderBook.reconnect()
+                // }
+
+                // if(i == 12) {
+                //     orderBook.stopStream()
+                // }
+
                 await util.sleep(1000)
             }
         })

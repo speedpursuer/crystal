@@ -4,21 +4,24 @@ const MarketManager = require('bittrex-market')
 
 class OrderBookStreamBittrex extends OrderbookStream {
 
-    constructor(symbols) {
-        super(symbols)
-        this.marketManager = new MarketManager(false)
-        this.registerUpdate()
-    }
+    // constructor(symbols) {
+    //     super(symbols)
+    //     this.index = 0
+    // }
 
     connect() {
+        this.marketManager = new MarketManager(false)
+        this.registerUpdate()
         for(let symbol of this.realSymbols) {
-            this.doConnect(symbol)
+            this.connectBySymbol(symbol)
         }
         this.checkDataAvailable()
         this.log('WS open')
+        // this.index++
+        // this.marketManager.index = this.index
     }
 
-    doConnect(symbol) {
+    connectBySymbol(symbol) {
         let that = this
         this.marketManager.market(symbol, (err, crypto) => {
             crypto.on('orderbookUpdated', () => {
@@ -30,48 +33,35 @@ class OrderBookStreamBittrex extends OrderbookStream {
         })
     }
 
-    // 在以下两种情况下被通知重新start client，执行doReconnect方法
+    // 在以下两种情况下被通知重新start client，执行reconnect
     // 1. 意外断开连接时
     // 2. 主动调用this.marketManager.reset()时
     registerUpdate() {
         let that = this
         this.marketManager.on('disconnected', (client) => {
-            that.doReconnect(client)
+            that.doReconnect('disconnected')
         })
         this.marketManager.on('onerror', (client) => {
-            // that.doReconnect(client)
+            that.doReconnect('onerror')
         })
-    }
-    // 描述同上
-    doReconnect(client) {
-        this.stopStream()
-        let that = this
-        this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`)
-        setTimeout(function(){
-            that.log("WebSocketClient: reconnecting...")
-            client.start()
-            that.checkDataAvailable()
-        }, this.autoReconnectInterval)
+        this.marketManager.stopped = false
     }
 
-    // API自动重试时自动调用，防止重复执行。
-    // reset()使ws connection断开，disconnected事件中重新start
-    reconnect(e) {
-        if(this.isConnecting) return
-        this.stopStream()
-        this.marketManager.reset()
+    doReconnect(msg) {
+        if(!this.marketManager.stopped) {
+            this.reconnect(msg)
+        }
     }
 
-    // 设置停止工作标示，重置orderbooks，设置自动检查
-    // 在两种情况下，提前执行，等待stream就绪：
-    // 1. 意外断开连接
-    // 2. 主动重新连接
+    disconnect() {
+        this.marketManager.stopped = true
+        this.stopStream()
+    }
+
     stopStream() {
-        if(this.isConnecting) return
-        this.isConnecting = true
-        this.isWorking = false
-        this.initOrderbooks()
-        this.log('停止stream')
+        if(this.isStopping) return
+        this.marketManager.reset()
+        super.stopStream()
     }
 }
 

@@ -78,8 +78,8 @@ class StreamService extends EventEmitter{
         this.streams[exchangeId].reconnect(new Error(`reconnect stream of ${exchangeId}`))
     }
 
-    stopStream(exchangeId) {
-        this.streams[exchangeId].stopStream()
+    disconnectStream(exchangeId) {
+        this.streams[exchangeId].disconnect()
     }
 }
 

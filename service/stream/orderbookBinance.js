@@ -5,8 +5,8 @@ const rp = require('request-promise')
 
 class OrderBookStreamBinance extends OrderbookStream {
 
-    initOrderbooks() {
-        super.initOrderbooks()
+    resetOrderbooks() {
+        super.resetOrderbooks()
         for(let symbol of this.symbols) {
             this.url += `${this.realSymbol(symbol)}@depth10/`
         }

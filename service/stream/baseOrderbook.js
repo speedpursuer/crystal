@@ -15,8 +15,9 @@ class OrderbookStream extends EventEmitter {
         this.orderBookSize = orderBookSize
         this.isWorking = false
         this.isConnecting = false
+        this.isStopping = false
         this.config()
-        this.initOrderbooks()
+        this.resetOrderbooks()
     }
 
     config() {
@@ -43,7 +44,7 @@ class OrderbookStream extends EventEmitter {
         return this.adjustedOrderbook(orderbook)
     }
 
-    initOrderbooks() {
+    resetOrderbooks() {
         this.orderbooks = {}
         this.realSymbols = []
         for(let symbol of this.symbols) {
@@ -111,7 +112,9 @@ class OrderbookStream extends EventEmitter {
 
     reconnect(e) {
         if(this.isConnecting) return
+        this.isConnecting = true
         this.stopStream()
+        this.resetOrderbooks()
         let that = this
         this.log(`WebSocketClient: retry in ${this.autoReconnectInterval} ms`, e)
         setTimeout(function(){
@@ -120,17 +123,26 @@ class OrderbookStream extends EventEmitter {
         }, this.autoReconnectInterval)
     }
 
+    disconnect() {
+        this.stopStream()
+    }
+
     stopStream() {
-        if(this.isConnecting) return
-        this.isConnecting = true
+        if(this.isStopping) return
+        this.isStopping = true
         this.isWorking = false
         this.log('停止stream')
         this.stopConnection()
+        this.isStopping = false
     }
 
     stopConnection() {
         this.stopCheckConnection()
-        this.ws.removeAllListeners()
+        this.stopWS()
+    }
+
+    stopWS() {
+        if(this.ws) this.ws.removeAllListeners()
     }
 
     stopCheckConnection() {
