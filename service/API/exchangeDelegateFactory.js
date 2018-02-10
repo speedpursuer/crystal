@@ -8,11 +8,11 @@ const ONE_MIN = 60 * ONE_SEC
 const ONE_HOUR = 60 * ONE_MIN
 
 const config = {
-    failureInterval: 5 * ONE_MIN,
+    failureInterval: ONE_MIN,
     failureThreshold: 2,
-    retryInterval: 2 * ONE_HOUR,
+    retryInterval: 0.5 * ONE_HOUR,
     retryThreshold: 2,
-    retryDelay: 5 * ONE_MIN
+    retryDelay: 3 * ONE_MIN
 }
 
 const apis = { 
