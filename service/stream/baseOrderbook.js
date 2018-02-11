@@ -106,7 +106,7 @@ class OrderbookStream extends EventEmitter {
     }
 
     checkConnection() {
-        if (util.time - this.lastHeartBeat > 8000) {
+        if (util.time - this.lastHeartBeat > 10 * 1000) {
             this.reconnect("socket连接异常，正在尝试重新建立连接")
         }else {
             this.ping()
