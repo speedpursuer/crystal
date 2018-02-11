@@ -14,6 +14,7 @@ class OrderBookStreamBinance extends OrderbookStream {
 
     handleMessage(msg) {
         this.orderbooks[this.getSymbol(msg)] = msg.data
+        this.pong()
     }
 
     getSymbol(msg) {

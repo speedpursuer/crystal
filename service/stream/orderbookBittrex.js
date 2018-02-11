@@ -15,8 +15,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
         for(let symbol of this.realSymbols) {
             this.connectBySymbol(symbol)
         }
-        this.checkDataAvailable()
-        this.log('WS open')
+        this.openStream()
         // this.index++
         // this.marketManager.index = this.index
     }
@@ -29,6 +28,7 @@ class OrderBookStreamBittrex extends OrderbookStream {
                     bids: _.slice(crypto.bids, 0, this.orderBookSize),
                     asks: _.slice(crypto.asks, 0, this.orderBookSize)
                 }
+                that.pong()
             })
         })
     }

@@ -52,13 +52,13 @@ class OrderBookStreamBitfinex extends OrderbookStream {
         }else if(msg.event === 'info') {
             switch (msg.code){
                 case 20051:
-                    this.reconnect(new Error("Stop/Restart Websocket Server"))
+                    this.reconnect("Stop/Restart Websocket Server")
                     break
                 case 20060:
-                    this.reportErr(new Error('Entering in Maintenance mode.')).then()
+                    this.reportErr('Entering in Maintenance mode').then()
                     break
                 case 20061:
-                    this.reconnect(new Error("Maintenance ended"))
+                    this.reconnect("Maintenance ended")
                     break
                 default:
                     this.log(`Other info: ${JSON.stringify(msg)}`)

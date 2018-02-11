@@ -43,7 +43,7 @@ var exchangeInfo = {
             'BTC/USD': 'btcusdt',
             'ETH/USD': 'ethusdt',
         },
-        needPing: false
+        needPing: true
     },
 
     OrderBookStreamBittrex: {
@@ -52,6 +52,7 @@ var exchangeInfo = {
             'BCH/BTC': 'BTC-BCC',
             'BTC/USDT': 'USDT-BTC',
         },
+        needPing: true
     },
 }
 

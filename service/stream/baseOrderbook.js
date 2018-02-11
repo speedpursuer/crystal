@@ -71,7 +71,6 @@ class OrderbookStream extends EventEmitter {
 
         let that = this
         this.ws.on('open', function() {
-            that.log('WS open')
             that.openStream()
         })
 
@@ -89,9 +88,14 @@ class OrderbookStream extends EventEmitter {
     }
 
     openStream() {
+        this.log('WS open')
         if(this.start) {
             this.start()
         }
+        this.checkDataReady()
+    }
+
+    checkDataUpdate() {
         if(this.needPing) {
             this.lastHeartBeat = util.time
             let that = this
@@ -99,12 +103,11 @@ class OrderbookStream extends EventEmitter {
                 that.checkConnection()
             }, 5000)
         }
-        this.checkDataAvailable()
     }
 
     checkConnection() {
         if (util.time - this.lastHeartBeat > 8000) {
-            this.reconnect(new Error("socket 连接断开，正在尝试重新建立连接"))
+            this.reconnect("socket连接异常，正在尝试重新建立连接")
         }else {
             this.ping()
         }
@@ -149,9 +152,9 @@ class OrderbookStream extends EventEmitter {
         if(this.checkInterval) clearInterval(this.checkInterval)
     }
 
-    async reportErr(e) {
+    async reportErr(msg) {
         this.isWorking = false
-        await AppLog.instance.recordClosedAPI(`${this.name}, reason: ${e}`)
+        await AppLog.instance.recordClosedAPI(`${this.name}, reason: ${msg}`)
     }
 
     parseMessage(msg) {
@@ -163,7 +166,7 @@ class OrderbookStream extends EventEmitter {
     }
 
     ping() {
-        throw new Error("ping() must be implemented")
+        //implement as needed
     }
 
     pong() {
@@ -202,11 +205,11 @@ class OrderbookStream extends EventEmitter {
         })
     }
 
-    log(message) {
-        util.log(this.name, message)
+    log(msg1, msg2='') {
+        util.log(this.name, msg1, msg2)
     }
 
-    checkDataAvailable() {
+    checkDataReady() {
         let that = this, i = 0, maxTry = 30
         util.repeat(function () {
             i++
@@ -216,6 +219,7 @@ class OrderbookStream extends EventEmitter {
         }, 1000, maxTry, function () {
             if(!that.isOrderbookEmpty()) {
                 that.notifyOrderbookReceived(true)
+                that.checkDataUpdate()
                 return true
             }
             return false
