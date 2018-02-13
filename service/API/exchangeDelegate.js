@@ -84,13 +84,13 @@ class ExchangeDelegate extends EventEmitter {
     async _cancelPendingOrders(symbol, amount, accountInfo) {
         this._log("开始轮询订单状态")
                 
-        var beforeAccount = accountInfo
-        var newAccount = beforeAccount
-        var retryTimes = 0        
-        var dealAmount = 0
-        var balanceChanged = 0
-        var hasPendingOrders = false
-        var completed = false            
+        let beforeAccount = accountInfo
+        let newAccount = beforeAccount
+        let retryTimes = 0
+        let dealAmount = 0
+        let balanceChanged = 0
+        let hasPendingOrders = false
+        let completed = false
 
         while(retryTimes < 10) {   
             await util.sleep(this.interval)  
@@ -117,13 +117,22 @@ class ExchangeDelegate extends EventEmitter {
                 continue
             }           
 
-            if(newAccount.frozenStocks == 0 && newAccount.frozenBalance == 0) {
-                dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
-                balanceChanged = newAccount.balance - beforeAccount.balance
-                completed = true
-                this.checkOrderCompletion(dealAmount)
-                break
-            }         
+            // 有冻结，重新刷新
+            if(newAccount.frozenStocks !== 0 || newAccount.frozenBalance !== 0) {
+                continue
+            }
+
+            dealAmount = Math.abs(newAccount.stocks - beforeAccount.stocks)
+            balanceChanged = newAccount.balance - beforeAccount.balance
+
+            // 钱和币不一致，重新刷新
+            if(!this.checkOrderCompletion(dealAmount, balanceChanged)) {
+                continue
+            }
+
+            // 成功，跳出循环
+            completed = true
+            break
         }
         if(completed) {
             this._log(`订单轮询处理完成, 成交量: ${dealAmount}, 余额变化: ${balanceChanged}`, "green")
@@ -136,10 +145,16 @@ class ExchangeDelegate extends EventEmitter {
         }        
     }
 
-    checkOrderCompletion(dealAmount) {
-	    if(dealAmount === 0) {
+    checkOrderCompletion(dealAmount, balanceChanged) {
+	    if(dealAmount !== 0 && balanceChanged !== 0) {
+	        //成功下单
+        }else if (dealAmount === 0 && balanceChanged === 0) {
             this._reportIssue({message: "下单量为0，下单失败"})
+        }else {
+	        //账户数据不一致，需重新获取
+            return false
         }
+        return true
     }
 
     parseAccount(data, symbol) {
