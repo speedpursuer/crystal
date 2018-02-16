@@ -174,6 +174,9 @@ class OrderbookStream extends EventEmitter {
     }
 
     adjustedOrderbook(orderbook) {
+        if(!this.isWorking) {
+            return null
+        }
         return {
             bids: this.adjustedList(orderbook, 'bids'),
             asks: this.adjustedList(orderbook, 'asks')
@@ -181,9 +184,6 @@ class OrderbookStream extends EventEmitter {
     }
 
     adjustedList(orderbook, side) {
-        if(!this.isWorking) {
-            return null
-        }
         return this.formatNumber(_.slice(this.sortOrderList(orderbook[side], side), 0, this.orderBookSize))
     }
 
