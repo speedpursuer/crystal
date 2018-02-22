@@ -3,7 +3,7 @@ const util = require ('../../util/util.js')
 const TradeSim = require('./tradeSim')
 const Trade = require('./trade')
 const allConfig = require('../../config/tradeAllConfig')
-const StreamService = require('../stream/streamService')
+const StreamService = require('../API/ws/streamService')
 
 const Interval = 1000
 
@@ -13,9 +13,9 @@ class TradeAll{
         this.useSim = useSim === 'sim'
     }
 
-    async init() {
+    async start() {
         await this.configSubTrades()
-        this.configStreams()
+        await this.run()
     }
 
     async configSubTrades() {
@@ -26,27 +26,14 @@ class TradeAll{
             if(this.useSim) {
                 let config = allConfig[name]
                 let exchangesAccount = this.exchangesAccount(config.exchanges, config.initAccount)
-                subTrade = new TradeSim(name, exchangesAccount, true, true)
+                subTrade = new TradeSim(name, exchangesAccount)
             }else {
-                subTrade = new Trade(name, true, true)
+                subTrade = new Trade(name)
             }
 
             await subTrade.init()
             this.tradeList.push(subTrade)
         }
-    }
-
-    configStreams() {
-        let streamService = StreamService.instance, that = this
-        streamService.on('started', function (isSuccess) {
-            if(isSuccess) {
-                util.log("stream started")
-                that.run().then
-            }else {
-                throw new Error('stream not started successfully')
-            }
-        })
-        streamService.start()
     }
 
     async run() {
@@ -58,7 +45,7 @@ class TradeAll{
 
     async doTrade() {
         let workingTrades = this.getWorkingTrades()
-        if(workingTrades.length == 0) {
+        if(workingTrades.length === 0) {
             throw new Error('All trades is stopped!')
         }
         for(let trade of workingTrades) {

@@ -2,6 +2,7 @@ const _ = require('lodash')
 const should = require('should');
 const util = require('../util/util.js')
 const TradeBuilder = require('../service/trade/tradeBuilder')
+const StreamService = require('../service/API/ws/streamService')
 
 
 describe.only('测试 exchange', async function() {
@@ -15,6 +16,20 @@ describe.only('测试 exchange', async function() {
 	})
 
   	describe.only('真实测试交易所API', async function() {
+
+        it('单个账户查询、订单簿、下单、取消', async function() {
+            let exchange = await createExchange('BCH', 'BTC', 'Bitfinex')
+            await exchange.fetchAccount()
+            await exchange.fetchOrderBook()
+            util.log('sell1Price', exchange.sell1Price)
+            util.log('sell1Amount', exchange.sell1Amount)
+            util.log("---------------------")
+            util.log('buy1Price', exchange.buy1Price)
+            util.log('buy1Amount', exchange.buy1Amount)
+
+            util.log(await exchange.limitBuy(0.1))
+        })
+
     	it('查询账户、订单簿、下单、取消', async function() {  
 
             var base = 'ETH', quote = 'BTC'
@@ -160,5 +175,11 @@ describe.only('测试 exchange', async function() {
 
     function getTradeBuilder(base, quote) {
         return new TradeBuilder(`${base}/${quote}`, true)
+    }
+    
+    async function createExchange(base, quote, id) {
+        let exchanges = getTradeBuilder(base, quote).buildExchanges([id])
+        await StreamService.instance.start()
+        return exchanges[id]
     }
 })

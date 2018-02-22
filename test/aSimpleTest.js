@@ -20,6 +20,8 @@ const Counter = require("../util/counter")
 
 const MarketManager = require('bittrex-market')
 
+const deferred = require('deferred')
+
 class Test {
 	async run() {
 		return util.sleep(100)
@@ -1180,8 +1182,90 @@ function test60() {
     // })
 }
 
+function test61() {
+	const o = {
+		name: 'xl'
+	}
+
+	let b = o
+
+	b.name = 'yj'
+
+	util.log(o, b)
+}
+
+function test62() {
+    util.log(_.indexOf(['os', 'on', 'ou', 'oc'], 'ou1'))
+	util.log(Array.isArray('1'))
+    util.log(Array.isArray(1))
+    util.log(Array.isArray([1, 2]))
+    util.log(Array.isArray(['1']))
+}
+
+async function test63() {
+	async function test() {
+        util.log('before')
+		await util.sleep(1000)
+		util.log('after')
+		return true
+	}
+
+    async function a() {
+        let def = deferred()
+		test().then(function (value) {
+            def.resolve(value)
+        }).catch(function (e) {
+            def.reject(e)
+        })
+		return def.promise
+	}
+
+	await a()
+	util.log('a')
+}
+
+function test64() {
+	let list = [
+		{
+			id: 1,
+            symbol: 'btc'
+		},
+        {
+        	id: 2,
+            symbol: 'btc'
+        },
+		{
+			id: 3,
+            symbol: 'eth'
+		}
+	]
+
+    util.log(_.filter(list, function(o) { return o.symbol === 'btc1' }))
+
+	function test(stateString) {
+        const orderState = {
+            ACTIVE: "ACTIVE",
+            EXECUTED: "EXECUTED",
+            PARTIALLY_FILLED: "PARTIALLY FILLED",
+            CANCELED: "CANCELED"
+        }
+
+        for (let key in orderState) {
+            if (_.startsWith(stateString, orderState[key])) {
+                return orderState[key]
+            }
+        }
+    }
+
+	util.log(test('PARTIALLY FILLED 1'))
+}
+
+function test65() {
+	util.log(_.size({a: 1}))
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test60()
+    test64()
 }

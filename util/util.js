@@ -157,6 +157,10 @@ class Util{
             if(i >= maxTimes || (funStop != null && funStop())) clearInterval(anInterval)
         }, interval)
 	}
+
+	contains(target, list) {
+        return _.indexOf(list, target) !== -1
+	}
 }
 var util = new Util()
 module.exports = util

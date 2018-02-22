@@ -3,8 +3,8 @@ const Trade = require('./trade')
 
 class TradeSim extends Trade{
 
-    constructor(tradeName, exchangeAccount, useStream=false, debug=true){
-        super(tradeName, useStream, debug)
+    constructor(tradeName, exchangeAccount, debug=true){
+        super(tradeName, debug)
         this.exchangeAccount = exchangeAccount
     }
 
@@ -16,7 +16,7 @@ class TradeSim extends Trade{
             formattedAccount[newKey] = this.exchangeAccount[key]
             this.exchangesIDs.push(newKey)
         }
-        this.exchanges = this.tradeBuilder.buildExchangesSim(formattedAccount, this.useStream)
+        this.exchanges = this.tradeBuilder.buildExchangesSim(formattedAccount)
     }
 }
 module.exports = TradeSim

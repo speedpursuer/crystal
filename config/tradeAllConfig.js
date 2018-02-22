@@ -52,6 +52,46 @@ const tradeAllConfig = {
         }
     },
 
+    // 'All_BCH/BTC': {
+    //     base: "BCH",
+    //     quote: "BTC",
+    //     // exchanges: ['okex', 'Bitfinex', 'Bittrex'],
+    //     exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
+    //     exchangeInfo: exchangeInfoBCH,
+    //     strategy: HedgeNew,
+    //     strategyConfig: {
+    //         maxAmountOnce: 1,
+    //         orderRate: 0.1,
+    //         minMargin: 0.0001,
+    //         maxLoss: -0.001,
+    //         debug: true
+    //     },
+    //     initAccount: {
+    //         base: 7,
+    //         quote: 1
+    //     }
+    // },
+    //
+    // 'All_ETH/BTC': {
+    //     base: "ETH",
+    //     quote: "BTC",
+    //     // exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex'],
+    //     exchanges: ['okex', 'huobipro', 'Bitfinex', 'Bittrex', 'binance'],
+    //     exchangeInfo: exchangeInfoETH,
+    //     strategy: HedgeNew,
+    //     strategyConfig: {
+    //         maxAmountOnce: 1,
+    //         orderRate: 0.1,
+    //         minMargin: 0.00004,
+    //         maxLoss: -0.001,
+    //         debug: true
+    //     },
+    //     initAccount: {
+    //         base: 12,
+    //         quote: 1
+    //     }
+    // },
+
     // 'All_BTC/USD': {
     //     base: "BTC",
     //     quote: "USDT",

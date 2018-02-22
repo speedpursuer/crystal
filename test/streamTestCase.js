@@ -1,8 +1,8 @@
-const OrderBookHuobi = require('../service/stream/orderbookHuobi')
-const OrderBookOkex = require('../service/stream/orderbookOkex')
-const OrderBookBitfinex = require('../service/stream/orderbookBitfinex')
-const OrderBookBinance = require('../service/stream/orderbookBinance')
-const OrderBookBittrex = require('../service/stream/orderbookBittrex')
+const StreamHuobi = require('../service/API/ws/streamHuobi')
+const StreamOkex = require('../service/API/ws/streamOkex')
+const StreamBitfinex = require('../service/API/ws/streamBitfinex')
+const StreamBinance = require('../service/API/ws/streamBinance')
+const StreamBittrex = require('../service/API/ws/streamBittrex')
 const util = require('../util/util.js')
 const should = require('should')
 const binance = require('node-binance-api')
@@ -23,25 +23,25 @@ describe('测试Orderbook stream', async function() {
 	describe.only('查询订单簿数据', async function() {
     	it('huobi', async function() {
             let symbos = ['EOS/BTC', 'ETH/BTC']
-            let orderBook = new OrderBookHuobi(symbos)
+            let orderBook = new StreamHuobi(symbos)
             connect(orderBook, symbos)
     	})
 
         it('okex', async function() {
             let symbos = ['EOS/BTC', 'ETH/BTC', 'IOTA/BTC']
-            let orderBook = new OrderBookOkex(symbos)
+            let orderBook = new StreamOkex(symbos)
             connect(orderBook, symbos)
         })
 
         it('Bitfinex', async function() {
             let symbos = ['EOS/BTC', 'ETH/BTC', 'IOTA/BTC']
-            let orderBook = new OrderBookBitfinex(symbos)
-            connect(orderBook, symbos)
+            let orderBook = new StreamBitfinex(symbos)
+            await connect1(orderBook, symbos)
         })
 
         it('Binance', async function() {
             let symbos = ['BTC/USD', 'ETH/USD', 'IOTA/BTC']
-            let orderBook = new OrderBookBinance(symbos)
+            let orderBook = new StreamBinance(symbos)
             connect(orderBook, symbos)
             // let orderBook = new OrderBookBinance(['EOS/BTC', 'ETH/BTC'])
             // binance.options({
@@ -61,13 +61,13 @@ describe('测试Orderbook stream', async function() {
 
         it('Bittrex', async function() {
             let symbos = ['BCH/BTC', 'ETH/BTC']
-            let orderBook = new OrderBookBittrex(symbos)
+            let orderBook = new StreamBittrex(symbos)
             connect(orderBook, symbos)
         })
 
         it('Bittrex异常处理', async function() {
             let symbos = ['BCH/BTC']
-            let orderBook = new OrderBookBittrex(symbos)
+            let orderBook = new StreamBittrex(symbos)
             orderBook.connect()
 
             for(let i=0; i<200; i++) {
@@ -115,6 +115,13 @@ describe('测试Orderbook stream', async function() {
                 util.log.red(`orderbook NOT all received: ${flag}`)
             }
         })
+    }
+
+    async function connect1(orderBook, symbos) {
+        orderBook.connect()
+        for(let i=0; i<200; i++) {
+            await util.sleep(1000)
+        }
     }
 })
 

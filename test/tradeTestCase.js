@@ -24,7 +24,7 @@ describe('测试trade和stratege', async function() {
 	// async function initBTC_USD() {
 	// 	exchangeIDs = ['Bitfinex', 'Bitstamp', 'Poloniex']
 	// 	trade = new TradeSim('BTC/USD', 20000, 1, exchangeIDs)
-	// 	await trade.init()
+	// 	await trade.start()
 	// }
 
 	async function initETH_BTC() {
@@ -46,13 +46,13 @@ describe('测试trade和stratege', async function() {
     // async function initBTC_BCH() {
 		// exchangeIDs = ['okex', 'hitbtc']
     //     trade = new TradeSim('BCH/BTC', 1000, 10, exchangeIDs)
-		// await trade.init()
+		// await trade.start()
     // }
     //
     // async function initBTC_IOTA() {
     //     exchangeIDs = ['okex', 'hitbtc']
     //     trade = new TradeSim('All_IOTA/BTC', 1000, 10, exchangeIDs)
-    //     await trade.init()
+    //     await trade.start()
     // }
 
   	describe('单次对冲交易', async function() {

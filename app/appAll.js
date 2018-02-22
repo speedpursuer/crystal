@@ -4,7 +4,7 @@ const TradeAll = require('../service/trade/tradeAll')
 function main() {
     try {
         var trade = new TradeAll(util.getParameter(false))
-        trade.init().then()
+        trade.start().then()
     }catch (e) {
         util.log.bright.yellow(e)
         process.exit()

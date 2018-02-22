@@ -1,5 +1,5 @@
 const util = require('../util/util.js')
-const ExchangeSim = require ('../service/API/exchangeSim.js')
+const ExchangeSim = require ('../service/API/class/exchangeSim.js')
 const should = require('should');
 
 

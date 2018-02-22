@@ -3,22 +3,22 @@ const tradeConfig = require('../../config/tradeConfig')
 const backtestConfig = require('../../config/backtestConfig')
 const tradeAllConfig = require('../../config/tradeAllConfig')
 const Exchange = require('../exchange/exchange.js')
-const ExchangeStream = require('../exchange/exchangeStream')
-const factory = require ('../API/exchangeDelegateFactory.js')
+const factory = require ('../exchange/exchangeDelegateFactory.js')
+const StreamService = require('../API/ws/streamService')
 
 
 class TradeBuilder{
     constructor(key, debug=true){
         this.key = key
         this.debug = debug
-        this.config = this.buildConfig(key)
+        this.buildConfig(key)
     }
 
     buildConfig(key) {
         let allConfig = Object.assign(tradeConfig, backtestConfig, tradeAllConfig)
         let config = allConfig[key]
         if(!config) throw `trade config for ${key} not found`
-        return {
+        this.config = {
             exchanges: config.exchanges,
             exchangeInfo: config.exchangeInfo,
             strategy: new config.strategy(config.base, config.quote, config.strategyConfig),
@@ -27,29 +27,30 @@ class TradeBuilder{
         }
     }
 
-    buildExchanges(exchangesIDs, useStream=false) {
+    buildExchanges(exchangesIDs) {
         let exchanges = {}
         for(var id of exchangesIDs) {
             let info = this.exchangeInfo(id)
             let exchangeDelegate = factory.getExchangeDelegate(info, this.debug)
-            exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
+            StreamService.instance.register(info, this.symbol)
+            exchanges[id] = this.createExchange(exchangeDelegate, info)
         }
         return exchanges
     }
 
-    buildExchangesSim(exchangeAccount, useStream=false) {
+    buildExchangesSim(exchangeAccount) {
         let exchanges = {}
         for(var id in exchangeAccount) {
             let info = this.exchangeInfo(id)
-            let exchangeDelegate = factory.getExchangeDelegateSim(info, this.parseBalance(exchangeAccount[id]), false, this.debug)
-            exchanges[id] = this.createExchange(exchangeDelegate, info, useStream)
+            let exchangeDelegate = factory.getExchangeDelegateSim(info, this.parseBalance(exchangeAccount[id]), this.debug)
+            StreamService.instance.register(info, this.symbol)
+            exchanges[id] = this.createExchange(exchangeDelegate, info)
         }
         return exchanges
     }
 
-    createExchange(exchangeDelegate, info, useStream=false) {
-        let exchangeClass = useStream? ExchangeStream: Exchange
-        return new exchangeClass(exchangeDelegate, info, this.strategy.crypto, this.strategy.fiat, this.debug)
+    createExchange(exchangeDelegate, info) {
+        return new Exchange(exchangeDelegate, info, this.config.base, this.config.quote, this.debug)
     }
 
     get strategy() {
@@ -75,6 +76,10 @@ class TradeBuilder{
             [this.config.base]: data.base,
             [this.config.quote]: data.quote,
         }
+    }
+
+    get symbol() {
+        return `${this.config.base}/${this.config.quote}`
     }
 }
 

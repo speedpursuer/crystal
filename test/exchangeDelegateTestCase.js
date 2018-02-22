@@ -1,7 +1,8 @@
 const should = require('should');
 const util = require('../util/util.js')
-const factory = require ('../service/API/exchangeDelegateFactory.js')
+const factory = require ('../service/exchange/exchangeDelegateFactory.js')
 const TradeBuilder = require('../service/trade/tradeBuilder')
+const StreamService = require('../service/API/ws/streamService')
 
 
 describe('单元测试ExchangeDelegate', async function() {
@@ -9,14 +10,15 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'binance'
-    var base = "BCH", quote = "BTC"
+    var exchange = 'bitfinex'
+    var base = "ETH", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}
+    let info
 
 	before(async function() {
         let traderBuilder = new TradeBuilder(symbol)
-        let info = traderBuilder.exchangeInfo(exchange)
+        info = traderBuilder.exchangeInfo(exchange)
 
         factory.exchangeDelegateConfig = {
             failureInterval: 4000,
@@ -27,6 +29,8 @@ describe('单元测试ExchangeDelegate', async function() {
         }
 
         exchangeDelegate = factory.getExchangeDelegate(info, true)
+
+        await setupStreamService()
 	})
 
 	beforeEach(async function(){
@@ -48,10 +52,10 @@ describe('单元测试ExchangeDelegate', async function() {
         it('createLimitOrder', async function() {
             var account = await exchangeDelegate.fetchAccount(symbol)
             util.log(account)
-            if(account.balance > 0.1) {
-                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.1, 0.09, account))
+            if(account.balance > 0.002) {
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 2, 0.0001, account))
             }else {
-                util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 0.1, 1, account))
+                util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 2, 1, account))
             }
         })
 
@@ -117,4 +121,9 @@ describe('单元测试ExchangeDelegate', async function() {
             }
         })
     })
+    async function setupStreamService() {
+        let streamService = StreamService.instance
+        streamService.register(info, symbol)
+        await streamService.start()
+    }
 })
