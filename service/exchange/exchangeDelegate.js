@@ -77,7 +77,7 @@ class ExchangeDelegate extends EventEmitter {
         }catch(e){
             this._reportIssue(e)
         }
-        await util.sleep(this.interval * 2)
+        await util.sleep(this.interval * 3)
         return await this._cancelPendingOrders(symbol, amount, accountInfo)
     }
 
@@ -92,9 +92,9 @@ class ExchangeDelegate extends EventEmitter {
         let hasPendingOrders = false
         let completed = false
 
-        while(retryTimes < 10) {   
-            await util.sleep(this.interval)  
+        while(retryTimes < 10) {
             retryTimes++
+            await util.sleep(this.interval * retryTimes)
             let orders = await this._fetchOpenOrders(symbol)
             if(orders && orders.length > 0) {
                 hasPendingOrders = true
