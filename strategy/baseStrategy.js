@@ -67,7 +67,7 @@ class BaseStrategy {
 		if(this.currProfit < this.maxLoss) {
 			let err = `${this.market} has too much loss, trading stopped`
             util.log.red(err)
-			this.tradeLog.recordStopped(err).then
+			this.tradeLog.recordStopped(err).then()
 			this.failed = true
 			return false
 		}
