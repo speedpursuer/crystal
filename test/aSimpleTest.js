@@ -1264,8 +1264,22 @@ function test65() {
 	util.log(_.size({a: 1}))
 }
 
+function test66() {
+	let basePrice = 9000, gap = 3000, size = 5
+
+	function getGrid(price) {
+		let gridPrice = gap / size
+		let grid = (price - basePrice) / gridPrice
+		grid = grid >= 0? _.floor(grid): _.ceil(grid)
+		util.log(`Price: ${price}, grid: ${grid}`)
+    }
+    getGrid(9100)
+    getGrid(8500)
+    getGrid(8300)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test64()
+    test66()
 }
