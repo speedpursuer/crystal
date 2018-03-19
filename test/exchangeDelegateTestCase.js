@@ -10,7 +10,7 @@ describe('单元测试ExchangeDelegate', async function() {
 	this.timeout(50000)
 
     var exchangeDelegate
-    var exchange = 'bitfinex'
+    var exchange = 'Bittrex'
     var base = "ETH", quote = "BTC"
     var symbol = `${base}/${quote}`
     var balance = {}

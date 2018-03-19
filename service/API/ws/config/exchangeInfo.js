@@ -29,6 +29,7 @@ var exchangeInfo = {
             'IOTA/BTC': 'tIOTBTC',
             'ETH/BTC': 'tETHBTC',
             'BCH/BTC': 'tBCHBTC',
+            'BTC/USDT': 'tBTCUSDT',
         },
         needPing: true
     },

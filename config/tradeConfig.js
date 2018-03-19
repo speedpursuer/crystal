@@ -8,6 +8,7 @@ const exchangeInfoIOTA = require('./exchangeInfo/exchangeInfo_iota.js')
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
 const HedgeNew = require('../strategy/hedgeNew')
+const GridTrade = require('../strategy/gridTrade')
 
 const tradeConfig = {
     'BTC/USD': {
@@ -84,6 +85,23 @@ const tradeConfig = {
             debug: true
         },
     },
+
+    'grid': {
+        base: "BTC",
+        quote: "USDT",
+        exchanges: ['Bittrex'],
+        exchangeInfo: exchangeInfo,
+        strategy: GridTrade,
+        strategyConfig: {
+            basePrice: 9000,
+            maxLoss: -0.001,
+            debug: true
+        },
+        initAccount: {
+            base: 10,
+            quote: 80000
+        }
+    }
 
     // 'XMR/BTC': {
     //     base: "XMR",

@@ -1,6 +1,7 @@
 const util = require ('../util/util.js')
 const _ = require('lodash')
 const BaseStrategy = require('./baseStrategy.js')
+const Grid = require('./grid')
 
 
 const config = {
@@ -12,11 +13,19 @@ const config = {
 
 class GridTrade extends BaseStrategy {
     before() {
-        // TODO check if there is only one exchange
+        this.totalProfit = 0
+        this.exchange = this.exchanges[0]
+        let basePrice = this.getConfig('basePrice')
+        this.grid = new Grid(basePrice, this.exchange.stock, 2500, 10, this.exchange)
     }
 
     async doTrade() {
-        //
+        if(!this.canTrade()) return
+        await this.grid.doTrade()
+    }
+
+    canTrade() {
+        return true
     }
 }
 

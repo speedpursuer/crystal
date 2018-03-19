@@ -16,6 +16,22 @@ class Grid {
         this.profit = 0
     }
 
+    async doTrade() {
+        let price = this.exchange.price
+        let grid = this.getGrid(price)
+        let orderAmount = this.getOrderAmount(grid)
+        if(orderAmount === 0) {
+            return
+        }
+        // price = this.correctedPrice(orderAmount)
+        await this.trade(orderAmount, price)
+        this.recordTrade(orderAmount, price, grid)
+    }
+
+    correctedPrice(amount) {
+        return amount > 0? this.exchange.sellPrice: this.exchange.buyPrice
+    }
+
     getGrid(price) {
         let grid = (price - this.basePrice) / this.gridPrice
         grid = grid >= 0? _.floor(grid): _.ceil(grid)
@@ -57,6 +73,18 @@ class Grid {
         }
     }
 
+    async trade(amount, price) {
+        if(amount === 0) {
+            return
+        }else if(amount > 0) {
+            return await this.exchange.limitBuy(amount)
+        }else if(price > this.avgCost){
+            return await this.exchange.limitSell(-1 * amount)
+        }else {
+            return
+        }
+    }
+
     recordTrade(amount, price, grid) {
         if(amount === 0) return
 
@@ -83,10 +111,6 @@ class Grid {
     _getGridChanged(grid) {
         let lastGrid = this.lastTrade == null? 0: this.lastTrade.grid
         return grid - lastGrid
-    }
-
-    _createTrade(grid, position, price, amount) {
-        return {grid, position, price, amount}
     }
 }
 

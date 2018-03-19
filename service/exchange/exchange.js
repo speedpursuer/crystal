@@ -114,6 +114,10 @@ class Exchange {
         }, 0) * this.orderRate
     }
 
+    get price() {
+	    return (this.buyPrice + this.sellPrice) / 2
+    }
+
     get buyPrice() {
         return this.sell1Price * (1+this.slippage)
     }
