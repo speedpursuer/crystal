@@ -4,10 +4,12 @@ const _ = require('lodash')
 class Grid {
     constructor(basePrice, baseStock, priceRange, gridSize, exchange) {
         this.basePrice = basePrice
-        this.priceRange = priceRange
-        this.gridSize = gridSize
+        // this.priceRange = priceRange
+        // this.gridSize = gridSize
         this.gridPrice = priceRange / gridSize
         this.unitAmount = baseStock / gridSize
+
+        util.log(`gridPrice: ${this.gridPrice}, unitAmount: ${this.unitAmount}`)
         this.exchange = exchange
 
         this.stock = baseStock
@@ -20,12 +22,16 @@ class Grid {
         let price = this.exchange.price
         let grid = this.getGrid(price)
         let orderAmount = this.getOrderAmount(grid)
+        util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}`)
         if(orderAmount === 0) {
             return
         }
         // price = this.correctedPrice(orderAmount)
-        await this.trade(orderAmount, price)
-        this.recordTrade(orderAmount, price, grid)
+        let result = await this.trade(orderAmount, price)
+        // util.log(`result: ${JSON.stringify(result)}`)
+        if(result && result.completed) {
+            this.recordTrade(result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
+        }
     }
 
     correctedPrice(amount) {
@@ -74,15 +80,12 @@ class Grid {
     }
 
     async trade(amount, price) {
-        if(amount === 0) {
-            return
-        }else if(amount > 0) {
+        if(amount > 0 && this.exchange.canBuySuch(amount)) {
             return await this.exchange.limitBuy(amount)
-        }else if(price > this.avgCost){
+        }else if(amount < 0 && price > this.avgCost && this.exchange.canSellSuch(amount)) {
             return await this.exchange.limitSell(-1 * amount)
-        }else {
-            return
         }
+        return null
     }
 
     recordTrade(amount, price, grid) {
@@ -96,7 +99,7 @@ class Grid {
         }
 
         if(amount > 0) {
-            this.avgCost = (this.stock * this.avgCost + price * amount) / this.stock + amount
+            this.avgCost = (this.stock * this.avgCost + price * amount) / (this.stock + amount)
         }
 
         if(amount < 0) {

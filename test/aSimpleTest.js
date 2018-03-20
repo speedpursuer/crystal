@@ -1278,8 +1278,12 @@ function test66() {
     getGrid(8300)
 }
 
+function test67() {
+	util.log(Math.abs(-853.92048/0.10016))
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test66()
+    test67()
 }

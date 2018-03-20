@@ -5,8 +5,8 @@ function main() {
     try {
         let exchangeAccount = {
             'Bittrex': {
-                base: 30,
-                quote: 1
+                base: 10,
+                quote: 80000
             },
             // 'hitbtc': {
             //     base: 30,

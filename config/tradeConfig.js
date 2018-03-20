@@ -97,10 +97,6 @@ const tradeConfig = {
             maxLoss: -0.001,
             debug: true
         },
-        initAccount: {
-            base: 10,
-            quote: 80000
-        }
     }
 
     // 'XMR/BTC': {

@@ -132,6 +132,10 @@ class Backtest {
         return await this.test(key, pairExchangeIDs? pairExchangeIDs: exchangeIDs, total_budget/quotePrice/exchangeIDs.length, total_budget/basePrice/exchangeIDs.length)
 	}
 
+	async grid() {
+        return await this.test('grid', ['Bittrex'], 10, 80000)
+	}
+
 	getExchangeAccount(exchangeIDs, initBalance, initStocks) {
         let exchangesAccount = {}
         for(let exchange of exchangeIDs) {
@@ -202,7 +206,7 @@ class Backtest {
 async function test(){
     try {
         let name = util.getParameter()
-        var backtest = new Backtest("2018-01-21 15:22:44", '2018-01-22 19:22:44', false)
+        var backtest = new Backtest("2018-03-18 15:22:44", '2018-03-20 15:22:44', false)
         // var backtest = new Backtest("2018-01-04 11:34:13", '2018-01-06 11:34:13', false)
 		await backtest[name]()
         process.exit()

@@ -14,12 +14,13 @@ const config = {
 class GridTrade extends BaseStrategy {
     before() {
         this.totalProfit = 0
-        this.exchange = this.exchanges[0]
+        this.exchange = this.allExchanges['bittrex']
         let basePrice = this.getConfig('basePrice')
-        this.grid = new Grid(basePrice, this.exchange.stock, 2500, 10, this.exchange)
+        this.grid = new Grid(9000, this.exchange.stocks, 2500, 10, this.exchange)
     }
 
     async doTrade() {
+        util.log('-------------doTrade------------')
         if(!this.canTrade()) return
         await this.grid.doTrade()
     }
