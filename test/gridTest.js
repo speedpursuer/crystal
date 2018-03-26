@@ -28,6 +28,7 @@ describe('单元测试grid', async function() {
                 }
             }
             let exchange = getTradeBuilder('BCH', 'BTC').buildExchangesSim(account)['binance']
+            await exchange.fetchAccount()
             exchange.orderBooks = {"bids":[[0.03860468,1],[0.029004,9.96],[0.029003,2.7],[0.029,3.2],[0.028823,0.0154],[0.0288,154.4348]],"asks":[[0.0291,1.9434],[0.0293,0.0396],[0.029304,1],[0.029399,0.0013],[0.029407,0.0152],[0.029456,5]]}
             let grid = new Grid(9000, 5, 3000, 5, exchange)
 
@@ -49,10 +50,10 @@ describe('单元测试grid', async function() {
 
             doGrid(grid, 9700)
             doGrid(grid, 10000)
-            doGrid(grid, 10002)
-            doGrid(grid, 10003)
-            doGrid(grid, 10004)
-            doGrid(grid, 10005)
+            doGrid(grid, 11002)
+            doGrid(grid, 13003)
+            doGrid(grid, 15004)
+            doGrid(grid, 8005)
         })
 
         // it('3次，但超过规定时间，正常', async function() {
@@ -69,15 +70,8 @@ describe('单元测试grid', async function() {
 
     function doGrid(gridObj, price) {
         let grid = gridObj.getGrid(price)
-        util.log(`Grid - price: ${price}, grid: ${grid}`)
         let amount = gridObj.getOrderAmount(grid)
-        util.log(`Amount: ${amount}`)
-        // gridObj.lastTrade = {
-        //     price: price,
-        //     amount: amount
-        // }
-        gridObj.recordTrade(amount, price, grid)
-        // return amount
+        gridObj.recordTrade(amount, amount, price, grid)
     }
 
     function getTradeBuilder(base, quote) {

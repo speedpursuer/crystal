@@ -171,6 +171,39 @@ describe.only('测试 exchange', async function() {
 
             util.log(exchange2.account)
         })
+
+
+        it('下单价格分析', async function() {
+
+            let account = {
+                binance: {
+                    base: 100,
+                    quote: 1
+                }
+            }
+
+            let exchange = getTradeBuilder('EOS', 'BTC').buildExchangesSim(account)['binance']
+
+            await exchange.fetchAccount()
+
+            exchange.orderBooks = {"bids":[[100,5]],"asks":[[80,10]]}
+
+            util.log(`sellPrice: ${exchange.sellPrice}, buy1Price: ${exchange.buy1Price}, buy1Amount: ${exchange.buy1Amount}, realSellPrice: ${exchange.earnForSellOne}`)
+
+            util.log(`buyPrice: ${exchange.buyPrice}, sell1Price: ${exchange.sell1Price}, sell1Amount: ${exchange.sell1Amount}, realBuyPrice: ${exchange.payForBuyOne}`)
+
+            let result = await exchange.limitSell(1)
+
+            util.log(`${JSON.stringify(result)}`)
+
+            util.log(`Avg price: ${result.balanceChanged/result.dealAmount}`)
+
+            // await exchange.testOrder(0.0009, 0.0009, 3)
+
+            // util.log(exchange.account)
+
+            // util.log(exchange.account)
+        })
     })
 
     function getTradeBuilder(base, quote) {

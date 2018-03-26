@@ -22,20 +22,14 @@ class Grid {
         let price = this.exchange.price
         let grid = this.getGrid(price)
         let orderAmount = this.getOrderAmount(grid)
-        util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}`)
         if(orderAmount === 0) {
             return
         }
-        // price = this.correctedPrice(orderAmount)
-        let result = await this.trade(orderAmount, price)
+        let result = await this.trade(orderAmount)
         // util.log(`result: ${JSON.stringify(result)}`)
         if(result && result.completed) {
-            this.recordTrade(result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
+            this.recordTrade(orderAmount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
         }
-    }
-
-    correctedPrice(amount) {
-        return amount > 0? this.exchange.sellPrice: this.exchange.buyPrice
     }
 
     getGrid(price) {
@@ -50,65 +44,69 @@ class Grid {
             return 0
         }
 
-        // let lastGrid = this.lastTrade == null? 0: this.getGrid(this.lastTrade.price)
         let gridChanged = this._getGridChanged(grid)
 
-        let orderAmount
+        // util.log(`gridChanged: ${gridChanged}`)
+
+        let orderAmount = 0, type = 'buy'
 
         if(gridChanged === 0) {
-            if(this.lastTrade.amount > 0) {
-                let amount = this.unitAmount - this.lastTrade.amount
-                orderAmount = amount > 0? amount: 0
-            }else {
-                let amount = this.unitAmount + this.lastTrade.amount
-                orderAmount = amount > 0? -1 * amount: 0
-            }
+            orderAmount = Math.max(this.unitAmount - Math.abs(this.lastTrade.amount), 0)
+            type = this.lastTrade.amount > 0? 'buy': 'sell'
         }else {
-            orderAmount = -1 * gridChanged * this.unitAmount
+            orderAmount = this.unitAmount * Math.abs(gridChanged)
+            type = gridChanged > 0? 'sell': 'buy'
         }
-        // else if(gridChanged > 0) {
-        //     return -1 * Math.min(gridChanged * this.unitAmount, this.exchange.buy1Amount)
-        // }else {
-        //     return -1 * Math.max(gridChanged * this.unitAmount, -1 * this.exchange.sell1Amount)
-        // }
 
-        if(orderAmount > 0) {
-            return Math.min(orderAmount, this.exchange.sell1Amount)
+        if(type === 'buy') {
+            return Math.min(orderAmount, this.exchange.sell1Amount, this.exchange.amountCanBuy)
         }else {
-            return Math.max(orderAmount, -1 * this.exchange.buy1Amount)
+            return Math.min(orderAmount, this.exchange.buy1Amount, this.exchange.amountCanSell) * -1
         }
     }
 
-    async trade(amount, price) {
+    async trade(amount) {
         if(amount > 0 && this.exchange.canBuySuch(amount)) {
             return await this.exchange.limitBuy(amount)
-        }else if(amount < 0 && price > this.avgCost && this.exchange.canSellSuch(amount)) {
-            return await this.exchange.limitSell(-1 * amount)
+        }else if(amount < 0 && this.getTradePrice(amount) > this.avgCost && this.exchange.canSellSuch(Math.abs(amount))) {
+            return await this.exchange.limitSell(Math.abs(amount))
         }
         return null
     }
 
-    recordTrade(amount, price, grid) {
-        if(amount === 0) return
+    getTradePrice(tradeAmount) {
+        return tradeAmount > 0? this.exchange.payForBuyOne: this.exchange.earnForSellOne
+    }
 
-        if(this._getGridChanged(grid) === 0) {
-            amount += this.lastTrade.amount
-        }
+    recordTrade(orderAmount, dealAmount, price, grid) {
+        if(dealAmount === 0) return
+
         this.lastTrade = {
-            amount, grid
+            amount: this._getGridChanged(grid) === 0? dealAmount + this.lastTrade.amount: dealAmount, grid
         }
 
-        if(amount > 0) {
-            this.avgCost = (this.stock * this.avgCost + price * amount) / (this.stock + amount)
+        if(dealAmount > 0) {
+            this.avgCost = (this.stock * this.avgCost + price * dealAmount) / (this.stock + dealAmount)
         }
 
-        if(amount < 0) {
-            this.profit -= (price - this.avgCost) * amount
+        if(dealAmount < 0) {
+            this.profit += (price - this.avgCost) * Math.abs(dealAmount)
         }
 
-        this.stock += amount
+        this.stock += dealAmount
 
-        util.log(`this.avgCost: ${this.avgCost}, this.profit: ${this.profit}`)
+        this.printLog(price, grid, orderAmount, dealAmount)
+    }
+
+    printLog(price, grid, orderAmount, dealAmount) {
+        util.log('------------------------')
+        util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}`)
+        if(dealAmount > 0) {
+            util.log.green(`buy: ${dealAmount}`)
+        }else {
+            util.log.blue(`sell: ${dealAmount}`)
+        }
+        util.log(`this.avgCost: ${this.avgCost}, profit: ${this.profit}, stocks: ${this.stock}`)
     }
 
     _getGridChanged(grid) {
