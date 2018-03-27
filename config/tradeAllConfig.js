@@ -15,8 +15,8 @@ const tradeAllConfig = {
     'All_EOS/BTC': {
         base: "EOS",
         quote: "BTC",
-        // exchanges: ['Bitfinex', 'huobipro', 'OKEx'],
-        exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
+        exchanges: ['Bitfinex', 'Binance', 'OKEx'],
+        // exchanges: ['Bitfinex', 'Binance', 'huobipro', 'OKEx'],
         exchangeInfo: exchangeInfoEOS,
         strategy: HedgeNew,
         strategyConfig: {
@@ -35,7 +35,6 @@ const tradeAllConfig = {
     'All_IOTA/BTC': {
         base: "IOTA",
         quote: "BTC",
-        // exchanges: ['Bitfinex', 'OKEx'],
         exchanges: ['Bitfinex', 'Binance', 'OKEx'],
         exchangeInfo: exchangeInfoIOTA,
         strategy: HedgeNew,

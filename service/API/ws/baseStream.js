@@ -100,7 +100,7 @@ class BaseStream extends EventEmitter {
         if(this.needPing) {
             this.lastHeartBeat = util.time
             let that = this
-            this.checkInterval = setInterval(function() {
+            this.checkUpdateInterval = setInterval(function() {
                 that.checkConnection()
             }, 5000)
         }
@@ -150,7 +150,8 @@ class BaseStream extends EventEmitter {
     }
 
     stopCheckConnection() {
-        if(this.checkInterval) clearInterval(this.checkInterval)
+        if(this.checkUpdateInterval) clearInterval(this.checkUpdateInterval)
+        if(this.checkReadyInterval) clearInterval(this.checkReadyInterval)
     }
 
     async reportErr(msg) {
@@ -212,7 +213,7 @@ class BaseStream extends EventEmitter {
 
     checkDataReady() {
         let that = this, i = 0, maxTry = 30
-        util.repeat(function () {
+        this.checkReadyInterval = util.repeat(function () {
             i++
             if(i == maxTry) {
                 that.notifyOrderbookReceived(false)

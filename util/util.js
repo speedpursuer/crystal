@@ -156,6 +156,7 @@ class Util{
             i++
             if(i >= maxTimes || (funStop != null && funStop())) clearInterval(anInterval)
         }, interval)
+		return anInterval
 	}
 
 	contains(target, list) {
