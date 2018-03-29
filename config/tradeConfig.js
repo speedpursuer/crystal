@@ -87,12 +87,11 @@ const tradeConfig = {
     'grid': {
         base: "BTC",
         quote: "USDT",
-        exchanges: ['Bittrex'],
-        exchangeInfo: exchangeInfo,
+        exchanges: ['huobipro'],
+        exchangeInfo: exchangeInfoEOS,
         strategy: GridTrade,
         strategyConfig: {
-            basePrice: 9000,
-            maxLoss: -0.001,
+            maxLoss: -100,
             debug: true
         },
     }

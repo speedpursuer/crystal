@@ -77,12 +77,18 @@ class Trade{
 	async run(){
 		try {
             await this.init()
+            await this.confirmation()
             await this.loop()
         }catch (e) {   
         	util.log.red("交易初始化失败，程序退出")     	
         	throw e
         }
 	}
+
+	async confirmation() {
+	    util.log(`请确认配置，30秒后开始交易策略`)
+        await util.sleep(30000)
+    }
 
 	async handleError(err) {
 		util.log.bright.yellow(err)
