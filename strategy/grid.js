@@ -67,8 +67,10 @@ class Grid {
 
     async trade(amount) {
         if(amount > 0 && this.exchange.canBuySuch(amount)) {
+            this.printStarter()
             return await this.exchange.limitBuy(amount)
         }else if(amount < 0 && this.getTradePrice(amount) > this.avgCost && this.exchange.canSellSuch(Math.abs(amount))) {
+            this.printStarter()
             return await this.exchange.limitSell(Math.abs(amount))
         }
         return null
@@ -99,7 +101,6 @@ class Grid {
     }
 
     printLog(price, grid, orderAmount, dealAmount) {
-        util.log('------------------------')
         util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}`)
         if(dealAmount > 0) {
             util.log.green(`buy: ${dealAmount}`)
@@ -107,6 +108,10 @@ class Grid {
             util.log.blue(`sell: ${dealAmount}`)
         }
         util.log(`this.avgCost: ${this.avgCost}, profit: ${this.profit}, stocks: ${this.stock}`)
+    }
+
+    printStarter() {
+        util.log('------------------------')
     }
 
     _getGridChanged(grid) {

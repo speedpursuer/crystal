@@ -88,6 +88,7 @@ class Trade{
 	async confirmation() {
 	    util.log(`请确认配置，30秒后开始交易策略`)
         await util.sleep(30000)
+        util.log(`-------------------------`)
     }
 
 	async handleError(err) {

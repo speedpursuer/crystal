@@ -26,6 +26,7 @@ class GridTrade extends BaseStrategy {
         this.grid = new Grid(config.basePrice, config.baseStock, config.priceRange, config.gridSize, this.exchange)
 
         util.log.green(`策略配置: minStock: ${this.minStock}, minBalance: ${this.minBalance}, topPrice: ${this.topPrice}, bottomPrice: ${this.bottomPrice}, exchange: ${this.exchange}`)
+        util.log.blue(`当前币值: ${this.exchange.stocks}, 余额: ${this.exchange.balance}, 价格: ${this.price}`)
     }
 
     async doTrade() {
