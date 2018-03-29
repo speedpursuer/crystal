@@ -16,8 +16,8 @@ class Trade{
 	async init(){
 		await this.initExchanges()
 		await this.initBalance()
+        await this.initPrices()
 		await this.initStratege()
-        await this.updateOrderBook()
 	}
 
 	async initExchanges() {
@@ -51,6 +51,10 @@ class Trade{
         this.log(`*********************************************************`)
         this.log(`*********************************************************`)
 	}
+
+	async initPrices() {
+        await this.updateOrderBook()
+    }
 
 	async initStratege() {
         await this.strategy.init(this.exchanges)
