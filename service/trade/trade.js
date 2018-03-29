@@ -17,6 +17,7 @@ class Trade{
 		await this.initExchanges()
 		await this.initBalance()
 		await this.initStratege()
+        await this.updateOrderBook()
 	}
 
 	async initExchanges() {
@@ -87,8 +88,8 @@ class Trade{
 
 	async confirmation() {
 	    util.log(`请确认配置，30秒后开始交易策略`)
-        await util.sleep(30000)
         util.log(`-------------------------`)
+        await util.sleep(30000)
     }
 
 	async handleError(err) {
