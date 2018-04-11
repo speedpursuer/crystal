@@ -5,6 +5,7 @@ const AppLog = require('../db/appLog')
 const StreamService = require('../API/ws/streamService')
 
 const Interval = 2000
+const confirmTime = 15
 
 class Trade{
 	constructor(tradeName, debug=true){
@@ -93,9 +94,10 @@ class Trade{
 	}
 
 	async confirmation() {
-	    util.log(`请确认配置，30秒后开始交易策略`)
+	    util.log(`请确认配置，${confirmTime}秒后开始交易策略`)
         util.log(`-------------------------`)
-        await util.sleep(30000)
+        await util.sleep(confirmTime * 1000)
+        util.log.green(`开始交易！！！`)
     }
 
 	async handleError(err) {
