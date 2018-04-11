@@ -30,11 +30,14 @@ class GridTrade extends BaseStrategy {
     }
 
     async doTrade() {
-        if(!this.canTrade()) return
         await this.grid.doTrade()
     }
 
     canTrade() {
+        if(!super.canTrade()) {
+            return false
+        }
+
         if(this.exchange.stocks <= this.minStock) {
             util.log.red(`当前币值 ${this.exchange.stocks} 小于最小币值: ${this.minStock}`)
             return false

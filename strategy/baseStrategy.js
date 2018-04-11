@@ -89,20 +89,11 @@ class BaseStrategy {
 	}
 
 	get exchanges() {
-		var that = this
 		return _.filter(this._exchanges, function(e) { 
-			if(!e.orderBooks || !e.isAvailable) {
+			if(!e.orderBooks || !e.isAvailable || e.sellPrice <= 0 || e.buyPrice <= 0) {
 				return false
-			}else if(!cryptoInfo[that.market]){
-				return true				
-			}else {
-				if(_.inRange(e.sellPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max) &&
-				   _.inRange(e.buyPrice, cryptoInfo[that.market].min, cryptoInfo[that.market].max)) {
-					return true
-				}else {
-					return false
-				}
 			}
+			return true
 		})
 	}
 
@@ -133,6 +124,14 @@ class BaseStrategy {
 	
 	doTrade() {
 		throw new Error("doTrade() must be implemented")
+	}
+
+    canTrade() {
+        if(this.exchanges.length === 0) {
+            this.log("无对冲数据，请检查配置")
+			return false
+        }
+        return true
 	}
 }
 module.exports = BaseStrategy

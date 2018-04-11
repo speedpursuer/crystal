@@ -16,9 +16,7 @@ class StaHedge extends Hedge {
 
     async doTrade() {
         this.reset()
-        if(this.exchanges.length == 0) {
-            this.log("无对冲数据，请检查配置")
-        }else if(!await this.balance()) {
+        if(!await this.balance()) {
             await this.hedge()
         }
     }
@@ -49,7 +47,7 @@ class StaHedge extends Hedge {
 
     willHedge(sellExchange, buyExchange) {
         var tradeAmount = Math.min(sellExchange.amountCanSell, buyExchange.amountCanBuy, sellExchange.buy1Amount, buyExchange.sell1Amount, maxAmountOnce)
-        if(sellExchange.canSellSuch(tradeAmount) && buyExchange.canBuySuch(tradeAmount) && this.canTrade(sellExchange, buyExchange)) {
+        if(sellExchange.canSellSuch(tradeAmount) && buyExchange.canBuySuch(tradeAmount) && this.canDoTrade(sellExchange, buyExchange)) {
             this.actions.push(this.performHedge(sellExchange, buyExchange, tradeAmount))
             this.setTrade(sellExchange, buyExchange)
         }
@@ -93,7 +91,7 @@ class StaHedge extends Hedge {
         return pairs
     }
 
-    canTrade(sellExchange, buyExchange) {
+    canDoTrade(sellExchange, buyExchange) {
         if(this.pairs[sellExchange.id].sell || this.pairs[buyExchange.id].buy) {
             return false
         }

@@ -1,21 +1,24 @@
 const util = require ('../util/util.js')
 const _ = require('lodash')
 
+const maxAmountOnce = 0.1
+
 class Grid {
-    constructor(basePrice, baseStock, priceRange, gridSize, exchange) {
+    constructor(basePrice, baseStock, priceRange, gridSize, maxAmountOnce, exchange) {
         this.basePrice = basePrice
         // this.priceRange = priceRange
         // this.gridSize = gridSize
         this.gridPrice = priceRange / gridSize
         this.unitAmount = baseStock / gridSize
 
-        util.log(`gridPrice: ${this.gridPrice}, unitAmount: ${this.unitAmount}`)
         this.exchange = exchange
 
         this.stock = baseStock
         this.lastTrade = null
         this.avgCost = basePrice
         this.profit = 0
+
+        util.log(`basePrice: ${this.basePrice}, baseStock: ${this.stock}, gridPrice: ${this.gridPrice}, unitAmount: ${this.unitAmount}`)
     }
 
     async doTrade() {
@@ -28,7 +31,7 @@ class Grid {
         let result = await this.trade(orderAmount)
         // util.log(`result: ${JSON.stringify(result)}`)
         if(result && result.completed) {
-            this.recordTrade(orderAmount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
+            this._recordTrade(orderAmount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
         }
     }
 
@@ -80,11 +83,12 @@ class Grid {
         return tradeAmount > 0? this.exchange.payForBuyOne: this.exchange.earnForSellOne
     }
 
-    recordTrade(orderAmount, dealAmount, price, grid) {
+    _recordTrade(orderAmount, dealAmount, price, grid) {
         if(dealAmount === 0) return
 
         this.lastTrade = {
-            amount: this._getGridChanged(grid) === 0? dealAmount + this.lastTrade.amount: dealAmount, grid
+            amount: this._getGridChanged(grid) === 0? dealAmount + this.lastTrade.amount: dealAmount,
+            grid: grid
         }
 
         if(dealAmount > 0) {
@@ -101,7 +105,7 @@ class Grid {
     }
 
     printLog(price, grid, orderAmount, dealAmount) {
-        util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}`)
+        util.log(`price: ${price}, grid: ${grid}, orderAmount: ${orderAmount}, dealAmount: ${dealAmount}`)
         if(dealAmount > 0) {
             util.log.green(`buy: ${dealAmount}`)
         }else {

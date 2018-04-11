@@ -70,9 +70,11 @@ class Trade{
 		while(this.strategy.condition) {
             try {            	
                 await this.updateOrderBook()
-                await this.strategy.doTrade()
-                await this.strategy.updateBalance()
-                await util.sleep(Interval)                                  
+                if(this.strategy.canTrade()) {
+                    await this.strategy.doTrade()
+                    await this.strategy.updateBalance()
+                }
+                await util.sleep(Interval)
             }catch (e) {
             	await this.handleError(e)
             }                    

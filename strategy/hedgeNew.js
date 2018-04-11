@@ -13,15 +13,11 @@ class HedgeNew extends Strategy {
     }
     
 	async doTrade() {
-        if(this.exchanges.length === 0) {
-            this.log("无对冲数据，请检查配置")
-        }else {
-            this.beforeTrade()
-            if(!await this.hedge()) {
-                await this.balance()
-            }
-            this.afterTrade()
+        this.beforeTrade()
+        if(!await this.hedge()) {
+            await this.balance()
         }
+        this.afterTrade()
 	}
 
     async hedge() {
