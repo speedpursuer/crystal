@@ -212,7 +212,7 @@ class BaseStream extends EventEmitter {
     }
 
     checkDataReady() {
-        let that = this, i = 0, maxTry = 60
+        let that = this, i = 0, maxTry = 3 * 60
         this.checkReadyInterval = util.repeat(function () {
             i++
             if(i == maxTry) {
@@ -253,10 +253,10 @@ class BaseStream extends EventEmitter {
             let msg = 'orderbooks not fully received'
             if(this.counter.isOverCountAfterCount) {
                 msg = `${msg}, too many time retry, give up`
-                AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then
+                AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then()
             }else {
                 msg = `${msg}, reconnect`
-                this.reconnect(msg, 5 * 60 * 1000)
+                this.reconnect(msg, 1 * 60 * 1000)
             }
             this.log(msg)
         }
