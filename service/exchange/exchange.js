@@ -173,7 +173,7 @@ class Exchange {
     }
 
     adjustedOrderPrice(price) {
-	    return _.floor(price, 8)
+	    return _.floor(price, 7)
     }
 
     async fetchOrderBook() {
