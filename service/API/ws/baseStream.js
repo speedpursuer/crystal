@@ -234,10 +234,10 @@ class BaseStream extends EventEmitter {
 
     isOrderbookEmpty() {
         let orderbooks = this.getAllOrderbooks()
-        if(_.size(orderbooks) != _.size(this.realSymbols)) return true
+        if(_.size(orderbooks) !== _.size(this.realSymbols)) return true
         for(let key in orderbooks) {
             let orderbook = orderbooks[key]
-            if(orderbook.bids.length == 0 || orderbook.asks.length == 0) {
+            if(orderbook.bids.length === 0 || orderbook.asks.length === 0) {
                 return true
             }
         }
@@ -248,17 +248,19 @@ class BaseStream extends EventEmitter {
         this.isWorking = flag
         this.isConnecting = false
         this.log(`All orderbooks received: ${flag}`)
-        this.emit('started', flag)
         if(!flag) {
             let msg = 'orderbooks not fully received'
             if(this.counter.isOverCountAfterCount) {
                 msg = `${msg}, too many time retry, give up`
+                this.emit('started', false)
                 AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then()
             }else {
                 msg = `${msg}, reconnect`
                 this.reconnect(msg, 1 * 60 * 1000)
             }
             this.log(msg)
+        }else {
+            this.emit('started', true)
         }
     }
 }
