@@ -4,6 +4,7 @@ const exchangeInfoETH = require('./exchangeInfo/exchangeInfo_eth.js')
 const exchangeInfoXMR = require('./exchangeInfo/exchangeInfo_xmr.js')
 const exchangeInfoEOS = require('./exchangeInfo/exchangeInfo_eos.js')
 const exchangeInfoIOTA = require('./exchangeInfo/exchangeInfo_iota.js')
+const exchangeInfoNEO = require('./exchangeInfo/exchangeInfo_neo')
 
 const Hedge = require('../strategy/hedge.js')
 const StaHedge = require('../strategy/staHedge.js')
@@ -27,8 +28,8 @@ const tradeConfig = {
     'BCH/BTC': {
         base: "BCH",
         quote: "BTC",
-        exchanges: ['okex', 'Bitfinex', 'binance'],
-        // exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
+        // exchanges: ['okex', 'Bitfinex', 'binance'],
+        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
         exchangeInfo: exchangeInfoBCH,
         strategy: HedgeNew,
         strategyConfig: {
@@ -78,6 +79,21 @@ const tradeConfig = {
         strategy: HedgeNew,
         strategyConfig: {
             maxAmountOnce: 30,
+            orderRate: 0.1,
+            minMargin: 0.000001,
+            maxLoss: -0.001,
+            debug: true
+        },
+    },
+
+    'NEO/BTC': {
+        base: "NEO",
+        quote: "BTC",
+        exchanges: ['Bitfinex', 'Binance', 'OKEx', 'huobipro'],
+        exchangeInfo: exchangeInfoNEO,
+        strategy: HedgeNew,
+        strategyConfig: {
+            maxAmountOnce: 5,
             orderRate: 0.1,
             minMargin: 0.000001,
             maxLoss: -0.001,
