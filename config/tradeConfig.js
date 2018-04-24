@@ -27,7 +27,8 @@ const tradeConfig = {
     'BCH/BTC': {
         base: "BCH",
         quote: "BTC",
-        exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
+        exchanges: ['okex', 'Bitfinex', 'binance'],
+        // exchanges: ['okex', 'Bitfinex', 'Bittrex', 'binance'],
         exchangeInfo: exchangeInfoBCH,
         strategy: HedgeNew,
         strategyConfig: {
