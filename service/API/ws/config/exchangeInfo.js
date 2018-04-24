@@ -5,7 +5,8 @@ var exchangeInfo = {
 			'EOS/BTC': 'eosbtc',
 			'ETH/BTC': 'ethbtc',
             'BCH/BTC': 'bchbtc',
-            'BTC/USDT': 'btcusdt'
+            'NEO/BTC': 'neobtc',
+            'BTC/USDT': 'btcusdt',
 		},
         needPing: true
 	},
@@ -17,6 +18,7 @@ var exchangeInfo = {
             'IOTA/BTC': 'iota_btc',
             'ETH/BTC': 'eth_btc',
             'BCH/BTC': 'bch_btc',
+            'NEO/BTC': 'neo_btc',
             'BTC/USDT': 'bch_usdt',
         },
         needPing: true
@@ -29,6 +31,7 @@ var exchangeInfo = {
             'IOTA/BTC': 'tIOTBTC',
             'ETH/BTC': 'tETHBTC',
             'BCH/BTC': 'tBCHBTC',
+            'NEO/BTC': 'tNEOBTC',
             'BTC/USDT': 'tBTCUSDT',
         },
         needPing: true
@@ -41,6 +44,7 @@ var exchangeInfo = {
             'IOTA/BTC': 'iotabtc',
             'ETH/BTC': 'ethbtc',
             'BCH/BTC': 'bccbtc',
+            'NEO/BTC': 'neobtc',
             'BTC/USD': 'btcusdt',
             'ETH/USD': 'ethusdt',
         },
@@ -51,6 +55,7 @@ var exchangeInfo = {
         symbolPairs: {
             'ETH/BTC': 'BTC-ETH',
             'BCH/BTC': 'BTC-BCC',
+            'NEO/BTC': 'BTC-NEO',
             'BTC/USDT': 'USDT-BTC',
         },
         needPing: true
