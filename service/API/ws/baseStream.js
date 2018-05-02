@@ -5,6 +5,7 @@ const Counter = require('../../../util/counter')
 const config = require('./config/exchangeInfo')
 const _ = require('lodash')
 const AppLog = require('../../db/appLog')
+const httpProxy = require ('../util/httpProxy')
 
 const orderBookSize = 10
 
@@ -19,6 +20,7 @@ class BaseStream extends EventEmitter {
         this.isStopping = false
         this.config()
         this.resetOrderbooks()
+        this.agent = httpProxy.instance.httpsProxyAgent
     }
 
     config() {
@@ -68,7 +70,7 @@ class BaseStream extends EventEmitter {
     }
 
     connect() {
-        this.ws = new WS(this.url, null, {})
+        this.ws = new WS(this.url, null, {agent: this.agent})
 
         let that = this
         this.ws.on('open', function() {

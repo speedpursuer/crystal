@@ -1,9 +1,11 @@
 const ccxt = require ('ccxt')
+const httpProxy = require ('../util/httpProxy')
 
 class BaseAPI {
     constructor(info) {
         this.id = info.id
         this.interval = 200
+        info.agent = httpProxy.instance.httpsProxyAgent
         this.restAPI = new ccxt[this.id](info)
         this.restAPI.timeout = 20000
         this.restAPI.nonce = function(){ return this.milliseconds () }

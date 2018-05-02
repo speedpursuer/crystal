@@ -8,6 +8,8 @@ mongoose.Promise = require('bluebird');
 
 const ccxt = require ('ccxt')
 
+const httpProxy = require ('../service/API/util/httpProxy')
+
 const moment = require('moment')
 
 const math = require('mathjs')
@@ -415,7 +417,8 @@ async function test18() {
 }
 
 async function test19() {
-	let exchange = new ccxt.bitfinex()
+	let agent = httpProxy.instance.httpsProxyAgent
+	let exchange = new ccxt.okex({agent})
 	this.orderBooks = await exchange.fetchOrderBook('BTC/USD', {
         'limit_bids': 5, // max = 50
         'limit_asks': 5, // may be 0 in which case the array is empty
@@ -1282,8 +1285,12 @@ function test67() {
 	util.log(Math.abs(-853.92048/0.10016))
 }
 
+function test68() {
+    util.log(process.env.NODE_ENV)
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test67()
+    test19()
 }
