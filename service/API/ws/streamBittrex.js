@@ -23,13 +23,17 @@ class StreamBittrex extends BaseStream {
     connectBySymbol(symbol) {
         let that = this
         this.marketManager.market(symbol, (err, crypto) => {
-            crypto.on('orderbookUpdated', () => {
-                that.orderbooks[symbol] = {
-                    bids: _.slice(crypto.bids, 0, this.orderBookSize),
-                    asks: _.slice(crypto.asks, 0, this.orderBookSize)
-                }
-                that.pong()
-            })
+            if(err) {
+                that.doReconnect('connect err')
+            }else if(crypto) {
+                crypto.on('orderbookUpdated', () => {
+                    that.orderbooks[symbol] = {
+                        bids: _.slice(crypto.bids, 0, that.orderBookSize),
+                        asks: _.slice(crypto.asks, 0, that.orderBookSize)
+                    }
+                    that.pong()
+                })
+            }
         })
     }
 
