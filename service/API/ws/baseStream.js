@@ -214,7 +214,7 @@ class BaseStream extends EventEmitter {
     }
 
     checkDataReady() {
-        let that = this, i = 0, maxTry = 3 * 60
+        let that = this, i = 0, maxTry = 20
         this.checkReadyInterval = util.repeat(function () {
             i++
             if(i == maxTry) {
