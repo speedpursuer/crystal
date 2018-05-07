@@ -4,10 +4,10 @@ const MarketManager = require('bittrex-market')
 
 class StreamBittrex extends BaseStream {
 
-    // constructor(symbols, exchangeInfo) {
-    //     super(symbols, exchangeInfo)
-    //     this.index = 0
-    // }
+    constructor(symbols, exchangeInfo) {
+        super(symbols, exchangeInfo)
+        this.index = 0
+    }
 
     connect() {
         this.marketManager = new MarketManager(false)
@@ -16,8 +16,8 @@ class StreamBittrex extends BaseStream {
             this.connectBySymbol(symbol)
         }
         this.openStream()
-        // this.index++
-        // this.marketManager.index = this.index
+        this.marketManager.index = this.index
+        this.index++
     }
 
     connectBySymbol(symbol) {
