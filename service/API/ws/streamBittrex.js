@@ -22,20 +22,24 @@ class StreamBittrex extends BaseStream {
 
     connectBySymbol(symbol) {
         let that = this
-        this.marketManager.market(symbol, (err, crypto) => {
-            if(err) {
-                this.log(`connectBySymbol错误: ${err}`)
-            }
-            if(crypto) {
-                crypto.on('orderbookUpdated', () => {
-                    that.orderbooks[symbol] = {
-                        bids: _.slice(crypto.bids, 0, that.orderBookSize),
-                        asks: _.slice(crypto.asks, 0, that.orderBookSize)
-                    }
-                    that.pong()
-                })
-            }
-        })
+        try{
+            this.marketManager.market(symbol, (err, crypto) => {
+                if(err) {
+                    this.log(`connectBySymbol错误: ${err}`)
+                }
+                if(crypto) {
+                    crypto.on('orderbookUpdated', () => {
+                        that.orderbooks[symbol] = {
+                            bids: _.slice(crypto.bids, 0, that.orderBookSize),
+                            asks: _.slice(crypto.asks, 0, that.orderBookSize)
+                        }
+                        that.pong()
+                    })
+                }
+            })
+        }catch(err) {
+            this.log(`connectBySymbol错误, catch: ${err}`)
+        }
     }
 
     // 在以下两种情况下被通知重新start client，执行reconnect
