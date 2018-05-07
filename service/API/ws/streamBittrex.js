@@ -23,6 +23,9 @@ class StreamBittrex extends BaseStream {
     connectBySymbol(symbol) {
         let that = this
         this.marketManager.market(symbol, (err, crypto) => {
+            if(err) {
+                this.log(`connectBySymbol错误: ${err}`)
+            }
             if(crypto) {
                 crypto.on('orderbookUpdated', () => {
                     that.orderbooks[symbol] = {
