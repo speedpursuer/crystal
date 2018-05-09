@@ -83,7 +83,7 @@ class BaseStream extends EventEmitter {
         })
 
         this.ws.on('message', function(msg) {
-            that.log('ws on message')
+            // that.log('ws on message')
             that.handleMessage(that.parseMessage(msg))
         })
 
