@@ -8,6 +8,7 @@ const AppLog = require('../../db/appLog')
 const httpProxy = require ('../util/httpProxy')
 
 const orderBookSize = 10
+const handshakeTimeout = 5000
 
 class BaseStream extends EventEmitter {
     constructor(symbols, exchangeInfo) {
@@ -70,7 +71,10 @@ class BaseStream extends EventEmitter {
     }
 
     connect() {
-        this.ws = new WS(this.url, null, {agent: this.agent})
+        this.ws = new WS(this.url, null, {
+            agent: this.agent,
+            handshakeTimeout
+        })
 
         let that = this
         this.ws.on('open', function() {
