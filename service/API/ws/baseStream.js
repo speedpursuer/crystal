@@ -264,14 +264,13 @@ class BaseStream extends EventEmitter {
         if(!flag) {
             let msg = 'orderbooks not fully received'
             if(this.counter.isOverCountAfterCount) {
-                msg = `${msg}, too many time retry, give up`
+                this.log(`${msg}, too many time retry, give up`)
                 this.emit('started', false)
                 AppLog.instance.recordClosedAPI(`${this.name}, ${msg}`).then()
             }else {
                 msg = `${msg}, reconnect`
                 this.reconnect(msg, 1 * 60 * 1000)
             }
-            this.log(msg)
         }else {
             this.emit('started', true)
         }
