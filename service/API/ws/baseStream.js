@@ -78,18 +78,22 @@ class BaseStream extends EventEmitter {
 
         let that = this
         this.ws.on('open', function() {
+            that.log('ws on open')
             that.openStream()
         })
 
         this.ws.on('message', function(msg) {
+            that.log('ws on message')
             that.handleMessage(that.parseMessage(msg))
         })
 
         this.ws.on('error', function(e) {
+            that.log('ws on error')
             that.reconnect(e)
         })
 
         this.ws.on('close', function(e) {
+            that.log('ws on close')
             that.reconnect(e)
         })
     }
@@ -152,7 +156,10 @@ class BaseStream extends EventEmitter {
     }
 
     stopWS() {
-        if(this.ws) this.ws.removeAllListeners()
+        if(this.ws) {
+            this.ws.removeAllListeners()
+            this.ws = undefined
+        }
     }
 
     stopCheckConnection() {
