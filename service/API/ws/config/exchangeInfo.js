@@ -6,6 +6,7 @@ var exchangeInfo = {
 			'ETH/BTC': 'ethbtc',
             'BCH/BTC': 'bchbtc',
             'NEO/BTC': 'neobtc',
+            'IOTA/BTC': 'iotabtc',
             'BTC/USDT': 'btcusdt',
 		},
         needPing: true
