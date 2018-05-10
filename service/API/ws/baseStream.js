@@ -88,13 +88,13 @@ class BaseStream extends EventEmitter {
         })
 
         this.ws.on('error', function(e) {
-            that.log('ws on error')
-            that.reconnect(e)
+            that.log(`ws on error: ${e}`)
+            that.notifyOrderbookReceived(false)
         })
 
         this.ws.on('close', function(e) {
-            that.log('ws on close')
-            that.reconnect(e)
+            that.log(`ws on close: ${e}`)
+            // that.notifyOrderbookReceived(false)
         })
     }
 
@@ -274,6 +274,7 @@ class BaseStream extends EventEmitter {
         }else {
             this.emit('started', true)
         }
+        this.log(`----------------------------`)
     }
 }
 
