@@ -63,16 +63,19 @@ class StreamBittrex extends BaseStream {
         this.stopStream()
     }
 
-    stopStream() {
-        if(this.isStopping) return
-        this.marketManager.reset()
-        super.stopStream()
+    stopWS() {
+        if(this.marketManager) {
+            this.marketManager.removeAllListeners()
+            this.marketManager.reset()
+            this.marketManager = undefined
+        }
     }
 
-    stopWS() {
-        this.marketManager.removeAllListeners()
-        this.marketManager = undefined
-    }
+    // stopStream() {
+    //     if(this.isStopping) return
+    //     this.marketManager.reset()
+    //     super.stopStream()
+    // }
 }
 
 module.exports = StreamBittrex
