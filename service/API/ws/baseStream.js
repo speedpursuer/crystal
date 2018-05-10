@@ -127,10 +127,10 @@ class BaseStream extends EventEmitter {
     reconnect(e, delay=this.autoReconnectInterval) {
         if(this.isConnecting) return
         this.isConnecting = true
+        this.log(`WebSocketClient: retry in ${delay} ms`, e)
         this.stopStream()
         this.resetOrderbooks()
         let that = this
-        this.log(`WebSocketClient: retry in ${delay} ms`, e)
         setTimeout(function(){
             that.log("WebSocketClient: reconnecting...")
             that.connect()
@@ -145,7 +145,7 @@ class BaseStream extends EventEmitter {
         if(this.isStopping) return
         this.isStopping = true
         this.isWorking = false
-        this.log('停止stream')
+        this.log('stopStream')
         this.stopConnection()
         this.isStopping = false
     }
@@ -228,7 +228,7 @@ class BaseStream extends EventEmitter {
         let that = this, i = 0, maxTry = 20
         this.checkReadyInterval = util.repeat(function () {
             i++
-            if(i == maxTry) {
+            if(i === maxTry) {
                 that.notifyOrderbookReceived(false)
             }
         }, 1000, maxTry, function () {
