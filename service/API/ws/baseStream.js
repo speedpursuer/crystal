@@ -220,8 +220,8 @@ class BaseStream extends EventEmitter {
         })
     }
 
-    log(msg1, msg2='') {
-        util.log(this.name, msg1, msg2)
+    log(msg1, msg2='', color='white') {
+        util.log[color](this.name, msg1, msg2)
     }
 
     checkDataReady() {
@@ -257,11 +257,11 @@ class BaseStream extends EventEmitter {
         return false
     }
 
-    notifyOrderbookReceived(flag) {
-        this.isWorking = flag
+    notifyOrderbookReceived(success) {
+        this.isWorking = success
         this.isConnecting = false
-        this.log(`All orderbooks received: ${flag}`)
-        if(!flag) {
+        this.log('All orderbooks received:', success, success? 'green': 'red')
+        if(!success) {
             let msg = 'orderbooks not fully received'
             if(this.counter.isOverCountAfterCount) {
                 this.log(`${msg}, too many time retry, give up`)
@@ -274,7 +274,7 @@ class BaseStream extends EventEmitter {
         }else {
             this.emit('started', true)
         }
-        this.log(`----------------------------`)
+        util.log(`----------------------------`)
     }
 }
 
