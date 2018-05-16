@@ -1,5 +1,5 @@
 const should = require('should');
-const Available = require('../util/available.js')
+const Available = require('../service/API/util/available.js')
 const util = require('../util/util.js')
 
 

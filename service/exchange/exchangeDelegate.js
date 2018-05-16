@@ -1,8 +1,9 @@
 const EventEmitter = require('events')
 const _ = require('lodash')
 const util = require ('../../util/util.js')
-const Available = require('../../util/available.js')
+const Available = require('../API/util/available.js')
 const AppLog = require('../db/appLog')
+const PendingOrder = require('./class/pendingOrder')
 
 const ORDER_TYPE_BUY = 'buy'
 const ORDER_TYPE_SELL = 'sell'
@@ -78,18 +79,17 @@ class ExchangeDelegate extends EventEmitter {
             this._reportIssue(e)
         }
         await util.sleep(this.interval * 3)
-        return await this._cancelPendingOrders(symbol, amount, accountInfo)
+        return await this._checkPendingOrders(symbol, amount, accountInfo)
     }
 
-    async _cancelPendingOrders(symbol, amount, accountInfo) {
-        this._log("开始轮询订单状态")
+    async _checkPendingOrders(symbol, amount, accountInfo, hasPendingOrders = false) {
+        this._log("开始订单状态检查")
                 
         let beforeAccount = accountInfo
         let newAccount = beforeAccount
         let retryTimes = 0
         let dealAmount = 0
         let balanceChanged = 0
-        let hasPendingOrders = false
         let completed = false
 
         while(retryTimes < 10) {
@@ -126,7 +126,7 @@ class ExchangeDelegate extends EventEmitter {
             }
 
             // 钱和币不一致，重新刷新
-            if(!this.checkOrderCompletion(dealAmount, balanceChanged)) {
+            if(!this._checkOrderCompletion(dealAmount, balanceChanged)) {
                 continue
             }
 
@@ -134,27 +134,41 @@ class ExchangeDelegate extends EventEmitter {
             completed = true
             break
         }
-        if(completed) {
-            this._log(`订单轮询处理完成, 成交量: ${dealAmount}, 余额变化: ${balanceChanged}`, "green")
-        }else {
-            this._reportIssue({message: "订单轮询处理失败"}, true)
-        }        
+
+        let orderResult = {amount, dealAmount, balanceChanged, completed, hasPendingOrders}
+        this._processOrderResult(symbol, accountInfo, orderResult)
+
         return {
-            info: {amount, dealAmount, balanceChanged, completed},
+            info: orderResult,
             newAccount
         }        
     }
 
-    checkOrderCompletion(dealAmount, balanceChanged) {
+    _processOrderResult(symbol, beforeAccount, orderResult) {
+        if(orderResult.completed) {
+            if(orderResult.dealAmount === 0) {
+                this._reportIssue({message: "下单量为0，下单失败"})
+            }
+            this._log(`订单状态检查成功, 成交量: ${orderResult.dealAmount}, 余额变化: ${orderResult.balanceChanged}`, "green")
+        }else {
+            this._reportIssue({message: "订单状态检查失败"}, true)
+            if(!this.pendingOrder) {
+                this.pendingOrder = new PendingOrder(symbol, beforeAccount, orderResult.amount, orderResult.hasPendingOrders)
+            }
+        }
+    }
+
+    _checkOrderCompletion(dealAmount, balanceChanged) {
 	    if(dealAmount !== 0 && balanceChanged !== 0) {
 	        //成功下单
+            return true
         }else if (dealAmount === 0 && balanceChanged === 0) {
-            this._reportIssue({message: "下单量为0，下单失败"})
+            //下单失败
+            return true
         }else {
 	        //账户数据不一致，需重新获取
             return false
         }
-        return true
     }
 
     parseAccount(data, symbol) {
@@ -173,7 +187,7 @@ class ExchangeDelegate extends EventEmitter {
     async _fetchBalance() {
         try {
             let balance = await this.api.fetchBalance()
-            this.emit('balanceUpdate', balance)
+            if(balance) this.emit('balanceUpdate', balance)
             return balance
         }catch(e) {
             this._reportIssue(e)
@@ -243,26 +257,60 @@ class ExchangeDelegate extends EventEmitter {
             await AppLog.instance.recordClosedAPI(that.id)
         })
         this.available.on('stopped', async function(){
-            that._log(`API调用多次失败，暂停使用，稍后自动重试`, "red")
+            that._log(`API调用失败，暂停使用，稍后自动重试`, "red")
             // that.emit('stopped')
         })
     }
 
     async _checkAvailable() {
         this._log(`自动检测 ${this.id} API可用性`)
+
+        if(await this._checkAPI()) {
+            this._log(`API恢复正常`, "green")
+            this.api.reconnectStream()
+            this.available.reportCheck(true)
+            // this.emit('reopen')
+        }else{
+            this._log(`AIP恢复失败`, "red")
+            this.available.reportCheck(false)
+            // this.emit('stopped')
+        }
+    }
+
+    async _checkAPI() {
         try{
-            if(await this.api.fetchBalance()) {
-                this._log(`API恢复正常`, "green")
-                // this.emit('reopen')
-                this.api.reconnectStream()
-                return this.available.reportCheck(true)
+            if(this.pendingOrder) {
+                return await this._recheckPendingOrders()
+            }else {
+                return await this.api.fetchBalance()
             }
         }catch(e) {
             this._log(e)
+            return false
         }
-        this._log(`AIP恢复失败`, "red")
-        // this.emit('stopped')
-        this.available.reportCheck(false)
+    }
+
+    async _recheckPendingOrders() {
+        let checkResult = await this._checkPendingOrders(
+            this.pendingOrder.symbol,
+            this.pendingOrder.orderAmount,
+            this.pendingOrder.beforeAccount,
+            this.pendingOrder.hasPendingOrders
+        )
+
+        let lastOrderAmount = this.pendingOrder.checkPendingOrder(
+            checkResult.info.completed,
+            checkResult.info.dealAmount,
+            checkResult.info.hasPendingOrders
+        )
+
+        if(lastOrderAmount !== null) {
+            this.pendingOrder = null
+            this._log(`上次失败订单最终下单量: ${lastOrderAmount}`, 'blue')
+            return true
+        }else {
+            return false
+        }
     }
 
     async testErr(isFatal=false) {

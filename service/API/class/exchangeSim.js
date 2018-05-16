@@ -17,7 +17,6 @@ class ExchangeSim {
 	constructor(info, balance, buySuccess=0.72, sellSuccess=0.72, debug=false){
 		this.orderList = {}
 		this.currID = 0
-		this.tryTime = 0
         this.interval = 0
 
         this.balanceMgr = new BalanceMgr(balance)
@@ -30,6 +29,10 @@ class ExchangeSim {
         this.sellSuccess = sellSuccess
 
         this.debug = debug
+
+		this.cancelOrderDisabled = false
+        this.fetchBalanceDisabled = false
+		this.fetchOpenOrdersDisabled = false
 	}
 
     get isAvailable() {
@@ -57,6 +60,7 @@ class ExchangeSim {
 	}
 
 	async fetchBalance() {
+		if(this.fetchBalanceDisabled) return null
         await util.sleep(Delay)
 		let balance = this.balanceMgr.fetchAllBalance()
 		this.log(balance, 'yellow')
@@ -154,31 +158,29 @@ class ExchangeSim {
 
 	async fetchOpenOrders() {
 		await util.sleep(Delay)
+		if(this.fetchOpenOrdersDisabled) return null
 		return _.filter(this.orderList, function(o) { return o.status == 'open' })
 	}
 
 	async cancelOrder(orderID, symbol) {
-		this.tryTime++
-		await util.sleep(Delay)
 
-		if(this.tryTime >= 1) {				
-			var order = this.orderList[orderID]
-			if(order.status == 'closed') return true
-            let account = this.getBalance(symbol)
-			if(order.type == 'buy') {			
-				var balanceRollback = this.specialBuy? order.amount * order.price / (1-this.fee): order.amount * order.price
-                account.frozenBalance -= balanceRollback
-                account.balance += balanceRollback
-			}else {
-                account.frozenStocks -= order.amount
-                account.stocks += order.amount
-			}
-			order.status = 'closed'
-			this.tryTime = 0
-			return true
-		}else{
-			return false
-		}
+        await util.sleep(Delay)
+
+		if(this.cancelOrderDisabled) return false
+
+        var order = this.orderList[orderID]
+        if(order.status == 'closed') return true
+        let account = this.getBalance(symbol)
+        if(order.type == 'buy') {
+            var balanceRollback = this.specialBuy? order.amount * order.price / (1-this.fee): order.amount * order.price
+            account.frozenBalance -= balanceRollback
+            account.balance += balanceRollback
+        }else {
+            account.frozenStocks -= order.amount
+            account.stocks += order.amount
+        }
+        order.status = 'closed'
+        return true
 	}
 
 	log(message, color='white') {

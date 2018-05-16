@@ -98,10 +98,15 @@ describe.only('测试 exchange', async function() {
 
     describe.only('模拟测试下单', async function() {
         it('下单数量不能超出限额', async function() {
-
+            let account = {
+                Bitfinex: {
+                    base: 100,
+                    quote: 1
+                }
+            }
             var base = 'BCH', quote = 'BTC', id = 'Bitfinex'
 
-            let exchanges = getTradeBuilder(base, quote).buildExchangesSim([id], 10, 100)
+            let exchanges = getTradeBuilder(base, quote).buildExchangesSim(account)
 
             var exchange = exchanges[id]
 
@@ -117,10 +122,15 @@ describe.only('测试 exchange', async function() {
         })
 
         it('下单数量精度为0的情况', async function() {
-
+            let account = {
+                binance: {
+                    base: 100,
+                    quote: 1
+                }
+            }
             var base = 'EOS', quote = 'BTC', id = 'binance'
 
-            let exchanges = getTradeBuilder(base, quote).buildExchangesSim([id], 10, 100)
+            let exchanges = getTradeBuilder(base, quote).buildExchangesSim(account)
 
             var exchange = exchanges[id]
 
@@ -134,14 +144,12 @@ describe.only('测试 exchange', async function() {
         })
 
         it('下单后自动更新exchange account数据', async function() {
-
             let account1 = {
                 binance: {
                     base: 100,
                     quote: 1
                 }
             }
-
             let account2 = {
                 binance: {
                     base: 10,
@@ -203,6 +211,87 @@ describe.only('测试 exchange', async function() {
             // util.log(exchange.account)
 
             // util.log(exchange.account)
+        })
+    })
+
+
+    describe.only('模拟下单失败，重试时计算下单量', async function() {
+
+        function createExchange() {
+            let account = {
+                binance: {
+                    base: 100,
+                    quote: 1
+                }
+            }
+
+            return getTradeBuilder('EOS', 'BTC').buildExchangesSim(account)['binance']
+        }
+
+        it('下单失败，但不能取消', async function() {
+
+            let exchange = createExchange()
+
+            await exchange.fetchAccount()
+
+            exchange.exchangeDelegate.api.cancelOrderDisabled = true
+
+            await exchange.testOrder(0.001, 0.001, 3)
+
+            setTimeout(function(){
+                exchange.exchangeDelegate.api.cancelOrderDisabled = false
+            }, 2000)
+        })
+
+        it('下单失败，先不能取消，后不能查账户', async function() {
+
+            let exchange = createExchange()
+
+            await exchange.fetchAccount()
+
+            exchange.exchangeDelegate.api.fetchOpenOrdersDisabled = true
+            exchange.exchangeDelegate.api.fetchBalanceDisabled = true
+
+            await exchange.testOrder(0.001, 0.001, 3)
+
+            setTimeout(function(){
+                exchange.exchangeDelegate.api.fetchOpenOrdersDisabled = false
+            }, 2000)
+
+            setTimeout(function(){
+                exchange.exchangeDelegate.api.fetchBalanceDisabled = false
+            }, 7000)
+        })
+
+
+        it('下单成功/失败，不能获取账号信息', async function() {
+
+            let exchange = createExchange()
+
+            await exchange.fetchAccount()
+
+            exchange.exchangeDelegate.api.fetchBalanceDisabled = true
+
+            await exchange.testOrder(0.001, 0.001, 3)
+
+            setTimeout(function(){
+                exchange.exchangeDelegate.api.fetchBalanceDisabled = false
+            }, 2000)
+        })
+
+        it('下单失败，不能获取open order', async function() {
+
+            let exchange = createExchange()
+
+            await exchange.fetchAccount()
+
+            exchange.exchangeDelegate.api.fetchOpenOrdersDisabled = true
+
+            await exchange.testOrder(0.001, 0.001, 3)
+
+            setTimeout(function(){
+                exchange.exchangeDelegate.api.fetchOpenOrdersDisabled = false
+            }, 2000)
         })
     })
 

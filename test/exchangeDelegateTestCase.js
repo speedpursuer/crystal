@@ -52,7 +52,7 @@ describe('单元测试ExchangeDelegate', async function() {
         it('createLimitOrder', async function() {
             var account = await exchangeDelegate.fetchAccount(symbol)
             util.log(account)
-            util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.01, 0.00021, account))
+            util.log(await exchangeDelegate.createLimitOrder(symbol, "buy", 0.1, 0.01, account))
             // util.log(await exchangeDelegate.createLimitOrder(symbol, "sell", 2, 1, account))
         })
 

@@ -1,4 +1,4 @@
-const util = require('./util.js')
+const util = require('../../../util/util.js')
 
 class Counter {
     constructor(interval, threshold) {

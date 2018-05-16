@@ -18,7 +18,7 @@ var ProgressBar = require('progress')
 
 const EventEmitter = require('events')
 
-const Counter = require("../util/counter")
+const Counter = require("../service/API/util/counter")
 
 const MarketManager = require('bittrex-market')
 

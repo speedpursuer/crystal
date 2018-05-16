@@ -52,6 +52,9 @@ class StreamBittrex extends BaseStream {
         this.marketManager.on('connectFailed', (client) => {
             that.doReconnect('connectFailed')
         })
+        this.marketManager.on('connectionLost', (client) => {
+            that.doReconnect('connectionLost')
+        })
         this.marketManager.stopped = false
     }
 
