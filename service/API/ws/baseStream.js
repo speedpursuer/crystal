@@ -1,5 +1,7 @@
 const EventEmitter = require('events')
 const WS = require('ws')
+const WebSocket = require('websocket')
+const WebSocketClient = WebSocket.client
 const util = require('../../../util/util')
 const Counter = require('../util/counter')
 const config = require('./config/exchangeInfo')
@@ -61,45 +63,87 @@ class BaseStream extends EventEmitter {
         }
     }
 
-    send(data) {
-        let that = this
-        this.ws.send(JSON.stringify(data), function(e) {
-            if(e !== undefined) {
-                that.reconnect(e)
-            }
-        })
-    }
+    // connect() {
+    //     this.ws = new WS(this.url, null, {
+    //         agent: this.agent,
+    //         handshakeTimeout
+    //     })
+    //
+    //     let that = this
+    //     this.ws.on('open', function() {
+    //         that.log('ws on open')
+    //         that.openStream()
+    //     })
+    //
+    //     this.ws.on('message', function(msg) {
+    //         // that.log('ws on message')
+    //         that.handleMessage(that.parseMessage(msg))
+    //     })
+    //
+    //     this.ws.on('error', function(e) {
+    //         that.log(`ws on error: ${e}`)
+    //         that.notifyOrderbookReceived(false)
+    //     })
+    //
+    //     this.ws.on('close', function(e) {
+    //         that.log(`ws on close: ${e}`)
+    //         // that.notifyOrderbookReceived(false)
+    //     })
+    // }
+    //
+    // send(data) {
+    //     let that = this
+    //     this.ws.send(JSON.stringify(data), function(e) {
+    //         if(e !== undefined) {
+    //             that.reconnect(e)
+    //         }
+    //     })
+    // }
 
     connect() {
-        this.ws = new WS(this.url, null, {
-            agent: this.agent,
-            handshakeTimeout
-        })
-
+        this.ws = new WebSocketClient()
         let that = this
-        this.ws.on('open', function() {
-            that.log('ws on open')
-            that.openStream()
-        })
-
-        this.ws.on('message', function(msg) {
-            // that.log('ws on message')
-            that.handleMessage(that.parseMessage(msg))
-        })
-
-        this.ws.on('error', function(e) {
-            that.log(`ws on error: ${e}`)
+        this.ws.on('connectFailed', function(error) {
+            that.log(`Connect Error: ${error.toString()}`)
             that.notifyOrderbookReceived(false)
         })
 
-        this.ws.on('close', function(e) {
-            that.log(`ws on close: ${e}`)
-            // that.notifyOrderbookReceived(false)
+        this.ws.on('connect', function(connection) {
+            that.connection = connection
+            that.openStream()
+
+            connection.on('error', function(error) {
+                that.log(`Connection Error: ${error.toString()}`)
+            });
+            connection.on('close', function() {
+                that.log('Connection Closed')
+            });
+            connection.on('message', function(msg) {
+                that.handleMessage(that.parseMessage(that._getData(msg)))
+            })
         })
+
+        this.ws.connect(this.url, null, null, null, {agent: this.agent})
+    }
+
+    send(data) {
+        if (this.connection.connected) {
+            this.connection.send(JSON.stringify(data))
+        }
+    }
+
+    _getData(msg) {
+        if (msg.type === 'utf8') {
+            return msg.utf8Data
+        }else if(msg.type === 'binary') {
+            return msg.binaryData
+        }else{
+            return ''
+        }
     }
 
     openStream() {
-        this.log('WS open')
+        this.log('Websocket open')
         if(this.start) {
             this.start()
         }
@@ -156,6 +200,10 @@ class BaseStream extends EventEmitter {
     }
 
     stopWS() {
+        if(this.connection) {
+            this.connection.removeAllListeners()
+            this.connection = undefined
+        }
         if(this.ws) {
             this.ws.removeAllListeners()
             this.ws = undefined
