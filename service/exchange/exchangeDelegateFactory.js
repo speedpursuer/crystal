@@ -31,7 +31,7 @@ class ExchangeDelegateFactory {
 
     getExchangeDelegateSim(info, balance, debug=false) {
         if(!this.exchangePoor[info.id]) {
-            let api = new ExhangeSim(info, balance, 1, 1)
+            let api = new ExhangeSim(info, balance, 0.1, 0.1)
             this.exchangePoor[info.id] = this.createExchangeDelegate(api, debug)
             return this.exchangePoor[info.id]
         }else {

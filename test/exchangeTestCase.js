@@ -252,6 +252,10 @@ describe.only('测试 exchange', async function() {
             exchange.exchangeDelegate.api.fetchOpenOrdersDisabled = true
             exchange.exchangeDelegate.api.fetchBalanceDisabled = true
 
+            exchange.once('lastOrderResult', (orderResult) => {
+                util.log.green(`Last order result: ${orderResult}`)
+            })
+
             await exchange.testOrder(0.001, 0.001, 3)
 
             setTimeout(function(){

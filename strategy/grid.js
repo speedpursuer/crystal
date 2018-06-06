@@ -25,14 +25,24 @@ class Grid {
         let price = this.exchange.price
         let grid = this.getGrid(price)
         let orderAmount = this.getOrderAmount(grid)
-        if(orderAmount === 0) {
-            return
+        if(orderAmount !== 0) {
+            this.handleResult(grid, await this.trade(orderAmount))
         }
-        let result = await this.trade(orderAmount)
-        // util.log(`result: ${JSON.stringify(result)}`)
-        if(result && result.completed) {
-            this._recordTrade(orderAmount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
+    }
+
+    handleResult(grid, result) {
+        if(!result) return
+        if(result.completed) {
+            this._recordTrade(result.amount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
+        }else {
+            this.setPendingOrderUpdate()
         }
+    }
+
+    setPendingOrderUpdate() {
+        this.exchange.once('lastOrderAmount', (amount) => {
+
+        })
     }
 
     getGrid(price) {

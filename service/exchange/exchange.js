@@ -1,3 +1,4 @@
+const EventEmitter = require('events')
 const util = require ('../../util/util.js')
 const _ = require('lodash')
 
@@ -11,13 +12,15 @@ const defaultMinOrderSize = 0.0001
 const defaultOrderRate = 0.2
 
 
-class Exchange {
+class Exchange extends EventEmitter {
 	constructor(exchangeDelegate, info, crypto, fiat, debug=true) {
+        super()
+
         this.exchangeDelegate = exchangeDelegate
 
         this.id = info.id
         this.fee = info.fee        
-        this.fiat = fiat == 'USD'? info.fiat: fiat
+        this.fiat = fiat === 'USD'? info.fiat: fiat
         this.specialBuy = this.getValue(info.specialBuy, false)
         this.minTrade = this.getValue(info.minTrade, defaultMinTrade)
         this.precision = this.getValue(info.precision, defaultPrecision)
@@ -43,6 +46,10 @@ class Exchange {
 	    let that = this
         this.exchangeDelegate.on('balanceUpdate', function(data){
             that.account = this.parseAccount(data, that.symbol)
+        })
+
+        this.exchangeDelegate.on('lastOrderResult', function(orderResult){
+            that.emit('lastOrderResult', orderResult)
         })
     }
 
@@ -201,7 +208,7 @@ class Exchange {
 
         var orderPrice, orderAmount, result
 
-        if(type == ORDER_TYPE_BUY) {
+        if(type === ORDER_TYPE_BUY) {
             orderPrice = this.adjustedOrderPrice(this.buyPrice)
             orderAmount = this.adjustedBuyAmount(amount)
             this.log(`限价买单，数量：${orderAmount}，价格：${orderPrice}`, 'green')
@@ -211,8 +218,7 @@ class Exchange {
             this.log(`限价卖单，数量：${orderAmount}，价格：${orderPrice}`, 'blue')
         }
 
-        result = await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
-        return result.info
+        return await this.exchangeDelegate.createLimitOrder(this.symbol, type, orderAmount, orderPrice, this.account)
     }
 
     getOrderBooksData(path) {

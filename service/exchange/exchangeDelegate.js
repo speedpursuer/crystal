@@ -135,17 +135,14 @@ class ExchangeDelegate extends EventEmitter {
             break
         }
 
-        let orderResult = {amount, dealAmount, balanceChanged, completed, hasPendingOrders}
+        let orderResult = {amount, dealAmount, balanceChanged, completed, hasPendingOrders, newAccount}
         this._processOrderResult(symbol, accountInfo, orderResult)
 
-        return {
-            info: orderResult,
-            newAccount
-        }        
+        return orderResult
     }
 
     _processOrderResult(symbol, beforeAccount, orderResult) {
-        if(orderResult.completed) {
+        if(this._isOrderCompleted(orderResult)) {
             if(orderResult.dealAmount === 0) {
                 this._reportIssue({message: "下单量为0，下单失败"})
             }
@@ -156,6 +153,10 @@ class ExchangeDelegate extends EventEmitter {
                 this.pendingOrder = new PendingOrder(symbol, beforeAccount, orderResult.amount, orderResult.hasPendingOrders)
             }
         }
+    }
+
+    _isOrderCompleted(orderResult) {
+	    return orderResult.completed
     }
 
     _checkOrderCompletion(dealAmount, balanceChanged) {
@@ -291,24 +292,20 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     async _recheckPendingOrders() {
-        let checkResult = await this._checkPendingOrders(
+        let orderResult = await this._checkPendingOrders(
             this.pendingOrder.symbol,
             this.pendingOrder.orderAmount,
             this.pendingOrder.beforeAccount,
             this.pendingOrder.hasPendingOrders
         )
 
-        let lastOrderAmount = this.pendingOrder.checkPendingOrder(
-            checkResult.info.completed,
-            checkResult.info.dealAmount,
-            checkResult.info.hasPendingOrders
-        )
-
-        if(lastOrderAmount !== null) {
+        if(this._isOrderCompleted(orderResult)) {
             this.pendingOrder = null
-            this._log(`上次失败订单最终下单量: ${lastOrderAmount}`, 'blue')
+            this.emit('lastOrderResult', orderResult)
+            this._log(`上次失败订单最终结果: ${orderResult}`, 'blue')
             return true
         }else {
+            this.pendingOrder.updatePendingOrder(orderResult.hasPendingOrders)
             return false
         }
     }
