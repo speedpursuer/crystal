@@ -55,7 +55,7 @@ var exchangeInfo = {
     StreamBittrex: {
         symbolPairs: {
             'ETH/BTC': 'BTC-ETH',
-            'BCH/BTC': 'BTC-BCC',
+            'BCH/BTC': 'BTC-BCH',
             'NEO/BTC': 'BTC-NEO',
             'BTC/USDT': 'USDT-BTC',
         },
