@@ -70,7 +70,7 @@ class ExchangeDelegate extends EventEmitter {
     async createLimitOrder(symbol, type, amount, price, accountInfo) {
         this._logAccount(symbol, accountInfo)
         try{
-            if(type == ORDER_TYPE_BUY) {
+            if(type === ORDER_TYPE_BUY) {
                 await this.api.createLimitBuyOrder(symbol, amount, price)
             }else {
                 await this.api.createLimitSellOrder(symbol, amount, price)
@@ -91,8 +91,9 @@ class ExchangeDelegate extends EventEmitter {
         let dealAmount = 0
         let balanceChanged = 0
         let completed = false
+        let maxRetry = 10
 
-        while(retryTimes < 10) {
+        while(retryTimes < maxRetry) {
             retryTimes++
             await util.sleep(this.interval * retryTimes)
             let orders = await this._fetchOpenOrders(symbol)
@@ -121,7 +122,7 @@ class ExchangeDelegate extends EventEmitter {
             balanceChanged = this._diff(newAccount.balance, beforeAccount.balance)
 
             // 没有挂单，但余额没变，需要重新刷新
-            if(!hasPendingOrders && dealAmount === 0  && balanceChanged === 0) {
+            if(!hasPendingOrders && dealAmount === 0 && balanceChanged === 0 && retryTimes !== maxRetry - 1) {
                 continue
             }
 
