@@ -4,7 +4,7 @@ const _ = require('lodash')
 const maxAmountOnce = 0.1
 
 class Grid {
-    constructor(basePrice, baseStock, priceRange, gridSize, maxAmountOnce, exchange) {
+    constructor(basePrice, baseStock, priceRange, gridSize, exchange) {
         this.basePrice = basePrice
         // this.priceRange = priceRange
         // this.gridSize = gridSize
@@ -14,24 +14,92 @@ class Grid {
         this.exchange = exchange
 
         this.stock = baseStock
-        this.lastTrade = null
         this.avgCost = basePrice
         this.profit = 0
+
+        this.lastTrade = null
+        this.isWorking = true
+        this.currGrid = 0
 
         util.log(`basePrice: ${this.basePrice}, baseStock: ${this.stock}, gridPrice: ${this.gridPrice}, unitAmount: ${this.unitAmount}`)
     }
 
-    async doTrade() {
+    canTrade() {
+        return this.isWorking
+    }
+
+    async _doTrade() {
         let price = this.exchange.price
         let grid = this.getGrid(price)
         let orderAmount = this.getOrderAmount(grid)
         if(orderAmount !== 0) {
+            // util.log(`Real price: ${price}, buyPrice: ${this.exchange.buyPrice}, sellPrice: ${this.exchange.sellPrice}`)
             this.handleResult(grid, await this.trade(orderAmount))
         }
     }
 
+    async doTrade() {
+
+        // let sell = this.calcOrderAmount(this.exchange.sellPrice)
+        // let buy = this.calcOrderAmount(this.exchange.buyPrice)
+        //
+        // if(sell.orderAmount !== 0) {
+        //     this.handleResult(sell.grid, await this.trade(sell.orderAmount))
+        // }else if(buy.orderAmount !== 0) {
+        //     this.handleResult(buy.grid, await this.trade(buy.orderAmount))
+        // }
+
+
+        // if(await this.didBuy(this.exchange.buyPrice)) {
+        //
+        // }else if(await this.didSell(this.exchange.sellPrice)) {
+        //
+        // }
+
+        if(await this.didSell(this.exchange.sellPrice)) {
+
+        }else if(await this.didBuy(this.exchange.buyPrice)) {
+
+        }
+    }
+
+    async didBuy(buyPrice) {
+        let buy = this.calcOrderAmount(buyPrice)
+        if(buy.orderAmount > 0 && this.exchange.canBuySuch(buy.orderAmount)) {
+            this.printStarter()
+            util.log.blue(`BuyPrice: ${buyPrice}`)
+            this.handleResult(buy.grid, await this.exchange.limitBuy(buy.orderAmount))
+            return true
+        }
+        return false
+    }
+
+    async didSell(sellPrice) {
+        let sell = this.calcOrderAmount(sellPrice)
+        if(sell.orderAmount < 0 && this.getTradePrice(sell.orderAmount) > this.avgCost && this.exchange.canSellSuch(Math.abs(sell.orderAmount))) {
+            this.printStarter()
+            util.log.green(`SellPrice: ${sellPrice}`)
+            this.handleResult(sell.grid, await this.exchange.limitSell(Math.abs(sell.orderAmount)))
+            return true
+        }
+        return false
+    }
+
+    calcOrderAmount(price) {
+        let grid = this.getGrid(price)
+        let orderAmount = this.getOrderAmount(grid)
+        return {grid, orderAmount}
+    }
+
+    gridGap() {
+        return this.currGrid
+    }
+
     handleResult(grid, result) {
         if(!result) return
+
+        this.isWorking = result.completed
+
         if(result.completed) {
             this._recordTrade(result.amount, result.dealAmount, Math.abs(result.balanceChanged/result.dealAmount), grid)
         }else {
@@ -40,16 +108,22 @@ class Grid {
     }
 
     setPendingOrderUpdate() {
-        this.exchange.once('lastOrderAmount', (amount) => {
-
+        let that = this
+        this.exchange.once('lastOrderResult', (result) => {
+            that.handleResult(that.currGrid, result)
         })
     }
 
     getGrid(price) {
         let grid = (price - this.basePrice) / this.gridPrice
         grid = grid >= 0? _.floor(grid): _.ceil(grid)
+        this.setCurrrentGrid(grid)
         // util.log(`Price: ${price}, grid: ${grid}`)
         return grid
+    }
+
+    setCurrrentGrid(grid) {
+        this.currGrid = grid
     }
 
     getOrderAmount(grid) {

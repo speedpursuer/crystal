@@ -110,11 +110,13 @@ class ExchangeDelegate extends EventEmitter {
 
             // 获取账户失败
             if(!newAccount) {
+                this._log(`检查pending订单 - 获取账户失败`, "lightGray")
                 continue
             }
 
             // 有冻结，重新刷新
             if(newAccount.frozenStocks !== 0 || newAccount.frozenBalance !== 0) {
+                this._log(`检查pending订单 - 有冻结资金, newAccount.frozenStocks = ${newAccount.frozenStocks}, newAccount.frozenBalance = ${newAccount.frozenBalance}`, "lightGray")
                 continue
             }
 
@@ -123,6 +125,7 @@ class ExchangeDelegate extends EventEmitter {
 
             // 没有挂单，但余额没变，需要重新刷新
             if(!hasPendingOrders && dealAmount === 0 && balanceChanged === 0 && retryTimes !== maxRetry - 1) {
+                this._log(`检查pending订单 - 没有挂单，但余额没变`, "lightGray")
                 continue
             }
 
@@ -169,6 +172,7 @@ class ExchangeDelegate extends EventEmitter {
             return true
         }else {
 	        //账户数据不一致，需重新获取
+            this._log(`检查pending订单 - 账户数据不一致, dealAmount = ${dealAmount}, balanceChanged = ${balanceChanged}`, "lightGray")
             return false
         }
     }
@@ -238,7 +242,7 @@ class ExchangeDelegate extends EventEmitter {
     }
 
     _diff(n1, n2) {
-	    return _.round(n1 - n2, 5)
+	    return _.round(n1 - n2, 4)
     }
 
     _reportIssue(err, isFatal=false) {

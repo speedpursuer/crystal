@@ -206,7 +206,7 @@ class Exchange extends EventEmitter {
             throw new Error("orderBooks not available")
         }
 
-        var orderPrice, orderAmount, result
+        var orderPrice, orderAmount
 
         if(type === ORDER_TYPE_BUY) {
             orderPrice = this.adjustedOrderPrice(this.buyPrice)

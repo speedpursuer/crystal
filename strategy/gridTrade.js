@@ -4,11 +4,11 @@ const BaseStrategy = require('./baseStrategy.js')
 const Grid = require('./grid')
 
 const config = {
-    basePrice: 8000,
-    baseStock: 5,
-    baseBalance: 40000,
+    basePrice: 7000,
+    baseStock: 3,
+    baseBalance: 21000,
     priceRange: 1000,
-    gridSize: 20
+    gridSize: 50
 }
 
 class GridTrade extends BaseStrategy {
@@ -35,6 +35,10 @@ class GridTrade extends BaseStrategy {
 
     canTrade() {
         if(!super.canTrade()) {
+            return false
+        }
+
+        if(!this.grid.canTrade()) {
             return false
         }
 

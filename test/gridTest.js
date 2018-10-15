@@ -56,16 +56,22 @@ describe('单元测试grid', async function() {
             doGrid(grid, 8005)
         })
 
-        // it('3次，但超过规定时间，正常', async function() {
-        //     test.available.reportIssue()
-        //     await util.sleep(2000)
-        //     test.use()
-        //     test.available.reportIssue()
-        //     await util.sleep(1000)
-        //     test.use()
-        //     test.available.reportIssue()
-        //     test.use().should.equal(true)
-        // })
+        it('getGrid', async function() {
+            let account = {
+                binance: {
+                    base: 0,
+                    quote: 7
+                }
+            }
+            let exchange = getTradeBuilder('BTC', 'USD').buildExchangesSim(account)['binance']
+            await exchange.fetchAccount()
+            exchange.orderBooks = {"bids":[[0.03860468,1],[0.029004,9.96],[0.029003,2.7],[0.029,3.2],[0.028823,0.0154],[0.0288,154.4348]],"asks":[[0.0291,1.9434],[0.0293,0.0396],[0.029304,1],[0.029399,0.0013],[0.029407,0.0152],[0.029456,5]]}
+            let grid = new Grid(7000, 3, 1000, 50, exchange)
+
+            let g = grid.getGrid(7015.092080795944)
+            let amount = grid.getOrderAmount(g)
+            util.log(`Grid: ${g}, amount: ${amount}`)
+        })
     })
 
     function doGrid(gridObj, price) {

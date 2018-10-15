@@ -36,7 +36,7 @@ describe('测试Orderbook stream', async function() {
         it('Bitfinex', async function() {
             let symbos = ['EOS/BTC', 'ETH/BTC', 'IOTA/BTC']
             let orderBook = new StreamBitfinex(symbos)
-            await connect1(orderBook, symbos)
+            await connect(orderBook, symbos)
         })
 
         it('Binance', async function() {

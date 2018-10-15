@@ -1289,8 +1289,16 @@ function test68() {
     util.log(process.env.NODE_ENV)
 }
 
+function test69() {
+    function _diff(n1, n2) {
+        return _.round(n1 - n2, 4)
+    }
+    util.log.lightGray(_diff(3.16178985, 3.16178983))
+    util.log.lightGray(_diff(114.70486971, 114.70487725))
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test19()
+    test69()
 }

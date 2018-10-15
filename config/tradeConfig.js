@@ -104,8 +104,8 @@ const tradeConfig = {
     'grid': {
         base: "BTC",
         quote: "USDT",
-        exchanges: ['huobipro'],
-        exchangeInfo: exchangeInfoEOS,
+        // exchanges: ['huobipro'],
+        exchangeInfo: exchangeInfoETH,
         strategy: GridTrade,
         strategyConfig: {
             maxLoss: -100,
