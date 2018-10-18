@@ -1,6 +1,7 @@
 const BaseStream =require('./baseStream')
 const util = require('../../../util/util')
 const _ = require('lodash')
+const pako = require('pako')
 
 class StreamOkex extends BaseStream {
 
@@ -31,6 +32,12 @@ class StreamOkex extends BaseStream {
 
     hasStreamData(msg) {
         return msg.constructor === Array && msg.length === 1
+    }
+
+    parseMessage(msg) {
+        return super.parseMessage(pako.inflateRaw(msg, {
+            to: 'string'
+        }))
     }
 
     parseData(msg) {

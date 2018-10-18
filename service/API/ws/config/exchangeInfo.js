@@ -13,7 +13,7 @@ var exchangeInfo = {
 	},
 
     StreamOkex: {
-        url: 'wss://real.okex.com:10441/websocket',
+        url: 'wss://real.okex.com:10441/websocket?compress=true',
         symbolPairs: {
             'EOS/BTC': 'eos_btc',
             'IOTA/BTC': 'iota_btc',
