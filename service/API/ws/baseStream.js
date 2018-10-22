@@ -119,7 +119,11 @@ class BaseStream extends EventEmitter {
                 that.log('Connection Closed')
             });
             connection.on('message', function(msg) {
-                that.handleMessage(that.parseMessage(that._getData(msg)))
+                try {
+                    that.handleMessage(that.parseMessage(that._getData(msg)))
+                }catch(err) {
+                    that.log(`On message Error: ${err.toString()}`, `msg: ${msg.toString()}`, 'red')
+                }
             })
         })
 

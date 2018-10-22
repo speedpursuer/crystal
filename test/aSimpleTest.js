@@ -1297,8 +1297,19 @@ function test69() {
     util.log.lightGray(_diff(114.70486971, 114.70487725))
 }
 
+function test70() {
+	let msg = ' '
+	if(msg)	{
+        try {
+            JSON.parse(msg)
+        }catch(err) {
+            util.log.red(`On message Error: ${err.toString()}, msg: ${msg.toString()}`)
+        }
+	}
+}
+
 if (require.main === module) {
   	// 如果是直接执行 main.js，则进入此处
   	// 如果 main.js 被其他文件 require，则此处不会执行。
-    test69()
+    test70()
 }
